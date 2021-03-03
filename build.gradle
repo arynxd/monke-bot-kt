@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.30'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.4.30'
+}
+
+mainClassName = 'me.arynxd.monke.MonkeKt'
+sourceCompatibility = 14
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    //Kotlin
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
+    implementation "ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0"
+
+    //Database
+    implementation 'org.postgresql:postgresql:42.2.18'
+    implementation "org.ktorm:ktorm-core:3.3.0"
+    implementation 'com.zaxxer:HikariCP:4.0.2'
+    implementation "org.ktorm:ktorm-support-postgresql:3.3.0"
+
+    //Discord
+    implementation "net.dv8tion:JDA:4.2.0_228"
+    implementation "com.github.minndevelopment:jda-ktx:842e9b3"
+
+    //Util
+    implementation "ch.qos.logback:logback-classic:1.2.3"
+    implementation 'io.github.classgraph:classgraph:4.8.102'
+    implementation 'org.jetbrains.kotlin:kotlin-scripting-jsr223:1.4.30'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.0.0'
+    implementation 'org.jsoup:jsoup:1.13.1'
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "14"
+    }
+}
+compileJava.options.encoding = 'UTF-8'

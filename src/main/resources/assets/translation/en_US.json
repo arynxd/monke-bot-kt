@@ -1,0 +1,397 @@
+{
+  "internal_error": {
+    "non_command_class": "Non command class ( %0 ) found in commands package!",
+    "non_handler_class": "Non command class ( %0 ) found in commands package!",
+    "duplicate_command": "Duplicate command ( %0 ) found in commands package!",
+    "database_offline": "Database connection failed, please check all config options.",
+    "eval_reflection_warning": "You can ignore the big red reflection warning above.",
+    "invalid_login": "The token provided was invalid! If you just launched the bot, the config file should have been created now.",
+    "invalid_build": "The selected configuration was invalid, this could be due to missing intents or a mistake by the developer!",
+    "web_service_error": "%0 didn't provide any valid data in their response.",
+    "pagination_pages_empty": "Cannot paginate with no pages.",
+    "language_key_not_found": "Key %0 does not exist for language %1,",
+    "language_not_found": "Language %0 not found."
+  },
+
+  "cancel_reason": {
+    "timeout": "%0 timed out.",
+    "bot_shutdown": "Bot was shutdown."
+  },
+
+  "keyword": {
+    "optional": "optional",
+    "required": "required",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No"
+  },
+
+  "command_error": {
+    "disabled": "That command is disabled, please try again later.",
+    "developer_only": "That command is for developers only.",
+    "argument_config": "Something went wrong when running that command. Please report this to the devs.",
+    "member_permission": "You are missing some permissions needed to execute that command. \n %0",
+    "bot_permission": "I am missing some permissions needed to execute that command. \n %0",
+    "required_args": "You are missing %0 required argument%1. \n %2",
+    "invalid_args": "Something went wrong with the following argument%0 \n %1",
+    "rate_limited": "This command is on a server-wide cooldown, please try again later.",
+    "cooldown": "You're on cooldown from that command (%0s remaining).",
+    "command_not_found": "Command `%0` was not found.\n Type %1help for help.",
+    "corrupt_web_data": "The data provided by %0 was corrupt, please report this to the developers!",
+    "nsfw_reddit_post": "The post found was NSFW and cannot be shown here, please try again."
+  },
+
+  "command_response": {
+    "reddit_description": "Taken from %0 by %1",
+    "reddit_footer": "%0 upvotes : %1 downvotes"
+  },
+
+  "command": {
+    "category": {
+      "developer": "Developer",
+      "fun": "Fun",
+      "misc": "Miscellaneous",
+      "moderation": "Moderation",
+      "configuration": "Configuration"
+    },
+
+    "language": {
+      "name": "language",
+      "description": "Gets and sets the language for this server.",
+      "aliases": "",
+      "argument": {
+        "language": {
+          "name": "language",
+          "description": "The new language."
+        }
+      },
+      "response": {
+        "get_response": "My language here is %0.",
+        "set_response": "My new language here is %0.",
+        "exists_response": "My language is already %0 here."
+      }
+    },
+
+    "eval": {
+      "name": "eval",
+      "description": "Evaluates Kotlin code.",
+      "argument": {
+        "code": {
+          "name": "code",
+          "description": "The code to evaluate."
+        }
+      },
+      "keyword": {
+        "evaluated_result": "Evaluated Result",
+        "status": "Status",
+        "duration": "Duration",
+        "code": "Code",
+        "error": "Error",
+        "no_error": "Evaluated without error.",
+        "result": "Result"
+      }
+    },
+
+    "json": {
+      "name": "json",
+      "description": "Gets the JSON representation of a message.",
+      "aliases": "getjson",
+      "argument": {
+        "message-id": {
+          "name": "message-id",
+          "description": "The ID to get from. Must be a message from the current channel."
+        }
+      },
+      "message_not_found": "That message could not be found in this channel."
+    },
+
+    "shutdown": {
+      "name": "shutdown",
+      "description": "Shuts the bot down gracefully.",
+      "response": {
+        "confirmation": "Do you really want to shut the bot down?",
+        "aborted": "Shutdown aborted.",
+        "success": "Shutting down..."
+      }
+    },
+
+    "test": {
+      "name": "test",
+      "description": "Tests the bot's basic functionality.",
+      "aliases": "",
+      "argument": {
+        "boolean-test": {
+          "name": "boolean-test",
+          "description": "Test the boolean arg type. Controls if the other tests run."
+        },
+        "member-test": {
+          "name": "member-test",
+          "description": "Test the member arg type. Must not be a bot."
+        },
+        "long-test": {
+          "name": "long-test",
+          "description": "Test the long arg type. Must be less than 0."
+        },
+        "int-test": {
+          "name": "int-test",
+          "description": "Test the int type. Must be greater than 0."
+        }
+      },
+      "keyword": {
+        "success": "Success",
+        "error": "Error",
+        "event_waiting": "Testing event waiting.",
+        "captured_result": "Captured result: %0",
+        "time_out": "Event waiter timed out.",
+        "embed": "Embed"
+      }
+    },
+
+    "avatar": {
+      "name": "avatar",
+      "description": "Shows the avatar of a user.",
+      "aliases": "avi/pfp/av",
+      "argument": {
+        "user": {
+          "name": "user",
+          "description": "The user to get the avatar for."
+        }
+      },
+      "response": {
+        "avatar_for_user": "Avatar for user: %0"
+      }
+    },
+
+    "cat": {
+      "name": "cat",
+      "description": "Shows cute cats from Reddit.",
+      "aliases": "kitty"
+    },
+
+    "google": {
+      "name": "google",
+      "description": "Queries Google with the given text.",
+      "aliases": "g",
+      "argument": {
+        "query": {
+          "name": "query",
+          "description": "The search query."
+        }
+      },
+      "response": {
+        "no_results": "No results found."
+      }
+    },
+
+    "rng": {
+      "name": "rng",
+      "description": "Gives you a random number in the specified range.",
+      "aliases": "number",
+      "argument": {
+        "number-one": {
+          "name": "number-one",
+          "description": "The first number in the range. Bigger than 0."
+        },
+        "number-two": {
+          "name": "number-two",
+          "description": "The second number in the range. Bigger than 0."
+        }
+      },
+      "response": {
+        "lower_>_upper": "Number 1 must be lower than Number 2."
+      }
+    },
+
+    "uwu": {
+      "name": "uwu",
+      "description": "UwUfies your sentence.",
+      "aliases": "owo",
+      "argument": {
+        "text": {
+          "name": "text",
+          "description": "The text to UwUfy."
+        }
+      }
+    },
+
+    "help": {
+      "name": "help",
+      "description": "Shows help menu, or help for a specific command.",
+      "aliases": "?/commands",
+      "argument": {
+        "command": {
+          "name": "command",
+          "description": "The command to show help for."
+        }
+      },
+      "keyword": {
+        "help_for": "Help for",
+        "description": "Description",
+        "usage": "Usage"
+      }
+    },
+
+    "info": {
+      "name": "info",
+      "description": "Shows information about various things.",
+      "aliases": "",
+      "argument": {
+        "member": {
+          "name": "member",
+          "description": "The member to show information for."
+        }
+      },
+      "child": {
+        "user": {
+          "name": "user",
+          "description": "Shows information about a user.",
+          "argument": {
+            "member": {
+              "name": "member",
+              "description": "The member to show information for."
+            }
+          }
+        },
+        "server": {
+          "name": "server",
+          "description": "Shows information about a server.",
+          "argument": {
+            "server": {
+              "name": "server",
+              "description": "The server to show information for or 'this' for the current server."
+            }
+          },
+          "response": {
+            "emote": "%0 / %1 slots used.\n\nAnimated: %2\n Non-Animated: %3"
+          }
+        },
+        "bot": {
+          "name": "bot",
+          "description": "Shows info about the bot.",
+          "aliases": "",
+          "keyword": {
+            "jvm_version": "JVM Version",
+            "jda_version": "JDA Version",
+            "monke_version": "Monke Version",
+
+            "thread_count": "Thread Count",
+            "memory_usage": "Memory Usage",
+            "cpu_usage": "CPU Usage",
+
+            "total_users": "Total Users",
+            "total_servers": "Total Servers",
+            "uptime": "Uptime"
+          }
+        }
+      },
+      "keyword": {
+        "information_for_user": "Information for user",
+        "boosting_since": "Boosting since",
+        "not_boosting": "Not boosting",
+        "joined_at": "Joined at",
+        "created_at": "Created account at",
+        "roles": "Roles",
+        "no_roles": "No roles.",
+
+        "information_for_server": "Information for server",
+        "is_partnered": "Is partnered",
+        "is_verified": "Is verified",
+        "is_public": "Is public",
+        "boost_count": "Boost count",
+        "member_count": "Member count",
+        "emotes": "Emotes",
+        "no_emotes": "No emotes"
+      }
+    },
+
+    "ping": {
+      "name": "ping",
+      "description": "Shows the bot's ping to discord.",
+      "aliases": "pong"
+    },
+
+    "prefix": {
+      "name": "prefix",
+      "description": "Gets and sets the prefix for this server.",
+      "aliases": "",
+      "argument": {
+        "prefix": {
+          "name": "prefix",
+          "description": "The new prefix. 5 characters or less."
+        }
+      },
+      "response": {
+        "prefix_here": "My prefix here is '%0'",
+        "prefix_already": "My prefix here is already '%0'!",
+        "prefix_new": "My new prefix here is '%0'"
+      }
+    },
+
+    "steal": {
+      "name": "steal",
+      "description": "Steals an emote and adds it here.",
+      "aliases": "",
+
+      "argument": {
+        "name": {
+          "name": "name",
+          "description": "The new emoji name, ( must be A-Z or _ and 2 - 32 characters long )."
+        },
+        "emoji": {
+          "name": "emoji",
+          "description": "The emoji URL. Must be a valid image URL."
+        }
+      },
+      "response": {
+        "invalid_image": "URL %0 could not be loaded as an image.",
+        "emoji_success": "Emote %0 added successfully!",
+        "emoji_add_error": "URL %0 could not be added. Your emote slots may be full, or that URL could not be parsed."
+      }
+    },
+
+    "uptime": {
+      "name": "uptime",
+      "description": "Shows the bot's uptime.",
+      "aliases": "",
+
+      "keyword": {
+        "uptime": "Uptime"
+      }
+    },
+
+    "wiki": {
+      "name": "wiki",
+      "description": "Queries Wikipedia with the given text.",
+      "aliases": "wikipedia",
+      "argument": {
+        "subject": {
+          "name": "subject",
+          "description": "The subject to query Wikipedia with."
+        }
+      },
+
+      "response": {
+        "not_found": "Subject was too vague or not found."
+      },
+
+      "keyword": {
+        "last_edited": "Page last edited at %0"
+      }
+    },
+
+    "clear": {
+      "name": "clear",
+      "description": "Clears messages from this channel.",
+      "aliases": "purge",
+      "argument": {
+        "amount": {
+          "name": "amount",
+          "description": "The amount to clear. 1 - 50"
+        }
+      },
+      "response": {
+        "cleared": "Cleared %0 message%1"
+      }
+    }
+  }
+}
