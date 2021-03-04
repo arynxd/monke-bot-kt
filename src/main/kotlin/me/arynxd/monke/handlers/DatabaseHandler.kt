@@ -18,7 +18,7 @@ class DatabaseHandler @JvmOverloads constructor(
         ConfigHandler::class.java,
         TranslationHandler::class.java
     )
-) : Handler {
+) : Handler() {
     private lateinit var pool: HikariDataSource
     lateinit var database: Database
 

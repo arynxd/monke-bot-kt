@@ -13,10 +13,9 @@ import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
 
-class CooldownHandler @JvmOverloads constructor(
+class CooldownHandler(
     override val monke: Monke,
-    override val dependencies: List<Class<out Handler>> = listOf()
-) : Handler {
+) : Handler() {
 
     private val users: LoadingCache<Long, CooledUser> =
         Caffeine.newBuilder()
@@ -33,14 +32,6 @@ class CooldownHandler @JvmOverloads constructor(
 
     fun addCommand(user: User, command: Command) {
         users[user.idLong]!!.addCommand(command)
-    }
-
-    override fun onEnable() {
-        //Unused
-    }
-
-    override fun onDisable() {
-        //Unused
     }
 
     class CooledUser {

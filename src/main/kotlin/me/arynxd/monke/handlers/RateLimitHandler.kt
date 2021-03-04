@@ -5,10 +5,9 @@ import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.ratelimit.RateLimiter
 import java.util.concurrent.ConcurrentHashMap
 
-class RateLimitHandler @JvmOverloads constructor(
+class RateLimitHandler(
     override val monke: Monke,
-    override val dependencies: List<Class<out Handler>> = listOf()
-) : Handler {
+) : Handler() {
 
     private val limiters = ConcurrentHashMap<Long, RateLimiter>()
 
@@ -20,13 +19,5 @@ class RateLimitHandler @JvmOverloads constructor(
         }
 
         return limiters[guildId]!!
-    }
-
-    override fun onEnable() {
-        //Unused
-    }
-
-    override fun onDisable() {
-        //Unused
     }
 }

@@ -26,7 +26,7 @@ class CommandHandler @JvmOverloads constructor(
         TranslationHandler::class.java,
         GuildSettingsHandler::class.java
     )
-) : Handler {
+) : Handler() {
     private val logger = LoggerFactory.getLogger(CommandHandler::class.java)
     private val classGraph: ClassGraph = ClassGraph().acceptPackages(COMMAND_PACKAGE)
     val commandMap: LinkedHashMap<String, Command> by lazy { loadCommands() }
@@ -99,6 +99,11 @@ class CommandHandler @JvmOverloads constructor(
                 return@launch
             }
             monke.handlers.get(CooldownHandler::class.java).addCommand(event.user, command)
+            monke.handlers.get(MetricsHandler::class.java).commandCounter.labels(
+                    if (command is SubCommand)
+                         "${command.parent.name} ${command.name}"
+                    else
+                        command.name).inc()
             command.run(event)
         }
     }
@@ -137,13 +142,5 @@ class CommandHandler @JvmOverloads constructor(
             }
         }
         return commands
-    }
-
-    override fun onEnable() {
-        //Unused
-    }
-
-    override fun onDisable() {
-        //Unused
     }
 }

@@ -2,7 +2,7 @@ package me.arynxd.monke.objects.handlers
 
 import io.github.classgraph.ClassGraph
 import me.arynxd.monke.Monke
-import me.arynxd.monke.objects.exception.HandlerNotFoundException
+import me.arynxd.monke.objects.exception.HandlerException
 import okhttp3.OkHttpClient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -16,13 +16,13 @@ val LOGGER: Logger = LoggerFactory.getLogger(Monke::class.java)
 
 class Handlers(val monke: Monke) {
     private val classGraph: ClassGraph = ClassGraph().acceptPackages(HANDLER_PACKAGE)
-    private val handlers: Map<Class<*>, Handler> = loadHandlers()
+    val handlers: Map<Class<*>, Handler> = loadHandlers()
     val okHttpClient: OkHttpClient = OkHttpClient()
 
     @Suppress("UNCHECKED_CAST")
     fun <T> get(clazz: Class<T>): T {
         if (!handlers.containsKey(clazz)) {
-            throw HandlerNotFoundException("Handler '${clazz.simpleName}' was not found.")
+            throw HandlerException("Handler '${clazz.simpleName}' was not found.")
         }
         return handlers[clazz] as T
     }
@@ -73,7 +73,7 @@ class Handlers(val monke: Monke) {
         while (queue.isNotEmpty()) {
             val handler = queue.remove()
             if (i > 50) {
-                // This cannot be translated because the TranslationHandler has not been loaded yet
+                // This cannot be translated because the TranslationHandler may not be loaded yet
                 LOGGER.error("Suspected infinite loop while loading the handlers, closing.")
                 exitProcess(1)
             }

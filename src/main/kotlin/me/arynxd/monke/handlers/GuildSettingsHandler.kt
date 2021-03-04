@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 class GuildSettingsHandler @JvmOverloads constructor(
     override val monke: Monke,
     override val dependencies: List<Class<out Handler>> = listOf(DatabaseHandler::class.java)
-) : Handler {
+) : Handler() {
 
     private val settingsCache: LoadingCache<Long, GuildSettings> =
         Caffeine.newBuilder()
@@ -30,13 +30,5 @@ class GuildSettingsHandler @JvmOverloads constructor(
                 set(GUILDS.GUILD_ID, guildId)
                 onConflict() { set(GUILDS.GUILD_ID, guildId) } //Do nothing
             }
-    }
-
-    override fun onEnable() {
-        //Unused
-    }
-
-    override fun onDisable() {
-        //Unused
     }
 }

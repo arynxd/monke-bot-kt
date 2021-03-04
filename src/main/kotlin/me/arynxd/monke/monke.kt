@@ -6,10 +6,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.arynxd.monke.events.guildEvents
 import me.arynxd.monke.events.messageEvents
-import me.arynxd.monke.handlers.ConfigHandler
-import me.arynxd.monke.handlers.GuildSettingsHandler
-import me.arynxd.monke.handlers.PaginationHandler
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.*
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.util.parseUptime
@@ -99,6 +96,9 @@ class Monke: ListenerAdapter() {
                                                             
                         ${handlers.get(ConfigHandler::class.java).config.api.website}
         """.trimIndent())
+
+        handlers.get(MetricsHandler::class.java).guildCount.set(getGuildCount().toDouble())
+        handlers.get(MetricsHandler::class.java).userCount.set(getUserCount().toDouble())
     }
 
     private fun initGuilds() {
@@ -108,6 +108,7 @@ class Monke: ListenerAdapter() {
     private fun initListeners() {
         messageEvents()
         guildEvents()
+        handlers.handlers.values.forEach() { jda.addEventListener(it) }
     }
 
     private fun initTasks() {

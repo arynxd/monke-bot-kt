@@ -12,7 +12,7 @@ import me.arynxd.monke.objects.translation.Language
 class PaginationHandler @JvmOverloads constructor(
     override val monke: Monke,
     override val dependencies: List<Class<out Handler>> = listOf(TranslationHandler::class.java)
-) : Handler {
+) : Handler() {
     private val paginators: MutableMap<Paginator, Job> = mutableMapOf()
 
     fun addPaginator(paginator: Paginator) {
@@ -28,10 +28,6 @@ class PaginationHandler @JvmOverloads constructor(
                 it.key.delete()
                 it.value.cancel(TranslationHandler.getString(Language.EN_US, "cancel_reason.timeout"))
             }
-    }
-
-    override fun onEnable() {
-        //Unused
     }
 
     override fun onDisable() {
