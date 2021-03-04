@@ -67,7 +67,9 @@ class Monke: ListenerAdapter() {
 
                 .setActivity(Activity.playing("loading up!"))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                .build()
+                .also { jda ->
+                    handlers.handlers.values.forEach { jda.addEventListeners(it) }
+                }.build()
 
 
         } catch (exception: LoginException) {
@@ -108,23 +110,24 @@ class Monke: ListenerAdapter() {
     private fun initListeners() {
         messageEvents()
         guildEvents()
-        handlers.handlers.values.forEach() { jda.addEventListener(it) }
     }
 
     private fun initTasks() {
-        GlobalScope.launch {
+        val jobHandler = handlers.get(JobHandler::class.java)
+
+        jobHandler.addJob({
             while (true) {
                 handlers.get(PaginationHandler::class.java).cleanup()
                 delay(15_000)
             }
-        }
+        })
 
-        GlobalScope.launch {
+        jobHandler.addJob({
             while (true) {
                 switchStatus()
                 delay(180_000) //2 Minutes
             }
-        }
+        })
     }
 
     private fun switchStatus() {

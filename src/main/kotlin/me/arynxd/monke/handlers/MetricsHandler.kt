@@ -13,6 +13,7 @@ import me.arynxd.monke.objects.exception.HandlerException
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import net.dv8tion.jda.api.events.DisconnectEvent
+import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.ResumedEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
@@ -96,14 +97,11 @@ class MetricsHandler @JvmOverloads constructor(
         } catch (exception: IOException) {
             LOGGER.error("MetricsHandler offline.", exception)
         }
+    }
 
-        GlobalScope.launch {
-            while (true) {
-                restPing.set(monke.jda.restPing.await().toDouble())
-                gatewayPing.set(monke.jda.gatewayPing.toDouble())
-                delay(150_000) //2.5 Minutes
-            }
-        }
+    override fun onReady(event: ReadyEvent) {
+        gatewayPing.set(monke.jda.gatewayPing.toDouble())
+        monke.jda.restPing.queue() { restPing.set(it.toDouble()) }
     }
 
     override fun onResumed(event: ResumedEvent) {
