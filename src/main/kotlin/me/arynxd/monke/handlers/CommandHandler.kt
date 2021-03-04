@@ -101,7 +101,7 @@ class CommandHandler @JvmOverloads constructor(
             monke.handlers.get(CooldownHandler::class.java).addCommand(event.user, command)
             monke.handlers.get(MetricsHandler::class.java).commandCounter.labels(
                     if (command is SubCommand)
-                         "${command.parent.name} ${command.name}"
+                        command.parent.name
                     else
                         command.name).inc()
             command.run(event)
