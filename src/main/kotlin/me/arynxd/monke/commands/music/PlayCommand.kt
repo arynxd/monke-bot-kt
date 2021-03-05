@@ -61,7 +61,7 @@ class PlayCommand : Command(
             }
 
             override fun loadFailed(exception: FriendlyException) {
-                channel.sendMessage(TranslationHandler.getString(event.getLanguage(), "music.could_not_play", exception.message)).queue()
+                channel.sendMessage(TranslationHandler.getString(event.getLanguage(), "music.could_not_play", exception.message.toString())).queue()
             }
         })
     }
