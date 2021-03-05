@@ -37,7 +37,8 @@ class EvalCommand : Command(
 ) {
     private val engine: ScriptEngine by lazy {
         ScriptEngineManager().getEngineByExtension("kts")!!.apply {
-            this.eval("""
+            this.eval(
+                """
         import net.dv8tion.jda.api.*
         import net.dv8tion.jda.api.entities.*
         import net.dv8tion.jda.api.exceptions.*
@@ -55,7 +56,8 @@ class EvalCommand : Command(
         import me.arynxd.monke.util.sendError
         import me.arynxd.monke.handlers.*
         import dev.minn.jda.ktx.Embed
-        """.trimIndent())
+        """.trimIndent()
+            )
 
             LOGGER.info(TranslationHandler.getInternalString("internal_error.eval_reflection_warning"))
         }
@@ -99,19 +101,24 @@ class EvalCommand : Command(
             builder.addField("$duration:", "${System.currentTimeMillis() - startTime}ms", true)
             builder.setColor(SUCCESS_EMBED_COLOUR)
             builder.addField("$code:", formatCodeBlock(script.let {
-                if(it.length > 1000) {
-                    return@let postBin(it.chunked(100).joinToString(separator = "\n"), event.monke.handlers.okHttpClient)
+                if (it.length > 1000) {
+                    return@let postBin(
+                        it.chunked(100).joinToString(separator = "\n"),
+                        event.monke.handlers.okHttpClient
+                    )
                 } else it
             }), false)
-            builder.addField("$result:", when(out) {
-                is RestAction<*> -> {
-                    out.queue()
-                    "RestAction enqueued."
-                }
+            builder.addField(
+                "$result:", when (out) {
+                    is RestAction<*> -> {
+                        out.queue()
+                        "RestAction enqueued."
+                    }
 
-                null -> noError
-                else -> out
-            }.toString(), true)
+                    null -> noError
+                    else -> out
+                }.toString(), true
+            )
 
         } catch (exception: Exception) {
             builder.addField("$status:", "Error", true)
@@ -119,14 +126,20 @@ class EvalCommand : Command(
             builder.setColor(ERROR_EMBED_COLOUR)
 
             builder.addField("$code:", formatCodeBlock(script.let {
-                if(it.length > 1000) {
-                    return@let postBin(it.chunked(100).joinToString(separator = "\n"), event.monke.handlers.okHttpClient)
+                if (it.length > 1000) {
+                    return@let postBin(
+                        it.chunked(100).joinToString(separator = "\n"),
+                        event.monke.handlers.okHttpClient
+                    )
                 } else it
             }), false)
 
             builder.addField("$error:", formatCodeBlock(exception.toString().let {
-                if(it.length > 1000) {
-                    return@let postBin(it.chunked(100).joinToString(separator = "\n"), event.monke.handlers.okHttpClient)
+                if (it.length > 1000) {
+                    return@let postBin(
+                        it.chunked(100).joinToString(separator = "\n"),
+                        event.monke.handlers.okHttpClient
+                    )
                 } else it
             }), true)
         }
@@ -136,8 +149,8 @@ class EvalCommand : Command(
 
     private fun formatCodeBlock(stringOrUrl: String?): String = //Omit the code-block if we posted a haste link
         stringOrUrl?.let {
-            if(it.startsWith("https://"))
+            if (it.startsWith("https://"))
                 it
             else "```kt\n$it```"
-    } ?: "null"
+        } ?: "null"
 }

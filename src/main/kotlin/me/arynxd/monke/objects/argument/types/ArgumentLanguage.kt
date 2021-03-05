@@ -11,7 +11,7 @@ class ArgumentLanguage(
     override val required: Boolean,
     override val type: ArgumentType,
     override val condition: (Language) -> Boolean = { true },
-    ) : Argument<Language>() {
+) : Argument<Language>() {
 
     override suspend fun convert(input: String, event: CommandEvent): Language? {
         return Language.getLanguageByName(input)

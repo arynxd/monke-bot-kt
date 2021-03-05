@@ -13,7 +13,7 @@ class TrackScheduler(
     private val queue: BlockingQueue<AudioTrack> = LinkedBlockingQueue()
 
     fun queue(track: AudioTrack) {
-        if(!player.startTrack(track, true)) queue.offer(track)
+        if (!player.startTrack(track, true)) queue.offer(track)
     }
 
     fun nextTrack() {
@@ -21,7 +21,7 @@ class TrackScheduler(
     }
 
     override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
-        if(endReason.mayStartNext) {
+        if (endReason.mayStartNext) {
             nextTrack()
         }
     }

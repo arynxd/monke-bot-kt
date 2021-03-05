@@ -62,7 +62,7 @@ class TestCommand : Command(
         )
     ),
 
-) {
+    ) {
 
     override suspend fun run(event: CommandEvent) {
         val language = event.getLanguage()
@@ -76,10 +76,12 @@ class TestCommand : Command(
         sendSuccess(event.message, success)
         sendError(event.message, error)
 
-        event.sendEmbed(Embed(
-            title = embed,
-            description = eventWaiting
-        ))
+        event.sendEmbed(
+            Embed(
+                title = embed,
+                description = eventWaiting
+            )
+        )
 
         try {
             withTimeout(7000) {
@@ -87,10 +89,16 @@ class TestCommand : Command(
                     guildEvent.author == event.user
                             && guildEvent.channel == event.channel
                 }
-                val capturedResult = TranslationHandler.getString(language, "command.test.keyword.captured_result", messageEvent.message.contentRaw)
-                event.sendEmbed(Embed(
-                    description = capturedResult
-                ))
+                val capturedResult = TranslationHandler.getString(
+                    language,
+                    "command.test.keyword.captured_result",
+                    messageEvent.message.contentRaw
+                )
+                event.sendEmbed(
+                    Embed(
+                        description = capturedResult
+                    )
+                )
             }
         } catch (exception: TimeoutCancellationException) {
             sendError(event.message, timeOut)

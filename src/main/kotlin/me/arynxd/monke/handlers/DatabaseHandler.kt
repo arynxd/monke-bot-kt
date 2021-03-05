@@ -10,13 +10,14 @@ import me.arynxd.monke.util.convertToString
 import me.arynxd.monke.util.loadResource
 import org.ktorm.database.Database
 import org.ktorm.support.postgresql.PostgreSqlDialect
+import kotlin.reflect.KClass
 import kotlin.system.exitProcess
 
 class DatabaseHandler @JvmOverloads constructor(
     override val monke: Monke,
-    override val dependencies: List<Class<out Handler>> = listOf(
-        ConfigHandler::class.java,
-        TranslationHandler::class.java
+    override val dependencies: List<KClass<out Handler>> = listOf(
+        ConfigHandler::class,
+        TranslationHandler::class
     )
 ) : Handler() {
     private lateinit var pool: HikariDataSource
@@ -24,7 +25,7 @@ class DatabaseHandler @JvmOverloads constructor(
 
     override fun onEnable() {
         val hikariConfig = HikariConfig()
-        val configuration = monke.handlers.get(ConfigHandler::class.java).config.database
+        val configuration = monke.handlers.get(ConfigHandler::class).config.database
 
         hikariConfig.driverClassName = configuration.driverName
         hikariConfig.jdbcUrl = configuration.jdbcURL

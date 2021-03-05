@@ -41,8 +41,10 @@ class UwUCommand : Command(
                 }
             }.joinToString(separator = "")
 
-        event.sendEmbed(Embed(
-            description = sentence
-        ))
+        event.sendEmbed(
+            Embed(
+                description = sentence
+            )
+        )
     }
 }

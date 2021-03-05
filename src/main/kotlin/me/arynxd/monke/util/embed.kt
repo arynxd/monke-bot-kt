@@ -19,44 +19,52 @@ val SUCCESS_EMBED_COLOUR: Color = Color.decode("#66B393")
 
 fun sendError(message: Message, text: String) {
     val user = message.author
-    message.reply(Embed(
-        description = Emoji.ERROR.getAsChat() + text,
-        color = ERROR_EMBED_COLOUR.rgb,
-        footerText = user.name,
-        timestamp = Instant.now(),
-        footerIcon = user.effectiveAvatarUrl
-    )).mentionRepliedUser(false).queue()
+    message.reply(
+        Embed(
+            description = Emoji.ERROR.getAsChat() + text,
+            color = ERROR_EMBED_COLOUR.rgb,
+            footerText = user.name,
+            timestamp = Instant.now(),
+            footerIcon = user.effectiveAvatarUrl
+        )
+    ).mentionRepliedUser(false).queue()
 }
 
 fun sendSuccess(message: Message, text: String) {
     val user = message.author
-    message.reply(Embed(
-        description = Emoji.SUCCESS.getAsChat() + text,
-        color = SUCCESS_EMBED_COLOUR.rgb,
-        timestamp = Instant.now(),
-        footerText = user.name,
-        footerIcon = user.effectiveAvatarUrl
-    )).mentionRepliedUser(false).queue()
+    message.reply(
+        Embed(
+            description = Emoji.SUCCESS.getAsChat() + text,
+            color = SUCCESS_EMBED_COLOUR.rgb,
+            timestamp = Instant.now(),
+            footerText = user.name,
+            footerIcon = user.effectiveAvatarUrl
+        )
+    ).mentionRepliedUser(false).queue()
 }
 
 fun sendSuccess(channel: MessageChannel, user: User, text: String) {
-    channel.sendMessage(Embed(
-        description = Emoji.SUCCESS.getAsChat() + text,
-        color = SUCCESS_EMBED_COLOUR.rgb,
-        timestamp = Instant.now(),
-        footerText = user.name,
-        footerIcon = user.effectiveAvatarUrl
-    )).queue()
+    channel.sendMessage(
+        Embed(
+            description = Emoji.SUCCESS.getAsChat() + text,
+            color = SUCCESS_EMBED_COLOUR.rgb,
+            timestamp = Instant.now(),
+            footerText = user.name,
+            footerIcon = user.effectiveAvatarUrl
+        )
+    ).queue()
 }
 
 fun sendError(channel: MessageChannel, user: User, text: String) {
-    channel.sendMessage(Embed(
-        description = Emoji.ERROR.getAsChat() + text,
-        color = ERROR_EMBED_COLOUR.rgb,
-        timestamp = Instant.now(),
-        footerText = "${user.asTag} | ",
-        footerIcon = user.effectiveAvatarUrl
-    )).queue()
+    channel.sendMessage(
+        Embed(
+            description = Emoji.ERROR.getAsChat() + text,
+            color = ERROR_EMBED_COLOUR.rgb,
+            timestamp = Instant.now(),
+            footerText = "${user.asTag} | ",
+            footerIcon = user.effectiveAvatarUrl
+        )
+    ).queue()
 }
 
 suspend fun awaitConfirmation(message: Message, user: User, monke: Monke): Boolean? {

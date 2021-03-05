@@ -34,21 +34,23 @@ class CommandEvent(
     fun sendEmbed(embed: MessageEmbed) {
         val user = message.author
 
-        message.reply(Embed(
-            title = embed.title,
-            description = embed.description,
-            image = embed.image?.url,
-            thumbnail = embed.thumbnail?.url,
-            fields = embed.fields,
-            color = DEFAULT_EMBED_COLOUR.rgb,
-            footerText = embed.footer?.text ?: user.name,
-            timestamp = if (embed.footer?.text == null) Instant.now() else null,
-            footerIcon = user.effectiveAvatarUrl
-        )).mentionRepliedUser(false).queue()
+        message.reply(
+            Embed(
+                title = embed.title,
+                description = embed.description,
+                image = embed.image?.url,
+                thumbnail = embed.thumbnail?.url,
+                fields = embed.fields,
+                color = DEFAULT_EMBED_COLOUR.rgb,
+                footerText = embed.footer?.text ?: user.name,
+                timestamp = if (embed.footer?.text == null) Instant.now() else null,
+                footerIcon = user.effectiveAvatarUrl
+            )
+        ).mentionRepliedUser(false).queue()
     }
 
     fun isDeveloper(): Boolean {
-        return monke.handlers.get(ConfigHandler::class.java).config.developers.contains(user.id)
+        return monke.handlers.get(ConfigHandler::class).config.developers.contains(user.id)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -69,14 +71,14 @@ class CommandEvent(
     }
 
     fun getPrefix(): String {
-        return monke.handlers.get(GuildSettingsHandler::class.java).getCache(guildIdLong).prefix
+        return monke.handlers.get(GuildSettingsHandler::class).getCache(guildIdLong).prefix
     }
 
     fun getLanguage(): Language {
-        return monke.handlers.get(GuildSettingsHandler::class.java).getCache(guildIdLong).language
+        return monke.handlers.get(GuildSettingsHandler::class).getCache(guildIdLong).language
     }
 
     fun getSettingsCache(): GuildSettings {
-        return monke.handlers.get(GuildSettingsHandler::class.java).getCache(guildIdLong)
+        return monke.handlers.get(GuildSettingsHandler::class).getCache(guildIdLong)
     }
- }
+}

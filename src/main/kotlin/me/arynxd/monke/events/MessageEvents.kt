@@ -7,14 +7,13 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
-import java.lang.IllegalStateException
 
 fun Monke.messageEvents() {
     jda.listener<GuildMessageReceivedEvent> {
         if (it.author.isBot || it.isWebhookMessage) {
             return@listener
         }
-        handlers.get(CommandHandler::class.java).handle(GuildMessageEvent(it))
+        handlers.get(CommandHandler::class).handle(GuildMessageEvent(it))
 
     }
 
@@ -23,7 +22,7 @@ fun Monke.messageEvents() {
             return@listener
         }
 
-        handlers.get(CommandHandler::class.java).handle(GuildMessageEvent(it))
+        handlers.get(CommandHandler::class).handle(GuildMessageEvent(it))
     }
 }
 
@@ -36,23 +35,23 @@ class GuildMessageEvent() {
     lateinit var member: Member
     lateinit var guild: Guild
 
-    constructor(event: GuildMessageReceivedEvent): this() {
+    constructor(event: GuildMessageReceivedEvent) : this() {
         message = event.message
         jda = event.jda
         messageChannel = event.channel
         channel = event.channel
         user = event.author
-        member = event.member?: throw IllegalStateException("Member was null")
+        member = event.member ?: throw IllegalStateException("Member was null")
         guild = event.guild
     }
 
-    constructor(event: GuildMessageUpdateEvent): this() {
+    constructor(event: GuildMessageUpdateEvent) : this() {
         message = event.message
         jda = event.jda
         messageChannel = event.channel
         channel = event.channel
         user = event.author
-        member = event.member?: throw IllegalStateException("Member was null")
+        member = event.member ?: throw IllegalStateException("Member was null")
         guild = event.guild
     }
 }

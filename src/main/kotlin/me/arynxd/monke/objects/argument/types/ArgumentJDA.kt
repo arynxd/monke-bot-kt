@@ -9,13 +9,13 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 
 class ArgumentServer(
-        override val name: String,
-        override val description: String,
-        override val required: Boolean,
-        override val type: ArgumentType,
-        override val condition: (Guild) -> Boolean = { true },
+    override val name: String,
+    override val description: String,
+    override val required: Boolean,
+    override val type: ArgumentType,
+    override val condition: (Guild) -> Boolean = { true },
 
-        ) : Argument<Guild>() {
+    ) : Argument<Guild>() {
 
     override suspend fun convert(input: String, event: CommandEvent): Guild? {
         if (input.equals("this", true)) {
@@ -39,11 +39,11 @@ class ArgumentServer(
 }
 
 class ArgumentMember(
-        override val name: String,
-        override val description: String,
-        override val required: Boolean,
-        override val type: ArgumentType,
-        override val condition: (Member) -> Boolean = { true },
+    override val name: String,
+    override val description: String,
+    override val required: Boolean,
+    override val type: ArgumentType,
+    override val condition: (Member) -> Boolean = { true },
 ) : Argument<Member>() {
 
     override suspend fun convert(input: String, event: CommandEvent): Member? {

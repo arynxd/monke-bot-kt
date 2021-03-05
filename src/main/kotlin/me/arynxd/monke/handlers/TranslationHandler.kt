@@ -10,15 +10,16 @@ import me.arynxd.monke.util.convertToString
 import me.arynxd.monke.util.loadResource
 import net.dv8tion.jda.api.exceptions.ParsingException
 import net.dv8tion.jda.api.utils.data.DataObject
+import kotlin.reflect.KClass
 
 val KEY_REGEX: Regex = Regex("\\.")
 
 class TranslationHandler @JvmOverloads constructor(
     override val monke: Monke,
-    override val dependencies: List<Class<out Handler>> = listOf(ConfigHandler::class.java)
+    override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
 ) : Handler() {
     override fun onEnable() {
-        val lang = Language.getLanguageByName(monke.handlers.get(ConfigHandler::class.java).config.preferredLanguage)
+        val lang = Language.getLanguageByName(monke.handlers.get(ConfigHandler::class).config.preferredLanguage)
         if (lang == null) {
             LOGGER.warn("Language specified in the config file was invalid, falling back to defaults.")
             internalLanguage = Language.DEFAULT

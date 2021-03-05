@@ -31,21 +31,27 @@ class InfoBotCommand(parent: Command) : SubCommand(
         val totalServers = TranslationHandler.getString(language, "command.info.child.bot.keyword.total_servers")
         val uptime = TranslationHandler.getString(language, "command.info.child.bot.keyword.uptime")
 
-        event.sendEmbed(Embed(
-            title = "${event.jda.selfUser.name} information",
-            fields = listOf(
-                MessageEmbed.Field(jvmVersion, monke.getJavaVersion(), true),
-                MessageEmbed.Field(jdaVersion, monke.getJDAVersion(), true),
-                MessageEmbed.Field(monkeVersion, MONKE_VERSION, true),
+        event.sendEmbed(
+            Embed(
+                title = "${event.jda.selfUser.name} information",
+                fields = listOf(
+                    MessageEmbed.Field(jvmVersion, monke.getJavaVersion(), true),
+                    MessageEmbed.Field(jdaVersion, monke.getJDAVersion(), true),
+                    MessageEmbed.Field(monkeVersion, MONKE_VERSION, true),
 
-                MessageEmbed.Field(threadCount, monke.getThreadCount().toString(), true),
-                MessageEmbed.Field(memoryUsage, "${monke.getMemoryFormatted()} [ ${monke.getMemoryPercent()}% ]", true),
-                MessageEmbed.Field(cpuUsage, "${monke.getCPUUsage()}%", true),
+                    MessageEmbed.Field(threadCount, monke.getThreadCount().toString(), true),
+                    MessageEmbed.Field(
+                        memoryUsage,
+                        "${monke.getMemoryFormatted()} [ ${monke.getMemoryPercent()}% ]",
+                        true
+                    ),
+                    MessageEmbed.Field(cpuUsage, "${monke.getCPUUsage()}%", true),
 
-                MessageEmbed.Field(totalUsers, monke.getUserCount().toString(), true),
-                MessageEmbed.Field(totalServers, monke.getGuildCount().toString(), true),
-                MessageEmbed.Field(uptime, monke.getUptimeString(), true)
+                    MessageEmbed.Field(totalUsers, monke.getUserCount().toString(), true),
+                    MessageEmbed.Field(totalServers, monke.getGuildCount().toString(), true),
+                    MessageEmbed.Field(uptime, monke.getUptimeString(), true)
+                )
             )
-        ))
+        )
     }
 }

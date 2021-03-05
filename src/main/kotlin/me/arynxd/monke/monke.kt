@@ -46,7 +46,7 @@ class Monke: ListenerAdapter() {
     private fun build(): JDA {
         try {
             return JDABuilder
-                .create(handlers.get(ConfigHandler::class.java).config.token,
+                .create(handlers.get(ConfigHandler::class).config.token,
                     GatewayIntent.GUILD_MEMBERS,
 
                     GatewayIntent.GUILD_MESSAGES,
@@ -64,7 +64,6 @@ class Monke: ListenerAdapter() {
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .setHttpClient(handlers.okHttpClient)
                 .addEventListeners(this)
-
                 .setActivity(Activity.playing("loading up!"))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .also { jda ->
@@ -96,15 +95,15 @@ class Monke: ListenerAdapter() {
              | |  | | (_) | | | |   <  __/ |_) | (_) | |_ 
              |_|  |_|\___/|_| |_|_|\_\___|_.__/ \___/ \__|
                                                             
-                        ${handlers.get(ConfigHandler::class.java).config.api.website}
+                        ${handlers.get(ConfigHandler::class).config.api.website}
         """.trimIndent())
 
-        handlers.get(MetricsHandler::class.java).guildCount.set(getGuildCount().toDouble())
-        handlers.get(MetricsHandler::class.java).userCount.set(getUserCount().toDouble())
+        handlers.get(MetricsHandler::class).guildCount.set(getGuildCount().toDouble())
+        handlers.get(MetricsHandler::class).userCount.set(getUserCount().toDouble())
     }
 
     private fun initGuilds() {
-        jda.guildCache.forEach { handlers.get(GuildSettingsHandler::class.java).initGuild(it.idLong) }
+        jda.guildCache.forEach { handlers.get(GuildSettingsHandler::class).initGuild(it.idLong) }
     }
 
     private fun initListeners() {
@@ -113,11 +112,11 @@ class Monke: ListenerAdapter() {
     }
 
     private fun initTasks() {
-        val jobHandler = handlers.get(JobHandler::class.java)
+        val jobHandler = handlers.get(JobHandler::class)
 
         jobHandler.addJob({
             while (true) {
-                handlers.get(PaginationHandler::class.java).cleanup()
+                handlers.get(PaginationHandler::class).cleanup()
                 delay(15_000)
             }
         })

@@ -28,11 +28,13 @@ class InfoCommand : Command(
     )
 ) {
     init {
-        super.children.addAll(listOf(
-            InfoUserCommand(this),
-            InfoServerCommand(this),
-            InfoBotCommand(this)
-        ))
+        super.children.addAll(
+            listOf(
+                InfoUserCommand(this),
+                InfoServerCommand(this),
+                InfoBotCommand(this)
+            )
+        )
     }
 
     override suspend fun run(event: CommandEvent) {

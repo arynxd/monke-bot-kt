@@ -60,22 +60,26 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
         sendError(event.message, error)
     }
 
-    val description = TranslationHandler.getString(language, "command_response.reddit_description",
-            post.getSubreddit()?: "null",
-            post.getAuthor()?: "null"
+    val description = TranslationHandler.getString(
+        language, "command_response.reddit_description",
+        post.getSubreddit() ?: "null",
+        post.getAuthor() ?: "null"
     )
 
-    val footer = TranslationHandler.getString(language, "command_response.reddit_footer",
-            post.getUpvotes()?: "0",
-            post.getDownvotes()?: "0"
+    val footer = TranslationHandler.getString(
+        language, "command_response.reddit_footer",
+        post.getUpvotes() ?: "0",
+        post.getDownvotes() ?: "0"
     )
 
-    event.sendEmbed(Embed(
-        title = post.getTitle(),
-        description = description,
-        image = post.getURL(),
-        footerText = footer
-    ))
+    event.sendEmbed(
+        Embed(
+            title = post.getTitle(),
+            description = description,
+            image = post.getURL(),
+            footerText = footer
+        )
+    )
 }
 
 suspend fun getWikipediaPage(event: CommandEvent, subject: String): WikipediaPage? {
@@ -106,7 +110,7 @@ suspend fun postBin(text: String, client: OkHttpClient): String? {
                 .header("User-Agent", "Mozilla/5.0 Monke")
                 .build()
         ).execute().let { response ->
-            if(!response.isSuccessful)
+            if (!response.isSuccessful)
                 null
             else
                 HASTEBIN_SERVER + DataObject.fromJson(

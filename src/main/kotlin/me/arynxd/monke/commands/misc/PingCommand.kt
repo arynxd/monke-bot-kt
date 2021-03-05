@@ -16,10 +16,12 @@ class PingCommand : Command(
     ) {
 
     override suspend fun run(event: CommandEvent) {
-        event.sendEmbed(Embed(
-            title = "Pong!",
-            description = "**REST Ping**: ${event.jda.restPing.await()}ms\n\n" +
-                          "**Gateway Ping**: ${event.jda.gatewayPing}ms"
-        ))
+        event.sendEmbed(
+            Embed(
+                title = "Pong!",
+                description = "**REST Ping**: ${event.jda.restPing.await()}ms\n\n" +
+                        "**Gateway Ping**: ${event.jda.gatewayPing}ms"
+            )
+        )
     }
 }

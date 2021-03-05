@@ -42,7 +42,7 @@ class HelpCommand : Command(
             return
         }
 
-        event.monke.handlers.get(PaginationHandler::class.java).addPaginator(
+        event.monke.handlers.get(PaginationHandler::class).addPaginator(
             Paginator(
                 monke = event.monke,
                 pages = getHelpPages(prefix, event),
@@ -53,17 +53,29 @@ class HelpCommand : Command(
 
     private fun getHelp(event: CommandEvent, command: Command): MessageEmbed {
         val prefix = event.getPrefix()
-        val fields = mutableListOf(MessageEmbed.Field("**$prefix${command.name}**", getDescription(command, event, command.name), true))
+        val fields = mutableListOf(
+            MessageEmbed.Field(
+                "**$prefix${command.name}**",
+                getDescription(command, event, command.name),
+                true
+            )
+        )
         val language = event.getLanguage()
         if (command.hasChildren()) {
             fields.addAll(command.children.map {
                 MessageEmbed.Field(
-                        "**$prefix${it.parent.getName(language)} ${it.getName(language)}**",
-                        getDescription(command, event, "${it.parent.getName(language)} ${it.getName(language)}"), true)
+                    "**$prefix${it.parent.getName(language)} ${it.getName(language)}**",
+                    getDescription(command, event, "${it.parent.getName(language)} ${it.getName(language)}"), true
+                )
             })
         }
         return Embed(
-            title = "${TranslationHandler.getString(event.getLanguage(), "command.help.keyword.help_for")} $prefix${command.getName(language)}",
+            title = "${
+                TranslationHandler.getString(
+                    event.getLanguage(),
+                    "command.help.keyword.help_for"
+                )
+            } $prefix${command.getName(language)}",
             fields = fields
         )
     }
@@ -76,8 +88,8 @@ class HelpCommand : Command(
         val usage = TranslationHandler.getString(language, "command.help.keyword.usage")
 
         val commandDescription = if (command is SubCommand)
-                                    command.getDescription(language) // Get the child's info
-                                 else command.getDescription(language) // Get the parent's info
+            command.getDescription(language) // Get the child's info
+        else command.getDescription(language) // Get the parent's info
 
         return "*${description}:* \n ${commandDescription}\n\n" +
                 "*${usage}:* \n $prefix$name ${command.arguments.getArgumentsList(language, command)} \n\n " +
@@ -86,18 +98,26 @@ class HelpCommand : Command(
 
     private fun getHelpPages(prefix: String, event: CommandEvent): List<MessageEmbed> {
         val result: MutableList<MessageEmbed> = mutableListOf()
-        val commands: List<Command> = event.monke.handlers.get(CommandHandler::class.java).commandMap.values.distinct()
+        val commands: List<Command> = event.monke.handlers.get(CommandHandler::class).commandMap.values.distinct()
         val pageCount = CommandCategory.values().size
         val language = event.getLanguage()
 
         for (category in CommandCategory.values()) {
             val categoryCommands = commands.filter { it.category == category }
-            result.add(Embed(
-                title = category.getName(language),
-                description = categoryCommands.joinToString(separator = "\n") { "`$prefix${it.getName(language)}` - *${it.getDescription(language)}*" },
-                color = DEFAULT_EMBED_COLOUR.rgb,
-                footerText = "Page ${category.ordinal + 1} / $pageCount"
-            ))
+            result.add(
+                Embed(
+                    title = category.getName(language),
+                    description = categoryCommands.joinToString(separator = "\n") {
+                        "`$prefix${it.getName(language)}` - *${
+                            it.getDescription(
+                                language
+                            )
+                        }*"
+                    },
+                    color = DEFAULT_EMBED_COLOUR.rgb,
+                    footerText = "Page ${category.ordinal + 1} / $pageCount"
+                )
+            )
         }
         return result
     }

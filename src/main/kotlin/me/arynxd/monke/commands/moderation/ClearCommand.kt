@@ -37,10 +37,10 @@ class ClearCommand : Command(
 
     botPermissions = listOf(Permission.MESSAGE_MANAGE),
 
-) {
+    ) {
 
     override suspend fun run(event: CommandEvent) {
-        val limiter = event.monke.handlers.get(RateLimitHandler::class.java).getRateLimiter(event.guildIdLong)
+        val limiter = event.monke.handlers.get(RateLimitHandler::class).getRateLimiter(event.guildIdLong)
         val language = event.getLanguage()
 
         if (!limiter.canTake(RateLimitedAction.BULK_DELETE)) {
@@ -52,7 +52,12 @@ class ClearCommand : Command(
         event.channel.iterableHistory
             .takeAsync(event.getArgument<Int>(0) + 1)
             .thenAccept {
-                val cleared = TranslationHandler.getString(language, "command.clear.response.cleared", it.size - 1, plurifyInt(it.size - 1))
+                val cleared = TranslationHandler.getString(
+                    language,
+                    "command.clear.response.cleared",
+                    it.size - 1,
+                    plurifyInt(it.size - 1)
+                )
                 event.channel.purgeMessages(it)
                 sendSuccess(event.channel, event.user, cleared)
                 limiter.take(RateLimitedAction.BULK_DELETE)

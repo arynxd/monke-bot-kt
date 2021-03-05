@@ -16,7 +16,9 @@ private val jsonFormat = Json {
 fun String.isValidUrl(): Boolean = try {
     URL(this).toURI()
     true
-} catch(ex: Exception) { false }
+} catch (ex: Exception) {
+    false
+}
 
 fun plurifyInt(input: Int): String = if (input != 1) "s" else ""
 fun plurifyLong(input: Long): String = if (input != 1L) "s" else ""

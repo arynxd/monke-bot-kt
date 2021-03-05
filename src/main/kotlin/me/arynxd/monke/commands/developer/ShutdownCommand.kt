@@ -7,9 +7,7 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.CommandFlag
-import me.arynxd.monke.util.ERROR_EMBED_COLOUR
 import me.arynxd.monke.util.SUCCESS_EMBED_COLOUR
-import me.arynxd.monke.util.awaitConfirmation
 import kotlin.system.exitProcess
 
 @Suppress("UNUSED")
@@ -21,40 +19,14 @@ class ShutdownCommand : Command(
 ) {
     override suspend fun run(event: CommandEvent) {
         val language = event.getLanguage()
-        val confirm = TranslationHandler.getString(language, "command.shutdown.response.confirmation")
-        val aborted = TranslationHandler.getString(language, "command.shutdown.response.aborted")
         val success = TranslationHandler.getString(language, "command.shutdown.response.success")
 
-        val message = event.channel.sendMessage(Embed(
-            title = confirm,
-            color = ERROR_EMBED_COLOUR.rgb
-        )).await()
-
-        val confirmation = awaitConfirmation(
-            message = message,
-            user = event.user,
-            monke = event.monke
-        )
-
-        if (confirmation == null) {
-            message.delete().queue()
-            return
-        }
-
-        if (!confirmation) {
-            message.editMessage(Embed(
-                title = aborted,
+        event.channel.sendMessage(
+            Embed(
+                title = success,
                 color = SUCCESS_EMBED_COLOUR.rgb
-            )).queue()
-            message.clearReactions().queue()
-            return
-        }
-
-        message.editMessage(Embed(
-            title = success,
-            color = SUCCESS_EMBED_COLOUR.rgb
-        )).await()
-        message.clearReactions().await()
+            )
+        ).await()
 
         event.monke.handlers.disableHandlers()
         event.jda.shutdownNow()

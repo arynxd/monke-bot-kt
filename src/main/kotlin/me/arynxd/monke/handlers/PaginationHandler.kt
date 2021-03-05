@@ -7,11 +7,11 @@ import kotlinx.coroutines.launch
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.Paginator
 import me.arynxd.monke.objects.handlers.Handler
-import me.arynxd.monke.objects.translation.Language
+import kotlin.reflect.KClass
 
 class PaginationHandler @JvmOverloads constructor(
     override val monke: Monke,
-    override val dependencies: List<Class<out Handler>> = listOf(TranslationHandler::class.java)
+    override val dependencies: List<KClass<out Handler>> = listOf(TranslationHandler::class)
 ) : Handler() {
     private val paginators: MutableMap<Paginator, Job> = mutableMapOf()
 

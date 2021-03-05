@@ -52,7 +52,7 @@ class StealCommand : Command(
         val url = event.getArgument<URL>(1)
         val language = event.getLanguage()
         val icon = getIcon(url)
-        val limiter = event.monke.handlers.get(RateLimitHandler::class.java).getRateLimiter(event.guildIdLong)
+        val limiter = event.monke.handlers.get(RateLimitHandler::class).getRateLimiter(event.guildIdLong)
 
         if (!limiter.canTake(RateLimitedAction.EMOJI_CREATE)) {
             sendError(event.message, TranslationHandler.getString(Language.EN_US, "command_error.rate_limited"))

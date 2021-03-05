@@ -46,26 +46,28 @@ class InfoServerCommand(parent: Command) : SubCommand(
         val createdAt = TranslationHandler.getString(language, "command.info.keyword.created_at")
         val emotes = TranslationHandler.getString(language, "command.info.keyword.emotes")
 
-        event.sendEmbed(Embed(
-            title = "$informationFor **${guild.name}**",
-            fields = listOf(
-                MessageEmbed.Field(isPartnered, getFeature(guild, "PARTNERED", language), true),
-                MessageEmbed.Field(isVerified, getFeature(guild, "VERIFIED", language), true),
-                MessageEmbed.Field(isPublic, getFeature(guild, "PUBLIC", language), true),
-                MessageEmbed.Field(boostCount, guild.boostCount.toString(), true),
-                MessageEmbed.Field(memberCount, "${guild.memberCount} / ${guild.maxMembers}", true),
-                MessageEmbed.Field(createdAt, parseDateTime(guild.timeCreated), true),
-                MessageEmbed.Field(emotes, getEmoteString(guild, language), false),
-            ),
-            thumbnail = guild.iconUrl
-        ))
+        event.sendEmbed(
+            Embed(
+                title = "$informationFor **${guild.name}**",
+                fields = listOf(
+                    MessageEmbed.Field(isPartnered, getFeature(guild, "PARTNERED", language), true),
+                    MessageEmbed.Field(isVerified, getFeature(guild, "VERIFIED", language), true),
+                    MessageEmbed.Field(isPublic, getFeature(guild, "PUBLIC", language), true),
+                    MessageEmbed.Field(boostCount, guild.boostCount.toString(), true),
+                    MessageEmbed.Field(memberCount, "${guild.memberCount} / ${guild.maxMembers}", true),
+                    MessageEmbed.Field(createdAt, parseDateTime(guild.timeCreated), true),
+                    MessageEmbed.Field(emotes, getEmoteString(guild, language), false),
+                ),
+                thumbnail = guild.iconUrl
+            )
+        )
     }
 
     private fun getFeature(guild: Guild, feature: String, language: Language): String {
         return if (guild.features.contains(feature))
-                    TranslationHandler.getString(language, "keyword.yes")
-               else
-                    TranslationHandler.getString(language, "keyword.no")
+            TranslationHandler.getString(language, "keyword.yes")
+        else
+            TranslationHandler.getString(language, "keyword.no")
     }
 
     private suspend fun getEmoteString(guild: Guild, language: Language): String {
@@ -81,11 +83,12 @@ class InfoServerCommand(parent: Command) : SubCommand(
         val regular = if (emotes.none { !it.isAnimated }) none else emotes.filter { !it.isAnimated }
             .joinToString(separator = " ") { it.asMention }
 
-        return TranslationHandler.getString(language, "command.info.child.server.response.emote",
-                emotes.size,
-                guild.maxEmotes,
-                animated,
-                regular
+        return TranslationHandler.getString(
+            language, "command.info.child.server.response.emote",
+            emotes.size,
+            guild.maxEmotes,
+            animated,
+            regular
         )
     }
 }

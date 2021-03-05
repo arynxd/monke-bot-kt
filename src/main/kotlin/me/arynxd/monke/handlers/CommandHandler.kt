@@ -9,35 +9,35 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.SubCommand
 import me.arynxd.monke.objects.handlers.Handler
+import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.markdownSanitize
 import me.arynxd.monke.util.sendError
-import org.slf4j.LoggerFactory
 import java.lang.reflect.Constructor
 import java.util.*
 import kotlin.collections.LinkedHashMap
+import kotlin.reflect.KClass
 
 const val COMMAND_PACKAGE = "me.arynxd.monke.commands"
 val SUBSTITUTION_REGEX = Regex("(%[0-9]*)")
 
 class CommandHandler @JvmOverloads constructor(
     override val monke: Monke,
-    override val dependencies: List<Class<out Handler>> = listOf(
-        TranslationHandler::class.java,
-        GuildSettingsHandler::class.java
+    override val dependencies: List<KClass<out Handler>> = listOf(
+        TranslationHandler::class,
+        GuildSettingsHandler::class
     )
 ) : Handler() {
-    private val logger = LoggerFactory.getLogger(CommandHandler::class.java)
     private val classGraph: ClassGraph = ClassGraph().acceptPackages(COMMAND_PACKAGE)
     val commandMap: LinkedHashMap<String, Command> by lazy { loadCommands() }
 
     fun handle(event: GuildMessageEvent) {
-        val prefix = monke.handlers.get(GuildSettingsHandler::class.java).getCache(event.guild.idLong).prefix
+        val prefix = monke.handlers.get(GuildSettingsHandler::class).getCache(event.guild.idLong).prefix
 
         val contentRaw = event.message.contentRaw
 
         val content: String = markdownSanitize(
-                when {
+            when {
                 isBotMention(event) -> contentRaw.substring(contentRaw.indexOf(char = '>') + 1, contentRaw.length)
 
                 contentRaw.startsWith(prefix) -> contentRaw.substring(prefix.length, contentRaw.length)
@@ -59,7 +59,10 @@ class CommandHandler @JvmOverloads constructor(
         val command: Command? = commandMap[query]
 
         if (command == null) {
-            sendError(event.message, TranslationHandler.getString(Language.EN_US, "command_error.command_not_found", query, prefix))
+            sendError(
+                event.message,
+                TranslationHandler.getString(Language.EN_US, "command_error.command_not_found", query, prefix)
+            )
             return
         }
 
@@ -98,12 +101,13 @@ class CommandHandler @JvmOverloads constructor(
             if (!command.isExecutable(event)) {
                 return@launch
             }
-            monke.handlers.get(CooldownHandler::class.java).addCommand(event.user, command)
-            monke.handlers.get(MetricsHandler::class.java).commandCounter.labels(
-                    if (command is SubCommand)
-                        command.parent.name
-                    else
-                        command.name).inc()
+            monke.handlers.get(CooldownHandler::class).addCommand(event.user, command)
+            monke.handlers.get(MetricsHandler::class).commandCounter.labels(
+                if (command is SubCommand)
+                    command.parent.name
+                else
+                    command.name
+            ).inc()
             command.run(event)
         }
     }
@@ -124,12 +128,22 @@ class CommandHandler @JvmOverloads constructor(
                 }
 
                 if (instance !is Command) {
-                    logger.warn(TranslationHandler.getInternalString("internal_error.non_command_class", cls.simpleName))
+                    LOGGER.warn(
+                        TranslationHandler.getInternalString(
+                            "internal_error.non_command_class",
+                            cls.simpleName
+                        )
+                    )
                     continue
                 }
 
                 if (commands.containsKey(instance.name)) {
-                    logger.warn(TranslationHandler.getInternalString("internal_error.duplicate_command", cls.simpleName))
+                    LOGGER.warn(
+                        TranslationHandler.getInternalString(
+                            "internal_error.duplicate_command",
+                            cls.simpleName
+                        )
+                    )
                     continue
                 }
 

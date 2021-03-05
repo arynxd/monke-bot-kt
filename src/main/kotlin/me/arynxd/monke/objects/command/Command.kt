@@ -7,7 +7,6 @@ import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.plurifyInt
 import me.arynxd.monke.util.sendError
 import net.dv8tion.jda.api.Permission
-import java.text.DecimalFormat
 
 abstract class Command(
     val name: String,
@@ -19,7 +18,10 @@ abstract class Command(
     val flags: List<CommandFlag> = emptyList(),
     val arguments: ArgumentConfiguration = ArgumentConfiguration(emptyList()),
     var isDisabled: Boolean = false,
-    var cooldown: Long = 1000L,
+    val cooldown: Long = 1000L,
+
+    val finalCheck: (CommandEvent) -> Boolean = { true },
+    val finalCheckFail: (CommandEvent) -> Unit = {},
 
     val memberPermissions: List<Permission> = emptyList(),
     val botPermissions: List<Permission> = emptyList(),
@@ -33,35 +35,52 @@ abstract class Command(
         }
 
         if (hasFlag(CommandFlag.DEVELOPER_ONLY) && !commandEvent.isDeveloper()) {
-            sendError(commandEvent.message, TranslationHandler.getString(Language.EN_US, "command_error.developer_only"))
+            sendError(
+                commandEvent.message,
+                TranslationHandler.getString(Language.EN_US, "command_error.developer_only")
+            )
             return false
         }
 
         if (!arguments.isConfigurationValid()) {
-            sendError(commandEvent.message, TranslationHandler.getString(Language.EN_US, "command_error.argument_config"))
+            sendError(
+                commandEvent.message,
+                TranslationHandler.getString(Language.EN_US, "command_error.argument_config")
+            )
             return false
         }
 
         if (!commandEvent.member.hasPermission(commandEvent.channel, memberPermissions)) {
             val perms = memberPermissions.joinToString(separator = "\n") { it.getName() }
-            sendError(commandEvent.message, TranslationHandler.getString(Language.EN_US, "command_error.member_permission", perms))
+            sendError(
+                commandEvent.message,
+                TranslationHandler.getString(Language.EN_US, "command_error.member_permission", perms)
+            )
             return false
         }
 
         if (!commandEvent.selfMember.hasPermission(commandEvent.channel, botPermissions)) {
             val perms = botPermissions.joinToString(separator = "\n") { it.getName() }
-            sendError(commandEvent.message, TranslationHandler.getString(Language.EN_US, "command_error.bot_permission", perms))
+            sendError(
+                commandEvent.message,
+                TranslationHandler.getString(Language.EN_US, "command_error.bot_permission", perms)
+            )
             return false
         }
 
-        val cooldown = "%.2f".format(commandEvent.monke.handlers.get(CooldownHandler::class.java)
-            .getRemaining(commandEvent.user, commandEvent.command) / 1000F)
+        val cooldown = "%.2f".format(
+            commandEvent.monke.handlers.get(CooldownHandler::class)
+                .getRemaining(commandEvent.user, commandEvent.command) / 1000F
+        )
 
-        val isOnCooldown = commandEvent.monke.handlers.get(CooldownHandler::class.java)
+        val isOnCooldown = commandEvent.monke.handlers.get(CooldownHandler::class)
             .isOnCooldown(commandEvent.user, commandEvent.command)
 
         if (isOnCooldown) {
-            sendError(commandEvent.message, TranslationHandler.getString(Language.EN_US, "command_error.cooldown", cooldown))
+            sendError(
+                commandEvent.message,
+                TranslationHandler.getString(Language.EN_US, "command_error.cooldown", cooldown)
+            )
             return false
         }
 
@@ -90,6 +109,11 @@ abstract class Command(
                 )
             )
 
+            return false
+        }
+
+        if (!finalCheck.invoke(commandEvent)) {
+            finalCheckFail.invoke(commandEvent)
             return false
         }
         return true

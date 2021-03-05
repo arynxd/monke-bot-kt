@@ -33,9 +33,9 @@ class InfoUserCommand(parent: Command) : SubCommand(
 
     override suspend fun run(event: CommandEvent) {
         val member = if (event.isArgumentPresent(0))
-                        event.getArgument(0)
-                     else
-                         event.member
+            event.getArgument(0)
+        else
+            event.member
 
         val language = event.getLanguage()
 
@@ -47,18 +47,22 @@ class InfoUserCommand(parent: Command) : SubCommand(
         val roles = TranslationHandler.getString(language, "command.info.keyword.roles")
         val noRoles = TranslationHandler.getString(language, "command.info.keyword.no_roles")
 
-        event.sendEmbed(Embed(
-            title = "$information: **" + member.user.asTag + "**",
-            fields = listOf(
-                MessageEmbed.Field(boosting,
-                    if (member.timeBoosted == null) notBoosting else parseDateTime(member.timeBoosted),
-                    true),
-                MessageEmbed.Field(joinedAt, parseDateTime(member.timeJoined), true),
-                MessageEmbed.Field(createdAt, parseDateTime(member.timeCreated), true),
-                MessageEmbed.Field(roles, getCondensedRoles(member, noRoles), true),
-            ),
-            thumbnail = member.user.effectiveAvatarUrl
-        ))
+        event.sendEmbed(
+            Embed(
+                title = "$information: **" + member.user.asTag + "**",
+                fields = listOf(
+                    MessageEmbed.Field(
+                        boosting,
+                        if (member.timeBoosted == null) notBoosting else parseDateTime(member.timeBoosted),
+                        true
+                    ),
+                    MessageEmbed.Field(joinedAt, parseDateTime(member.timeJoined), true),
+                    MessageEmbed.Field(createdAt, parseDateTime(member.timeCreated), true),
+                    MessageEmbed.Field(roles, getCondensedRoles(member, noRoles), true),
+                ),
+                thumbnail = member.user.effectiveAvatarUrl
+            )
+        )
     }
 
     private fun getCondensedRoles(member: Member, error: String): String {

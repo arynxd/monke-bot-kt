@@ -49,12 +49,18 @@ class WikipediaCommand : Command(
             return
         }
 
-        val lastEdited = TranslationHandler.getString(language, "command.wiki.keyword.last_edited", parseDateTime(page.getTimestamp())?: "null")
-        event.sendEmbed(Embed(
-            image = if (event.channel.isNSFW) page.getThumbnail() else null,
-            title = page.getTitle(),
-            description = cutString(page.getExtract()?: "null", MessageEmbed.TEXT_MAX_LENGTH),
-            footerText = lastEdited)
+        val lastEdited = TranslationHandler.getString(
+            language,
+            "command.wiki.keyword.last_edited",
+            parseDateTime(page.getTimestamp()) ?: "null"
+        )
+        event.sendEmbed(
+            Embed(
+                image = if (event.channel.isNSFW) page.getThumbnail() else null,
+                title = page.getTitle(),
+                description = cutString(page.getExtract() ?: "null", MessageEmbed.TEXT_MAX_LENGTH),
+                footerText = lastEdited
+            )
         )
     }
 }

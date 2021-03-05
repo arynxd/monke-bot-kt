@@ -16,11 +16,12 @@ import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.http.HttpRequestEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import java.io.IOException
+import kotlin.reflect.KClass
 
 //ty topi 👀 https://github.com/KittyBot-Org/KittyBot/blob/master/src/main/java/de/kittybot/kittybot/modules/PrometheusModule.java
 class MetricsHandler @JvmOverloads constructor(
     override val monke: Monke,
-    override val dependencies: List<Class<out Handler>> = listOf(ConfigHandler::class.java)
+    override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
 ) : Handler() {
 
     private val port: Int by lazy { getPrometheusPort() }
@@ -95,7 +96,7 @@ class MetricsHandler @JvmOverloads constructor(
 
     override fun onReady(event: ReadyEvent) {
         gatewayPing.set(monke.jda.gatewayPing.toDouble())
-        monke.jda.restPing.queue() { restPing.set(it.toDouble()) }
+        monke.jda.restPing.queue { restPing.set(it.toDouble()) }
     }
 
     override fun onResumed(event: ResumedEvent) {
@@ -128,7 +129,7 @@ class MetricsHandler @JvmOverloads constructor(
     }
 
     private fun getPrometheusPort(): Int {
-        return monke.handlers.get(ConfigHandler::class.java)
+        return monke.handlers.get(ConfigHandler::class)
             .config
             .prometheus
             .port.toIntOrNull() ?: throw HandlerException("Prometheus port was not a number.")

@@ -52,8 +52,10 @@ class GoogleCommand : Command(
                 sendError(event.message, noResults)
                 return@withContext
             }
-            sendSuccess(event.message,
-                "${links[0].attr("href")} --> *${names[0].text()}* \n\n ${descriptions[0].text()}")
+            sendSuccess(
+                event.message,
+                "${links[0].attr("href")} --> *${names[0].text()}* \n\n ${descriptions[0].text()}"
+            )
 
         } catch (exception: Exception) {
             val error = TranslationHandler.getString(language, "internal_error.web_service_error", "Google")

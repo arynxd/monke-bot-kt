@@ -35,14 +35,16 @@ class JsonCommand : Command(
         )
     ),
 
-) {
+    ) {
     override suspend fun run(event: CommandEvent) {
         val channel = event.channel
         val jda = event.jda
         val id = event.getArgument<Long>(0).toString()
         val notFound = TranslationHandler.getString(event.getLanguage(), "command.json.message_not_found")
-        RestActionImpl<Any>(jda,
-            Route.Messages.GET_MESSAGE.compile(channel.id, id)) { response: Response, _: Request<Any?>? ->
+        RestActionImpl<Any>(
+            jda,
+            Route.Messages.GET_MESSAGE.compile(channel.id, id)
+        ) { response: Response, _: Request<Any?>? ->
             val json = splitStringCodeblock(prettyPrintJson(response.getObject().toString()))
 
             for (part in json) {

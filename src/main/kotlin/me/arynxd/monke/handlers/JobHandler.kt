@@ -5,7 +5,8 @@ import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import java.util.*
 
-class JobHandler(override val monke: Monke
+class JobHandler(
+    override val monke: Monke
 ) : Handler() {
     private val jobs = mutableMapOf<String, Job>()
 
@@ -22,9 +23,11 @@ class JobHandler(override val monke: Monke
         }
         return name
     }
+
     fun removeJob(name: String) {
         jobs.remove(name)?.cancel("Manually cancelled")
     }
+
     override fun onDisable() {
         jobs.values.forEach { it.cancel(TranslationHandler.getInternalString("cancel_reason.bot_shutdown")) }
     }

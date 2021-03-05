@@ -13,26 +13,36 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.isValidUrl
+import me.arynxd.monke.util.sendError
 
+@Suppress("UNUSED")
 class PlayCommand : Command(
     name = "play",
-    description = "Plays some music",
+    description = "Plays music from youtube or soundcloud",
     category = CommandCategory.MUSIC,
-    arguments = ArgumentConfiguration(listOf(
-        ArgumentString(
-            name = "Music name",
-            description = "The name of the music you want to play",
-            required = true,
-            type = ArgumentType.VARARG
+    arguments = ArgumentConfiguration(
+        listOf(
+            ArgumentString(
+                name = "Track",
+                description = "The track to play.",
+                required = true,
+                type = ArgumentType.VARARG
+            )
         )
-    ))
+    ),
+
+    finalCheck = { it.member.voiceState?.channel != null },
+    finalCheckFail = { sendError(it.message, "You are not in a voice channel.") }
 ) {
     override suspend fun run(event: CommandEvent) {
-        val musicHandler = event.monke.handlers.get(MusicHandler::class.java)
-        val musicManager = musicHandler.getGuildAudioPlayer(event.guild)
+        val musicHandler = event.monke.handlers.get(MusicHandler::class)
+        val musicManager = musicHandler.getGuildMusicManager(event.guild)
         val channel = event.channel
+        val voiceChannel = event.member.voiceState!!.channel!!
+
         val query = event.getVararg<String>(0).joinToString(" ").let {
-            if(it.isValidUrl()) it else "ytsearch:$it"
+            if (it.isValidUrl()) it
+            else "ytsearch:$it"
         }
 
         musicHandler.playerManager.loadItemOrdered(musicManager, query, object : AudioLoadResultHandler {
@@ -41,7 +51,7 @@ class PlayCommand : Command(
                     TranslationHandler.getString(event.getLanguage(), "music.adding_to_queue", track.info.title)
                 ).queue()
 
-                musicHandler.play(channel.guild, musicManager, track)
+                musicManager.play(track, voiceChannel)
             }
 
             override fun playlistLoaded(playlist: AudioPlaylist) {
@@ -52,15 +62,22 @@ class PlayCommand : Command(
                             TranslationHandler.getString(event.getLanguage(), "music.first_track_of", playlist.name)
                 ).queue()
 
-                musicHandler.play(channel.guild, musicManager, firstTrack)
+                musicManager.play(firstTrack, voiceChannel)
             }
 
             override fun noMatches() {
-                channel.sendMessage(TranslationHandler.getString(event.getLanguage(), "music.nothing_found", query)).queue()
+                channel.sendMessage(TranslationHandler.getString(event.getLanguage(), "music.nothing_found", query))
+                    .queue()
             }
 
             override fun loadFailed(exception: FriendlyException) {
-                channel.sendMessage(TranslationHandler.getString(event.getLanguage(), "music.could_not_play", exception.message.toString())).queue()
+                channel.sendMessage(
+                    TranslationHandler.getString(
+                        event.getLanguage(),
+                        "music.could_not_play",
+                        exception.message.toString()
+                    )
+                ).queue()
             }
         })
     }

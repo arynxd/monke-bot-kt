@@ -17,26 +17,28 @@ class PrefixCommand : Command(
     category = CommandCategory.MISC,
 
     arguments = ArgumentConfiguration(listOf(
-            ArgumentString(
-                name = "prefix",
-                description = "The new prefix. 5 characters or less.",
-                required = false,
-                type = ArgumentType.REGULAR,
-                condition = { it.length <= 5 }
-            )
+        ArgumentString(
+            name = "prefix",
+            description = "The new prefix. 5 characters or less.",
+            required = false,
+            type = ArgumentType.REGULAR,
+            condition = { it.length <= 5 }
         )
+    )
     ),
 
     ) {
     override suspend fun run(event: CommandEvent) {
-        val cache = event.monke.handlers.get(GuildSettingsHandler::class.java).getCache(event.guildIdLong)
+        val cache = event.monke.handlers.get(GuildSettingsHandler::class).getCache(event.guildIdLong)
         val language = event.getLanguage()
 
         if (!event.isArgumentPresent(0)) {
             val prefixHere = TranslationHandler.getString(language, "command.prefix.response.prefix_here", cache.prefix)
-            event.sendEmbed(Embed(
-                title = prefixHere
-            ))
+            event.sendEmbed(
+                Embed(
+                    title = prefixHere
+                )
+            )
             return
         }
 
@@ -46,15 +48,19 @@ class PrefixCommand : Command(
         val prefixNew = TranslationHandler.getString(language, "command.prefix.response.prefix_new", prefix)
 
         if (prefix == cache.prefix) {
-            event.sendEmbed(Embed(
-                title = prefixAlready
-            ))
+            event.sendEmbed(
+                Embed(
+                    title = prefixAlready
+                )
+            )
             return
         }
 
         cache.prefix = prefix
-        event.sendEmbed(Embed(
-            title = prefixNew
-        ))
+        event.sendEmbed(
+            Embed(
+                title = prefixNew
+            )
+        )
     }
 }
