@@ -104,7 +104,7 @@ class Monke: ListenerAdapter() {
     }
 
     private fun initGuilds() {
-        jda.guildCache.forEach() { handlers.get(GuildSettingsHandler::class.java).initGuild(it.idLong) }
+        jda.guildCache.forEach { handlers.get(GuildSettingsHandler::class.java).initGuild(it.idLong) }
     }
 
     private fun initListeners() {

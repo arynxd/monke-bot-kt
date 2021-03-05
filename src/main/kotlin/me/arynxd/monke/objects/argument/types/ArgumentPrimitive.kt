@@ -10,8 +10,7 @@ class ArgumentLong(
         override val required: Boolean,
         override val type: ArgumentType,
         override val condition: (Long) -> Boolean = { true },
-
-        ) : Argument<Long>() {
+) : Argument<Long>() {
 
     override suspend fun convert(input: String, event: CommandEvent): Long? {
         return input.toLongOrNull()

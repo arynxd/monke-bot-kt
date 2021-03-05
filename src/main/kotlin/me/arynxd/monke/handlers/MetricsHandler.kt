@@ -1,13 +1,9 @@
 package me.arynxd.monke.handlers
 
-import dev.minn.jda.ktx.await
 import io.prometheus.client.Counter
 import io.prometheus.client.Gauge
 import io.prometheus.client.exporter.HTTPServer
 import io.prometheus.client.hotspot.DefaultExports
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.exception.HandlerException
 import me.arynxd.monke.objects.handlers.Handler
@@ -20,8 +16,6 @@ import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.http.HttpRequestEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import java.io.IOException
-import javax.annotation.Nonnull
-
 
 //ty topi 👀 https://github.com/KittyBot-Org/KittyBot/blob/master/src/main/java/de/kittybot/kittybot/modules/PrometheusModule.java
 class MetricsHandler @JvmOverloads constructor(
@@ -121,7 +115,7 @@ class MetricsHandler @JvmOverloads constructor(
         userCount.set(monke.getUserCount().toDouble())
     }
 
-    override fun onGuildLeave(@Nonnull event: GuildLeaveEvent) {
+    override fun onGuildLeave(event: GuildLeaveEvent) {
         guildCount.set(monke.getGuildCount().toDouble())
         userCount.set(monke.getUserCount().toDouble())
     }

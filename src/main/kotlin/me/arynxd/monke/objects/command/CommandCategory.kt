@@ -8,7 +8,8 @@ enum class CommandCategory(private val key: String) {
     FUN("fun"),
     MISC("misc"),
     MODERATION("moderation"),
-    CONFIGURATION("configuration");
+    CONFIGURATION("configuration"),
+    MUSIC("music");
 
     fun getName(language: Language): String {
         return TranslationHandler.getString(language, "command.category.$key")

@@ -2,18 +2,21 @@ package me.arynxd.monke.util
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
+import java.net.URL
 import java.time.Duration
-import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAccessor
 
 private val jsonFormat = Json {
     prettyPrint = true
 }
+
+fun String.isValidUrl(): Boolean = try {
+    URL(this).toURI()
+    true
+} catch(ex: Exception) { false }
 
 fun plurifyInt(input: Int): String = if (input != 1) "s" else ""
 fun plurifyLong(input: Long): String = if (input != 1L) "s" else ""

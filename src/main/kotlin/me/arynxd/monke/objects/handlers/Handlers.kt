@@ -64,7 +64,6 @@ class Handlers(val monke: Monke) {
         return handlers.toMap()
     }
 
-
     fun enableHandlers() {
         val enabled = mutableListOf<Class<out Handler>>()
         val queue = LinkedList(handlers.values)

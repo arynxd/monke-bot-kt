@@ -12,11 +12,11 @@ import net.dv8tion.jda.api.exceptions.ParsingException
 import net.dv8tion.jda.api.utils.data.DataObject
 
 val KEY_REGEX: Regex = Regex("\\.")
+
 class TranslationHandler @JvmOverloads constructor(
     override val monke: Monke,
     override val dependencies: List<Class<out Handler>> = listOf(ConfigHandler::class.java)
 ) : Handler() {
-
     override fun onEnable() {
         val lang = Language.getLanguageByName(monke.handlers.get(ConfigHandler::class.java).config.preferredLanguage)
         if (lang == null) {
