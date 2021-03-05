@@ -47,7 +47,6 @@ class PlayCommand : Command(
             override fun playlistLoaded(playlist: AudioPlaylist) {
                 val firstTrack: AudioTrack = playlist.selectedTrack ?: playlist.tracks[0]
 
-                channel.sendMessage("Adding to queue " + firstTrack.info.title + " (first track of playlist " + playlist.name + ")").queue()
                 channel.sendMessage(
                     TranslationHandler.getString(event.getLanguage(), "music.adding_to_queue", firstTrack.info.title) +
                             TranslationHandler.getString(event.getLanguage(), "music.first_track_of", playlist.name)
