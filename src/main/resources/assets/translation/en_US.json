@@ -73,6 +73,10 @@
       "name": "leave",
       "description": "Leaves the voice channel, if it's in one."
     },
+    "pause": {
+      "name": "pause",
+      "description": "Pause and unpause the player."
+    },
     "language": {
       "name": "language",
       "description": "Gets and sets the language for this server.",

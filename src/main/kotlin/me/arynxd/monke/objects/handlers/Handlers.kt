@@ -58,11 +58,11 @@ class Handlers(val monke: Monke) {
                     continue
                 }
 
-                handlers[instance.javaClass.kotlin] = instance
+                handlers[instance::class] = instance
             }
         }
 
-        return handlers.toMap()
+        return Collections.unmodifiableMap(handlers.toMap())
     }
 
     fun enableHandlers() {

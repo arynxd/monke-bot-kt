@@ -20,6 +20,10 @@ class TrackScheduler(
         player.startTrack(queue.poll(), false)
     }
 
+    fun hasNext(): Boolean {
+        return queue.peek() != null
+    }
+
     override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
         if (endReason.mayStartNext) {
             nextTrack()
