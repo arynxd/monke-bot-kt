@@ -28,31 +28,31 @@ fun Monke.messageEvents() {
 }
 
 class GuildMessageEvent() {
-    lateinit var message: Message
-    lateinit var jda: JDA
-    lateinit var messageChannel: MessageChannel
-    lateinit var channel: TextChannel
-    lateinit var user: User
-    lateinit var member: Member
-    lateinit var guild: Guild
+    val message: Message
+    val jda: JDA
+    val messageChannel: MessageChannel
+    val channel: TextChannel
+    val user: User
+    val member: Member
+    val guild: Guild
 
     constructor(event: GuildMessageReceivedEvent): this() {
-        message = event.message
-        jda = event.jda
-        messageChannel = event.channel
-        channel = event.channel
-        user = event.author
-        member = event.member?: throw IllegalStateException("Member was null")
-        guild = event.guild
+        this.message = event.message
+        this.jda = event.jda
+        this.messageChannel = event.channel
+        this.channel = event.channel
+        this.user = event.author
+        this.member = event.member?: throw IllegalStateException("Member was null")
+        this.guild = event.guild
     }
 
     constructor(event: GuildMessageUpdateEvent): this() {
-        message = event.message
-        jda = event.jda
-        messageChannel = event.channel
-        channel = event.channel
-        user = event.author
-        member = event.member?: throw IllegalStateException("Member was null")
-        guild = event.guild
+        this.message = event.message
+        this.jda = event.jda
+        this.messageChannel = event.channel
+        this.channel = event.channel
+        this.user = event.author
+        this.member = event.member?: throw IllegalStateException("Member was null")
+        this.guild = event.guild
     }
 }
