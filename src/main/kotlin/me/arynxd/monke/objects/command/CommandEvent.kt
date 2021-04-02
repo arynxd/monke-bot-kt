@@ -31,6 +31,7 @@ class CommandEvent(
     val selfMember = event.guild.selfMember
     val guildIdLong = event.guild.idLong
 
+    @Deprecated("Replace with CommandEvent#reply")
     fun sendEmbed(embed: MessageEmbed) {
         val user = message.author
 
@@ -49,36 +50,24 @@ class CommandEvent(
         ).mentionRepliedUser(false).queue()
     }
 
-    fun isDeveloper(): Boolean {
-        return monke.handlers.get(ConfigHandler::class).config.developers.contains(user.id)
-    }
+    suspend fun reply(function: suspend CommandReply.() -> Unit) = function(CommandReply(this))
+
+    fun isDeveloper(): Boolean = monke.handlers.get(ConfigHandler::class).config.developers.contains(user.id)
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> getArgument(indie: Int): T {
-        return args[indie] as T
-    }
-
+    fun <T> getArgument(indie: Int): T = args[indie] as T
     @Suppress("UNCHECKED_CAST")
-    fun <T> getVararg(start: Int): MutableList<T> {
-        return args
+    fun <T> getVararg(start: Int): MutableList<T> =
+        args
             .subList(start, args.size)
             .map { it as T }
             .toMutableList()
-    }
 
-    fun isArgumentPresent(indie: Int): Boolean {
-        return indie < args.size
-    }
+    fun isArgumentPresent(indie: Int): Boolean = indie < args.size
 
-    fun getPrefix(): String {
-        return monke.handlers.get(GuildSettingsHandler::class).getCache(guildIdLong).prefix
-    }
+    fun getPrefix(): String = getSettingsCache().prefix
 
-    fun getLanguage(): Language {
-        return monke.handlers.get(GuildSettingsHandler::class).getCache(guildIdLong).language
-    }
+    fun getLanguage(): Language = getSettingsCache().language
 
-    fun getSettingsCache(): GuildSettings {
-        return monke.handlers.get(GuildSettingsHandler::class).getCache(guildIdLong)
-    }
+    fun getSettingsCache(): GuildSettings = monke.handlers.get(GuildSettingsHandler::class).getCache(guildIdLong)
 }

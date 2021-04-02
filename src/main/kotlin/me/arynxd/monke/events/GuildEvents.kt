@@ -13,9 +13,9 @@ import java.time.Instant
 
 fun Monke.guildEvents() {
     jda.listener<GuildJoinEvent> {
-        val channel = jda.getTextChannelById(handlers.get(ConfigHandler::class).config.logChannel)
+        val channel = jda.getTextChannelById(handlers.get(ConfigHandler::class).config.logChannel)?: return@listener
         val serverCount = jda.guildCache.size()
-        channel?.sendMessage(
+        channel.sendMessage(
             Embed(
                 title = "Joined a new server!",
                 description = "Server: *${it.guild.name}* with owner **${
@@ -25,14 +25,14 @@ fun Monke.guildEvents() {
                 color = DEFAULT_EMBED_COLOUR.rgb,
                 timestamp = Instant.now()
             )
-        )?.queue()
+        ).queue()
     }
 
     jda.listener<GuildLeaveEvent> {
-        val channel = jda.getTextChannelById(handlers.get(ConfigHandler::class).config.logChannel)
+        val channel = jda.getTextChannelById(handlers.get(ConfigHandler::class).config.logChannel)?: return@listener
         val serverCount = jda.guildCache.size()
 
-        channel?.sendMessage(
+        channel.sendMessage(
             Embed(
                 title = "Left a server :(",
                 description = "Server: *${it.guild.name}* with owner **\n\n Now at **${serverCount}** server${
@@ -41,6 +41,6 @@ fun Monke.guildEvents() {
                 color = DEFAULT_EMBED_COLOUR.rgb,
                 timestamp = Instant.now()
             )
-        )?.queue()
+        ).queue()
     }
 }

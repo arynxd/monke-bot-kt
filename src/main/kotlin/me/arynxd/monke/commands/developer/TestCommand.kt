@@ -108,7 +108,8 @@ class TestCommand : Command(
             val boolean = event.getArgument<Boolean>(0)
             if (boolean) {
                 sendSuccess(event.message, "Boolean ${event.getArgument<Boolean>(0)}")
-            } else {
+            }
+            else {
                 sendError(event.message, "Boolean ${event.getArgument<Boolean>(0)}")
             }
 

@@ -21,6 +21,7 @@ fun String.isValidUrl(): Boolean = try {
 }
 
 fun plurifyInt(input: Int): String = if (input != 1) "s" else ""
+
 fun plurifyLong(input: Long): String = if (input != 1L) "s" else ""
 
 fun parseDateTime(time: TemporalAccessor?): String? = time?.let {

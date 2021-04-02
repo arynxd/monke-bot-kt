@@ -32,42 +32,51 @@ class LanguageCommand : Command(
         val language = cache.language
 
         if (!event.isArgumentPresent(0)) {
-            event.sendEmbed(
-                Embed(
-                    title = TranslationHandler.getString(
-                        language,
-                        "command.language.response.get_response",
+            event.reply {
+                information()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command.language.response.get_response",
                         language.commonName
                     )
                 )
-            )
+                footerIcon()
+                send()
+            }
             return
         }
 
         val newLanguage = event.getArgument<Language>(0)
         if (language == newLanguage) {
-            event.sendEmbed(
-                Embed(
-                    title = TranslationHandler.getString(
-                        language,
-                        "command.language.response.exists_response",
-                        language.commonName
+            event.reply {
+                information()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command.language.response.exists_response",
+                        values = arrayOf(language.commonName)
                     )
                 )
-            )
+                footerIcon()
+                send()
+            }
             return
         }
 
-        event.sendEmbed(
-            Embed(
-                title = TranslationHandler.getString(
-                    newLanguage,
-                    "command.language.response.set_response",
-                    newLanguage.commonName
+        event.reply {
+            information()
+            title(
+                TranslationHandler.getString(
+                    language = newLanguage,
+                    key = "command.language.response.set_response",
+                    values = arrayOf(newLanguage.commonName)
                 )
             )
-        )
+            footerIcon()
+            send()
 
-        cache.language = newLanguage
+            cache.language = newLanguage
+        }
     }
 }

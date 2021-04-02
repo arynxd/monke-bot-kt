@@ -31,26 +31,19 @@ class AvatarCommand : Command(
 
     override suspend fun run(event: CommandEvent) {
         val language = event.getLanguage()
-        if (!event.isArgumentPresent(0)) {
-            val forUser =
-                TranslationHandler.getString(language, "command.avatar.response.avatar_for_user", event.user.asTag)
-            event.sendEmbed(
-                Embed(
-                    title = forUser,
-                    image = "${event.user.effectiveAvatarUrl}?size=2048"
+        val user = if (event.isArgumentPresent(0)) event.getArgument(0) else event.user
+
+        event.reply {
+            information()
+            title(
+                TranslationHandler.getString(
+                    language = language,
+                    key = "command.avatar.response.avatar_for_user",
+                    user.asTag
                 )
             )
-            return
+            image(user.effectiveAvatarUrl, 2048)
+            send()
         }
-
-        val user = event.getArgument<User>(0)
-        val forUser = TranslationHandler.getString(language, "command.avatar.response.avatar_for_user", user.asTag)
-        event.sendEmbed(
-            Embed(
-                title = forUser,
-                image = "${user.effectiveAvatarUrl}?size=2048"
-            )
-        )
-        return
     }
 }

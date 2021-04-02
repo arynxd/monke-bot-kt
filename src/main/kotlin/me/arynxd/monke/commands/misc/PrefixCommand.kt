@@ -24,8 +24,7 @@ class PrefixCommand : Command(
             type = ArgumentType.REGULAR,
             condition = { it.length <= 5 }
         )
-    )
-    ),
+    )),
 
     ) {
     override suspend fun run(event: CommandEvent) {

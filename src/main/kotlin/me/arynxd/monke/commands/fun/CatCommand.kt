@@ -24,12 +24,23 @@ class CatCommand : Command(
         val random = Random
         val posts = getPosts(subreddits[random.nextInt(subreddits.size)], event.monke).filter { it.isMedia() }
         val language = event.getLanguage()
-        val corrupt = TranslationHandler.getString(language, "command_error.corrupt_web_data", "Reddit")
 
         if (posts.isEmpty()) {
-            sendError(event.message, corrupt)
+            event.reply {
+                exception()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command_error.corrupt_web_data",
+                        values = arrayOf("Reddit")
+                    )
+                )
+                footerIcon()
+                send()
+            }
             return
         }
+
         checkAndSendPost(event, posts[random.nextInt(posts.size)])
     }
 }

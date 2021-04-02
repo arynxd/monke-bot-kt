@@ -1,9 +1,7 @@
 package me.arynxd.monke
 
 import dev.minn.jda.ktx.injectKTX
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import me.arynxd.monke.events.guildEvents
 import me.arynxd.monke.events.messageEvents
 import me.arynxd.monke.handlers.*
@@ -100,6 +98,7 @@ class Monke: ListenerAdapter() {
 
         handlers.get(MetricsHandler::class).guildCount.set(getGuildCount().toDouble())
         handlers.get(MetricsHandler::class).userCount.set(getUserCount().toDouble())
+
     }
 
     private fun initGuilds() {
