@@ -40,15 +40,19 @@ class CommandReply(val event: CommandEvent) {
         embed.setColor(DEFAULT_EMBED_COLOUR)
     }
 
-    fun field(title: String?, description: String?, inline: Boolean = false) {
-        embed.addField(title, description, inline)
+    fun field(title: String?, description: String?, inline: Boolean) {
+        embed.addField(
+            title?.substring(0, title.length.coerceAtMost(MessageEmbed.TITLE_MAX_LENGTH)),
+            description?.substring(0, description.length.coerceAtMost(MessageEmbed.VALUE_MAX_LENGTH)),
+            inline
+        )
     }
 
     fun fields(fields: Collection<MessageEmbed.Field>) {
         fields.forEach { field(it.name, it.value, it.isInline) }
     }
 
-    fun blankField(inline: Boolean = false) {
+    fun blankField(inline: Boolean) {
         embed.addBlankField(inline)
     }
 
@@ -73,7 +77,7 @@ class CommandReply(val event: CommandEvent) {
     }
 
     fun footer(text: String = event.user.asTag, url: String = event.user.effectiveAvatarUrl) {
-        embed.setFooter(text, url)
+        embed.setFooter(text.substring(0, text.length.coerceAtMost(MessageEmbed.TEXT_MAX_LENGTH)), url)
     }
 
     fun thumbnail(url: String?) {
@@ -99,10 +103,6 @@ class CommandReply(val event: CommandEvent) {
     }
 
     fun build() = embed.build()
-
-    fun save(): CommandReply {
-        return this
-    }
 
     companion object {
         fun sendError(message: Message, text: String) {

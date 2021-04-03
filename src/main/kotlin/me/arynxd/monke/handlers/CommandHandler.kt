@@ -110,6 +110,7 @@ class CommandHandler @JvmOverloads constructor(
             if (!command.isExecutable(event)) {
                 return@launch
             }
+
             monke.handlers.get(CooldownHandler::class).addCommand(event.user, command)
             monke.handlers.get(MetricsHandler::class).commandCounter.labels(
                 if (command is SubCommand)
@@ -117,15 +118,17 @@ class CommandHandler @JvmOverloads constructor(
                 else
                     command.name
             ).inc()
+
             try {
                 withTimeout(5000) { //5 Seconds
                     command.run(event)
                 }
-            } catch (exception: Exception) {
+            }
+            catch (exception: Exception) {
                 event.reply {
                     exception()
                     title("Something went wrong whilst executing that command. Please report this to the devs!")
-                    description("What broke:\n ${exception.stackTraceToString()}")
+                    description("What broke:\n $exception")
                     footer()
                     send()
                 }

@@ -1,19 +1,18 @@
 package me.arynxd.monke.commands.developer
 
+import dev.minn.jda.ktx.await
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentString
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandFlag
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.handlers.LOGGER
-import me.arynxd.monke.util.ERROR_EMBED_COLOUR
-import me.arynxd.monke.util.SUCCESS_EMBED_COLOUR
+import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.postBin
-import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.RestAction
+import okhttp3.OkHttpClient
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
@@ -51,17 +50,17 @@ class EvalCommand : Command(
         import java.util.concurrent.*
         import java.util.stream.*
         import java.io.*
-        import java.time.*
-        import me.arynxd.monke.util.sendSuccess
-        import me.arynxd.monke.util.sendError
+        import java.time.* 
         import me.arynxd.monke.handlers.*
         import dev.minn.jda.ktx.Embed
+        import dev.minn.jda.ktx.await
         """.trimIndent()
             )
 
             LOGGER.info(TranslationHandler.getInternalString("internal_error.eval_reflection_warning"))
         }
     }
+
     private val codeBlockRegex = Regex("```[A-Za-z]*")
 
     override suspend fun run(event: CommandEvent) {
@@ -76,81 +75,118 @@ class EvalCommand : Command(
         engine.put("bot", event.jda.selfUser)
         engine.put("monke", event.monke)
 
-        val language = event.getLanguage()
-        val evaluatedResult = TranslationHandler.getString(language, "command.eval.keyword.evaluated_result")
-
-        val noError = TranslationHandler.getString(language, "command.eval.keyword.no_error")
-        val status = TranslationHandler.getString(language, "command.eval.keyword.status")
-        val duration = TranslationHandler.getString(language, "command.eval.keyword.duration")
-        val code = TranslationHandler.getString(language, "command.eval.keyword.code")
-        val error = TranslationHandler.getString(language, "command.eval.keyword.error")
-        val result = TranslationHandler.getString(language, "command.eval.keyword.result")
-
-        val builder = EmbedBuilder().setTitle(evaluatedResult)
-
         val script = event.getVararg<String>(0)
             .joinToString(separator = " ")
             .replace(codeBlockRegex, "")
 
+        val language = event.getLanguage()
+        val client = event.monke.handlers.okHttpClient
         val startTime = System.currentTimeMillis()
+        val result = doEval(script, language, client)
 
-        try {
-            val out = engine.eval(script)
+        val output = result.first
+        val isSuccessful = result.second
 
-            builder.addField("$status:", "Success", true)
-            builder.addField("$duration:", "${System.currentTimeMillis() - startTime}ms", true)
-            builder.setColor(SUCCESS_EMBED_COLOUR)
-            builder.addField("$code:", formatCodeBlock(script.let {
-                if (it.length > 1000) {
-                    return@let postBin(
-                        it.chunked(100).joinToString(separator = "\n"),
-                        event.monke.handlers.okHttpClient
-                    )
-                } else it
-            }), false)
-            builder.addField(
-                "$result:", when (out) {
-                    is RestAction<*> -> {
-                        out.queue()
-                        "RestAction enqueued."
-                    }
-
-                    null -> noError
-                    else -> out
-                }.toString(), true
+        val reply = CommandReply(event)
+            reply.title(
+                TranslationHandler.getString(
+                    language = language,
+                    key = "command.eval.keyword.evaluated_result"
+                )
             )
 
-        } catch (exception: Exception) {
-            builder.addField("$status:", "Error", true)
-            builder.addField("$duration:", "${System.currentTimeMillis() - startTime}ms", true)
-            builder.setColor(ERROR_EMBED_COLOUR)
+            reply.field(
+                title = TranslationHandler.getString(language, "command.eval.keyword.duration"),
+                description = "${System.currentTimeMillis() - startTime}ms",
+                inline = false
+            )
 
-            builder.addField("$code:", formatCodeBlock(script.let {
-                if (it.length > 1000) {
-                    return@let postBin(
-                        it.chunked(100).joinToString(separator = "\n"),
-                        event.monke.handlers.okHttpClient
-                    )
-                } else it
-            }), false)
+            reply.field(
+                title = TranslationHandler.getString(language, "command.eval.keyword.code"),
+                description =
+                    if (script.length > MessageEmbed.VALUE_MAX_LENGTH) {
+                        postBin(script, client) ?: "Something went wrong whilst uploading the code"
+                    }
+                    else {
+                        "```kt\n$script```"
+                    },
+                inline = false
+            )
+            reply.footer()
 
-            builder.addField("$error:", formatCodeBlock(exception.toString().let {
-                if (it.length > 1000) {
-                    return@let postBin(
-                        it.chunked(100).joinToString(separator = "\n"),
-                        event.monke.handlers.okHttpClient
-                    )
-                } else it
-            }), true)
+        if (isSuccessful) {
+            reply.success()
+            reply.field(
+                title = TranslationHandler.getString(language, "command.eval.keyword.result"),
+                description = output,
+                inline = false
+            )
+
         }
-
-        event.channel.sendMessage(builder.build()).queue()
+        else {
+            reply.exception()
+            reply.field(
+                title = TranslationHandler.getString(language, "command.eval.keyword.error"),
+                description = output,
+                inline = false
+            )
+        }
+        reply.send()
     }
 
-    private fun formatCodeBlock(stringOrUrl: String?): String = //Omit the code-block if we posted a haste link
-        stringOrUrl?.let {
-            if (it.startsWith("https://"))
-                it
-            else "```kt\n$it```"
-        } ?: "null"
+    private suspend fun doEval(code: String, language: Language, client: OkHttpClient): Pair<String, Boolean> {
+        var successful = true
+        val out =
+            try  {
+                engine.eval(code)
+            }
+            catch (exception: Exception) {
+                val st = exception.stackTraceToString()
+                successful = false
+                if (st.length > MessageEmbed.VALUE_MAX_LENGTH) {
+                    postBin(st, client)?: "Something went wrong whilst uploading the stacktrace"
+                }
+                else {
+                    st
+                }
+
+            }
+
+        val result = when(out) {
+            is RestAction<*> ->
+                try {
+                    out.await().toString()
+                }
+                catch (exception: ErrorResponseException) {
+                    successful = false
+                    val st = exception.stackTraceToString()
+                    if (st.length > MessageEmbed.VALUE_MAX_LENGTH) {
+                        postBin(st, client)?: "Something went wrong whilst uploading the stacktrace"
+                    }
+                    else {
+                        st
+                    }
+                }
+
+            else -> {
+                val o = out.toString()
+                if (o.isEmpty()) {
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command.eval.keyword.no_error"
+                    )
+                }
+                else {
+                    if (o.length > MessageEmbed.VALUE_MAX_LENGTH) {
+                        postBin(o, client)?: "Something went wrong whilst uploading the result"
+                    }
+                    else {
+                        o
+                    }
+                }
+            }
+        }
+
+        return Pair(result, successful)
+    }
 }

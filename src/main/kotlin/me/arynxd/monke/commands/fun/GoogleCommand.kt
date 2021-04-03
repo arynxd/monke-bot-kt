@@ -63,7 +63,8 @@ class GoogleCommand : Command(
 
             event.replyAsync {
                 success()
-                description("${links[0].attr("href")} --> *${names[0].text()}* \n\n ${descriptions[0].text()}")
+                title("*${names[0].text()}*")
+                description("${links[0].attr("href")} \n\n ${descriptions[0].text()}")
                 footer()
                 send()
             }
