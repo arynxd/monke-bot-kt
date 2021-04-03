@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariDataSource
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
-import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.convertToString
 import me.arynxd.monke.util.loadResource
 import org.ktorm.database.Database
@@ -20,10 +19,10 @@ class DatabaseHandler @JvmOverloads constructor(
         TranslationHandler::class
     )
 ) : Handler() {
-    private lateinit var pool: HikariDataSource
-    lateinit var database: Database
+    private val pool: HikariDataSource by lazy { getHikari() }
+    val database: Database by lazy { getKtorm() }
 
-    override fun onEnable() {
+    private fun getHikari(): HikariDataSource {
         val hikariConfig = HikariConfig()
         val configuration = monke.handlers.get(ConfigHandler::class).config.database
 
@@ -40,19 +39,26 @@ class DatabaseHandler @JvmOverloads constructor(
         hikariConfig.poolName = "DatabasePool"
 
         try {
-            pool = HikariDataSource(hikariConfig)
-            database = Database.connect(
-                dataSource = pool,
-                dialect = PostgreSqlDialect()
-            )
-            initTables()
+            return HikariDataSource(hikariConfig)
         } catch (exception: Exception) {
             LOGGER.error(
-                TranslationHandler.getString(Language.EN_US, "internal_error.database_offline"), exception
+                TranslationHandler.getInternalString(
+                    key = "internal_error.database_offline",
+                    values = arrayOf(exception)
+                )
             )
             exitProcess(1)
         }
     }
+
+    override fun onEnable() {
+        initTables()
+    }
+
+    private fun getKtorm() = Database.connect(
+        dataSource = pool,
+        dialect = PostgreSqlDialect()
+    )
 
     override fun onDisable() {
         pool.close()

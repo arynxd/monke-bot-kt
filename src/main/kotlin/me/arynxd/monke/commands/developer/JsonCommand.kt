@@ -1,6 +1,5 @@
 package me.arynxd.monke.commands.developer
 
-import dev.minn.jda.ktx.await
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
@@ -10,9 +9,7 @@ import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.CommandFlag
 import me.arynxd.monke.util.prettyPrintJson
-import me.arynxd.monke.util.sendError
 import me.arynxd.monke.util.splitStringCodeblock
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.Request
 import net.dv8tion.jda.api.requests.Response
 import net.dv8tion.jda.internal.requests.RestActionImpl
@@ -42,7 +39,6 @@ class JsonCommand : Command(
         val channel = event.channel
         val jda = event.jda
         val id = event.getArgument<Long>(0).toString()
-        val notFound = TranslationHandler.getString(event.getLanguage(), "command.json.message_not_found")
 
         RestActionImpl<Any>(
             jda,
@@ -51,28 +47,26 @@ class JsonCommand : Command(
             val json = splitStringCodeblock(prettyPrintJson(response.getObject().toString())).map {
                 "```json\n${
                     it.replace("`", "")
-                    .replace("\\\"", "\"")
+                        .replace("\\\"", "\"")
                 }```"
             }
 
-            for (part in json) {
-                channel.sendMessage("```json\n${part.replace("`", "").replace("\\\"", "\"")}```")
-                    .allowedMentions(emptyList())
-                    .queue()
+            event.replyAsync {
+                success()
+                footer()
+                chunks(json)
             }
-
-
-
-        }.queue(null) { sendError(event.message, notFound) }
-
-        val restAction = RestActionImpl<Any>(jda, Route.Messages.GET_MESSAGE.compile(channel.id, id))
-        val result = try {
-            restAction.await()
-        }
-        catch (exception: ErrorResponseException) {
-            event.reply {
+        }.queue(null) {
+            event.replyAsync {
                 exception()
-
+                title(
+                    TranslationHandler.getString(
+                        language = event.getLanguage(),
+                        key = "command.json.message_not_found"
+                    )
+                )
+                footer()
+                send()
             }
         }
     }

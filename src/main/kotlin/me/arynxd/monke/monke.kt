@@ -1,9 +1,7 @@
 package me.arynxd.monke
 
 import dev.minn.jda.ktx.injectKTX
-import kotlinx.coroutines.delay
-import me.arynxd.monke.events.guildEvents
-import me.arynxd.monke.events.messageEvents
+import me.arynxd.monke.events.Events
 import me.arynxd.monke.handlers.*
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
@@ -17,6 +15,7 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import java.lang.management.ManagementFactory
@@ -24,6 +23,8 @@ import java.text.DecimalFormat
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import javax.security.auth.login.LoginException
 import kotlin.random.Random
 import kotlin.system.exitProcess
@@ -32,7 +33,8 @@ fun main() {
     Monke()
 }
 
-class Monke: ListenerAdapter() {
+class Monke : ListenerAdapter() {
+    val scheduler = Executors.newScheduledThreadPool(10)
     val handlers = Handlers(this)
 
     init {
@@ -44,30 +46,35 @@ class Monke: ListenerAdapter() {
     private fun build(): JDA {
         try {
             return JDABuilder
-                .create(handlers.get(ConfigHandler::class).config.token,
+                .create(
+                    handlers.get(ConfigHandler::class).config.token,
                     GatewayIntent.GUILD_MEMBERS,
 
                     GatewayIntent.GUILD_MESSAGES,
                     GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                    GatewayIntent.GUILD_VOICE_STATES)
+                    GatewayIntent.GUILD_VOICE_STATES
+                )
 
                 .disableCache(
                     CacheFlag.ACTIVITY,
                     CacheFlag.EMOTE,
                     CacheFlag.CLIENT_STATUS,
                     CacheFlag.ROLE_TAGS,
-                    CacheFlag.MEMBER_OVERRIDES)
+                    CacheFlag.MEMBER_OVERRIDES
+                )
 
                 .injectKTX()
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .setHttpClient(handlers.okHttpClient)
-                .addEventListeners(this)
+                .addEventListeners(
+                    this,
+                    Events(this)
+                )
                 .setActivity(Activity.playing("loading up!"))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .also { jda ->
                     handlers.handlers.values.forEach { jda.addEventListeners(it) }
                 }.build()
-
 
         } catch (exception: LoginException) {
             LOGGER.error(TranslationHandler.getInternalString("internal_error.invalid_login"))
@@ -81,10 +88,10 @@ class Monke: ListenerAdapter() {
 
     override fun onReady(event: ReadyEvent) {
         initGuilds()
-        initListeners()
         initTasks()
 
-        LOGGER.info("""
+        LOGGER.info(
+            """
             
               __  __             _        _           _   
              |  \/  |           | |      | |         | |  
@@ -94,38 +101,30 @@ class Monke: ListenerAdapter() {
              |_|  |_|\___/|_| |_|_|\_\___|_.__/ \___/ \__|
                                                             
                         ${handlers.get(ConfigHandler::class).config.api.website}
-        """.trimIndent())
+        """.trimIndent()
+        )
 
         handlers.get(MetricsHandler::class).guildCount.set(getGuildCount().toDouble())
         handlers.get(MetricsHandler::class).userCount.set(getUserCount().toDouble())
 
+        MessageAction.setDefaultMentionRepliedUser(false)
+        MessageAction.setDefaultMentions(emptyList())
     }
 
     private fun initGuilds() {
-        jda.guildCache.forEach { handlers.get(GuildSettingsHandler::class).initGuild(it.idLong) }
-    }
-
-    private fun initListeners() {
-        messageEvents()
-        guildEvents()
+        jda.guildCache.forEach { handlers.get(GuildDataHandler::class).initGuild(it.idLong) }
     }
 
     private fun initTasks() {
-        val jobHandler = handlers.get(JobHandler::class)
+        val taskHandler = handlers.get(TaskHandler::class)
 
-        jobHandler.addJob({
-            while (true) {
-                handlers.get(PaginationHandler::class).cleanup()
-                delay(15_000)
-            }
-        })
+        taskHandler.addTask({
+            handlers.get(PaginationHandler::class).cleanup()
+        }, 30, TimeUnit.SECONDS)
 
-        jobHandler.addJob({
-            while (true) {
-                switchStatus()
-                delay(180_000) //2 Minutes
-            }
-        })
+        taskHandler.addTask({
+            switchStatus()
+        }, 2, TimeUnit.MINUTES)
     }
 
     private fun switchStatus() {
@@ -193,8 +192,10 @@ class Monke: ListenerAdapter() {
     fun getUptimeString(): String {
         val millis = ManagementFactory.getRuntimeMXBean().uptime
         return parseUptime(
-            Duration.between(LocalDateTime.now().minus(millis, ChronoUnit.MILLIS),
-            LocalDateTime.now())
+            Duration.between(
+                LocalDateTime.now().minus(millis, ChronoUnit.MILLIS),
+                LocalDateTime.now()
+            )
         )
     }
 }

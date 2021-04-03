@@ -1,7 +1,5 @@
 package me.arynxd.monke.commands.misc
 
-import dev.minn.jda.ktx.Embed
-import me.arynxd.monke.handlers.GuildSettingsHandler
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
@@ -28,38 +26,51 @@ class PrefixCommand : Command(
 
     ) {
     override suspend fun run(event: CommandEvent) {
-        val cache = event.monke.handlers.get(GuildSettingsHandler::class).getCache(event.guildIdLong)
+        val cache = event.getDataCache()
         val language = event.getLanguage()
 
         if (!event.isArgumentPresent(0)) {
-            val prefixHere = TranslationHandler.getString(language, "command.prefix.response.prefix_here", cache.prefix)
-            event.sendEmbed(
-                Embed(
-                    title = prefixHere
+            event.reply {
+                information()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command.prefix.response.prefix_here",
+                        values = arrayOf(cache.prefix)
+                    )
                 )
-            )
+                send()
+            }
             return
         }
 
         val prefix = event.getArgument<String>(0)
 
-        val prefixAlready = TranslationHandler.getString(language, "command.prefix.response.prefix_already", prefix)
-        val prefixNew = TranslationHandler.getString(language, "command.prefix.response.prefix_new", prefix)
-
         if (prefix == cache.prefix) {
-            event.sendEmbed(
-                Embed(
-                    title = prefixAlready
+            event.reply {
+                exception()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command.prefix.response.prefix_already",
+                        values = arrayOf(prefix)
+                    )
                 )
-            )
+                send()
+            }
             return
         }
 
-        cache.prefix = prefix
-        event.sendEmbed(
-            Embed(
-                title = prefixNew
+        event.reply {
+            success()
+            title(
+                TranslationHandler.getString(
+                    language = language,
+                    key = "command.prefix.response.prefix_new",
+                    values = arrayOf(prefix)
+                )
             )
-        )
+            cache.prefix = prefix
+        }
     }
 }

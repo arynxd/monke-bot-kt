@@ -10,10 +10,7 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.ratelimit.RateLimitedAction
-import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.getIcon
-import me.arynxd.monke.util.sendError
-import me.arynxd.monke.util.sendSuccess
 import net.dv8tion.jda.api.Permission
 import java.net.URL
 
@@ -55,24 +52,62 @@ class StealCommand : Command(
         val limiter = event.monke.handlers.get(RateLimitHandler::class).getRateLimiter(event.guildIdLong)
 
         if (!limiter.canTake(RateLimitedAction.EMOJI_CREATE)) {
-            sendError(event.message, TranslationHandler.getString(Language.EN_US, "command_error.rate_limited"))
+            event.reply {
+                exception()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command_error.rate_limited"
+                    )
+                )
+                send()
+            }
             return
         }
-
-        val couldNotLoad = TranslationHandler.getString(language, "command.steal.response.invalid_image", url)
-        val couldNotAdd = TranslationHandler.getString(language, "command.steal.response.emoji_add_error", url)
 
         if (icon == null) {
-            sendError(event.message, couldNotLoad)
+            event.reply {
+                exception()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command.steal.response.invalid_image",
+                        values = arrayOf(url)
+                    )
+                )
+                send()
+            }
             return
         }
 
-        event.guild.createEmote(name, icon).queue({
-            val success = TranslationHandler.getString(language, "command.steal.response.emoji_success", it.asMention)
-            sendSuccess(event.message, success)
-            limiter.take(RateLimitedAction.EMOJI_CREATE)
-        }, {
-            sendError(event.message, couldNotAdd)
-        })
+        event.guild.createEmote(name, icon).queue(
+            {
+                event.replyAsync {
+                    success()
+                    title(
+                        TranslationHandler.getString(
+                            language = language,
+                            key = "command.steal.response.emoji_success",
+                            values = arrayOf(it.asMention)
+                        )
+                    )
+                    send()
+                    limiter.take(RateLimitedAction.EMOJI_CREATE)
+                }
+            },
+            {
+                event.replyAsync {
+                    exception()
+                    title(
+                        TranslationHandler.getString(
+                            language = language,
+                            key = "command.steal.response.emoji_add_error",
+                            values = arrayOf(url)
+                        )
+                    )
+                    send()
+                }
+            }
+        )
     }
 }

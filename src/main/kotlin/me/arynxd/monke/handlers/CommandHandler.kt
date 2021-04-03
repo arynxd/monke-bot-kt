@@ -3,16 +3,17 @@ package me.arynxd.monke.handlers
 import io.github.classgraph.ClassGraph
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.Monke
 import me.arynxd.monke.events.GuildMessageEvent
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.command.SubCommand
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.markdownSanitize
-import me.arynxd.monke.util.sendError
 import java.lang.reflect.Constructor
 import java.util.*
 import kotlin.collections.LinkedHashMap
@@ -25,14 +26,14 @@ class CommandHandler @JvmOverloads constructor(
     override val monke: Monke,
     override val dependencies: List<KClass<out Handler>> = listOf(
         TranslationHandler::class,
-        GuildSettingsHandler::class
+        GuildDataHandler::class
     )
 ) : Handler() {
     private val classGraph: ClassGraph = ClassGraph().acceptPackages(COMMAND_PACKAGE)
     val commandMap: LinkedHashMap<String, Command> by lazy { loadCommands() }
 
     fun handle(event: GuildMessageEvent) {
-        val prefix = monke.handlers.get(GuildSettingsHandler::class).getCache(event.guild.idLong).prefix
+        val prefix = monke.handlers.get(GuildDataHandler::class).getCache(event.guild.idLong).prefix
 
         val contentRaw = event.message.contentRaw
 
@@ -59,9 +60,17 @@ class CommandHandler @JvmOverloads constructor(
         val command: Command? = commandMap[query]
 
         if (command == null) {
-            sendError(
-                event.message,
-                TranslationHandler.getString(Language.EN_US, "command_error.command_not_found", query, prefix)
+            val language = monke.handlers.get(GuildDataHandler::class).getCache(event.guild.idLong).language
+            CommandReply.sendError(
+                message = event.message,
+                text = TranslationHandler.getString(
+                    language = language,
+                    key = "command_error.command_not_found",
+                    values = arrayOf(
+                        query,
+                        prefix
+                    )
+                )
             )
             return
         }
@@ -108,7 +117,20 @@ class CommandHandler @JvmOverloads constructor(
                 else
                     command.name
             ).inc()
-            command.run(event)
+            try {
+                withTimeout(5000) { //5 Seconds
+                    command.run(event)
+                }
+            } catch (exception: Exception) {
+                event.reply {
+                    exception()
+                    title("Something went wrong whilst executing that command. Please report this to the devs!")
+                    description("What broke:\n ${exception.stackTraceToString()}")
+                    footer()
+                    send()
+                }
+                LOGGER.error("Command '${event.command.name}' had an uncaught exception", exception)
+            }
         }
     }
 

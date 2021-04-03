@@ -1,6 +1,5 @@
 package me.arynxd.monke.commands.misc.info
 
-import dev.minn.jda.ktx.Embed
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
@@ -13,7 +12,6 @@ import me.arynxd.monke.objects.command.SubCommand
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.parseDateTime
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.MessageEmbed
 
 @Suppress("UNUSED")
 class InfoServerCommand(parent: Command) : SubCommand(
@@ -26,15 +24,15 @@ class InfoServerCommand(parent: Command) : SubCommand(
         listOf(
             ArgumentServer(
                 name = "server",
-                description = "The server to show information for or 'this' for the current server.",
-                required = true,
+                description = "The server to show information for or nothing for the current server.",
+                required = false,
                 type = ArgumentType.REGULAR,
             )
         )
     )
 ) {
     override suspend fun run(event: CommandEvent) {
-        val guild = event.getArgument<Guild>(0)
+        val guild = if (event.isArgumentPresent(0)) event.getArgument(0) else event.guild
         val language = event.getLanguage()
 
         val informationFor = TranslationHandler.getString(language, "command.info.keyword.information_for_server")
@@ -46,21 +44,23 @@ class InfoServerCommand(parent: Command) : SubCommand(
         val createdAt = TranslationHandler.getString(language, "command.info.keyword.created_at")
         val emotes = TranslationHandler.getString(language, "command.info.keyword.emotes")
 
-        event.sendEmbed(
-            Embed(
-                title = "$informationFor **${guild.name}**",
-                fields = listOf(
-                    MessageEmbed.Field(isPartnered, getFeature(guild, "PARTNERED", language), true),
-                    MessageEmbed.Field(isVerified, getFeature(guild, "VERIFIED", language), true),
-                    MessageEmbed.Field(isPublic, getFeature(guild, "PUBLIC", language), true),
-                    MessageEmbed.Field(boostCount, guild.boostCount.toString(), true),
-                    MessageEmbed.Field(memberCount, "${guild.memberCount} / ${guild.maxMembers}", true),
-                    MessageEmbed.Field(createdAt, parseDateTime(guild.timeCreated), true),
-                    MessageEmbed.Field(emotes, getEmoteString(guild, language), false),
-                ),
-                thumbnail = guild.iconUrl
-            )
-        )
+        event.reply {
+            information()
+            title("$informationFor **${guild.name}**")
+
+            field(isPartnered, getFeature(guild, "PARTNERED", language), true)
+            field(isVerified, getFeature(guild, "VERIFIED", language), true)
+            field(isPublic, getFeature(guild, "PUBLIC", language), true)
+
+            field(boostCount, guild.boostCount.toString(), true)
+            field(memberCount, "${guild.memberCount} / ${guild.maxMembers}", true)
+            field(createdAt, parseDateTime(guild.timeCreated), true)
+
+            field(emotes, getEmoteString(guild, language), false)
+            thumbnail(guild.iconUrl)
+            footer()
+            send()
+        }
     }
 
     private fun getFeature(guild: Guild, feature: String, language: Language): String {
@@ -84,11 +84,14 @@ class InfoServerCommand(parent: Command) : SubCommand(
             .joinToString(separator = " ") { it.asMention }
 
         return TranslationHandler.getString(
-            language, "command.info.child.server.response.emote",
-            emotes.size,
-            guild.maxEmotes,
-            animated,
-            regular
+            language = language,
+            key = "command.info.child.server.response.emote",
+            values = arrayOf(
+                emotes.size,
+                guild.maxEmotes,
+                animated,
+                regular
+            )
         )
     }
 }

@@ -9,10 +9,7 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.ratelimit.RateLimitedAction
-import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.plurifyInt
-import me.arynxd.monke.util.sendError
-import me.arynxd.monke.util.sendSuccess
 import net.dv8tion.jda.api.Permission
 
 @Suppress("UNUSED")
@@ -44,22 +41,42 @@ class ClearCommand : Command(
         val language = event.getLanguage()
 
         if (!limiter.canTake(RateLimitedAction.BULK_DELETE)) {
-            sendError(event.message, TranslationHandler.getString(Language.EN_US, "command_error.rate_limited"))
+            event.reply {
+                exception()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command_error.rate_limited"
+                    )
+                )
+                footer()
+                send()
+            }
             return
         }
 
-
         event.channel.iterableHistory
-            .takeAsync(event.getArgument<Int>(0) + 1)
+            .takeAsync(event.getArgument<Int>(0) + 2)
+            .thenApply {
+                it.filter { m -> m.idLong != event.message.idLong }
+            }
             .thenAccept {
-                val cleared = TranslationHandler.getString(
-                    language,
-                    "command.clear.response.cleared",
-                    it.size - 1,
-                    plurifyInt(it.size - 1)
-                )
                 event.channel.purgeMessages(it)
-                sendSuccess(event.channel, event.user, cleared)
+                event.replyAsync {
+                    success()
+                    title(
+                        TranslationHandler.getString(
+                            language = language,
+                            key = "command.clear.response.cleared",
+                            values = arrayOf(
+                                it.size - 1,
+                                plurifyInt(it.size - 1)
+                            )
+                        )
+                    )
+                    footer()
+                    send()
+                }
                 limiter.take(RateLimitedAction.BULK_DELETE)
             }
     }

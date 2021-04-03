@@ -1,8 +1,8 @@
 package me.arynxd.monke.util
 
-import dev.minn.jda.ktx.Embed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.CommandEvent
@@ -23,6 +23,7 @@ const val HASTEBIN_SERVER = "https://hastebin.monkebot.ml/"
 suspend fun getPosts(subreddit: String, monke: Monke): List<RedditPost> {
     val request: Request = Request.Builder()
         .url("https://www.reddit.com/r/$subreddit/.json")
+        .addHeader("User-Agent", "Monkebot/${MONKE_VERSION} (Discord bot)")
         .build()
 
     val response = monke.handlers.okHttpClient.newCall(request).await()
@@ -56,8 +57,14 @@ suspend fun getPosts(subreddit: String, monke: Monke): List<RedditPost> {
 fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
     val language = event.getLanguage()
     val error = TranslationHandler.getString(language, "command_error.nsfw_reddit_post")
-    if (event.channel.isNSFW && (post.isNSFW() != false || post.isSpoiled() != false)) {
-        sendError(event.message, error)
+    if (!event.channel.isNSFW && (post.isNSFW() != true || post.isSpoiled() != true)) {
+        event.replyAsync {
+            exception()
+            title(error)
+            footer()
+            send()
+        }
+        return
     }
 
     val description = TranslationHandler.getString(
@@ -67,19 +74,22 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
     )
 
     val footer = TranslationHandler.getString(
-        language, "command_response.reddit_footer",
-        post.getUpvotes() ?: "0",
-        post.getDownvotes() ?: "0"
-    )
-
-    event.sendEmbed(
-        Embed(
-            title = post.getTitle(),
-            description = description,
-            image = post.getURL(),
-            footerText = footer
+        language = language,
+        key = "command_response.reddit_footer",
+        values = arrayOf(
+            post.getUpvotes() ?: "0",
+            post.getDownvotes() ?: "0"
         )
     )
+
+    event.replyAsync {
+        success()
+        title(post.getTitle())
+        description(description)
+        image(post.getURL())
+        footer(footer)
+        send()
+    }
 }
 
 suspend fun getWikipediaPage(event: CommandEvent, subject: String): WikipediaPage? {

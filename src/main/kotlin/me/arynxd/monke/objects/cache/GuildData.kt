@@ -1,13 +1,14 @@
-package me.arynxd.monke.objects.database
+package me.arynxd.monke.objects.cache
 
 import me.arynxd.monke.DEFAULT_BOT_PREFIX
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.DatabaseHandler
+import me.arynxd.monke.objects.database.GUILDS
 import me.arynxd.monke.objects.translation.Language
 import org.ktorm.dsl.*
 import org.ktorm.schema.Column
 
-class GuildSettings(
+class GuildData(
     val guildId: Long,
     val monke: Monke
 ) {
@@ -22,6 +23,8 @@ class GuildSettings(
             field = value
             setSetting(GUILDS.LANGUAGE, value.code)
         }
+
+    val messageCache = MessageCache(this)
 
     private fun <T : Any> getSetting(field: Column<T>, default: T): T {
         val query = monke.handlers.get(DatabaseHandler::class).database

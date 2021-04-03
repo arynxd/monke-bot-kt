@@ -6,7 +6,6 @@ import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.checkAndSendPost
 import me.arynxd.monke.util.getPosts
-import me.arynxd.monke.util.sendError
 import kotlin.random.Random
 
 @Suppress("UNUSED")
@@ -35,7 +34,7 @@ class CatCommand : Command(
                         values = arrayOf("Reddit")
                     )
                 )
-                footerIcon()
+                footer()
                 send()
             }
             return

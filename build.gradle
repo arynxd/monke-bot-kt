@@ -47,6 +47,7 @@ dependencies {
 compileKotlin {
     kotlinOptions {
         jvmTarget = "14"
+        languageVersion = "1.4"
     }
 }
 compileJava.options.encoding = 'UTF-8'

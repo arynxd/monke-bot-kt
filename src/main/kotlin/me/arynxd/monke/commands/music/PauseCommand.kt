@@ -4,8 +4,6 @@ import me.arynxd.monke.handlers.MusicHandler
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.util.sendError
-import me.arynxd.monke.util.sendSuccess
 
 @Suppress("UNUSED")
 class PauseCommand : Command(
@@ -14,7 +12,14 @@ class PauseCommand : Command(
     category = CommandCategory.MUSIC,
 
     finalCheck = { it.member.voiceState?.channel != null },
-    finalCheckFail = { sendError(it.message, "You are not in a voice channel.") }
+    finalCheckFail = {
+        it.replyAsync {
+            exception()
+            title("You or I are not in a voice channel.")
+            footer()
+            send()
+        }
+    }
 ) {
     override suspend fun run(event: CommandEvent) {
         val musicManager = event.monke.handlers.get(MusicHandler::class).getGuildMusicManager(
@@ -23,15 +28,23 @@ class PauseCommand : Command(
             voiceChannel = event.member.voiceState!!.channel!!
         )
 
-        val message = event.message
-
         if (musicManager.player.isPaused) {
-            sendSuccess(message, "Un-paused the player")
+            event.reply {
+                success()
+                title("Un-paused the player")
+                footer()
+                send()
+            }
             musicManager.player.isPaused = false
             return
         }
 
-        sendSuccess(message, "Paused the player")
+        event.reply {
+            success()
+            title("Paused the player")
+            footer()
+            send()
+        }
         musicManager.player.isPaused = true
     }
 }

@@ -144,7 +144,7 @@ class EvalCommand : Command(
             }), true)
         }
 
-        event.sendEmbed(builder.build())
+        event.channel.sendMessage(builder.build()).queue()
     }
 
     private fun formatCodeBlock(stringOrUrl: String?): String = //Omit the code-block if we posted a haste link

@@ -42,7 +42,7 @@ class CooldownHandler(
 
         fun isOnCooldown(command: Command): Boolean {
             val cooldown = commands[command] ?: return false
-            return System.currentTimeMillis() < cooldown
+            return System.currentTimeMillis() <= cooldown
         }
     }
 }

@@ -21,10 +21,6 @@
     "nothing_found": "Nothing found by %0.",
     "could_not_play": "Could not play: %0."
   },
-  "cancel_reason": {
-    "timeout": "%0 timed out.",
-    "bot_shutdown": "Bot was shutdown."
-  },
   "keyword": {
     "optional": "optional",
     "required": "required",
@@ -42,7 +38,7 @@
     "invalid_args": "Something went wrong with the following argument%0 \n %1",
     "rate_limited": "This command is on a server-wide cooldown, please try again later.",
     "cooldown": "You're on cooldown from that command (%0s remaining).",
-    "command_not_found": "Command `%0` was not found.\n Type %1help for help.",
+    "command_not_found": "Command `%0` was not found.\n Type **%1help** for help.",
     "corrupt_web_data": "The data provided by %0 was corrupt, please report this to the developers!",
     "nsfw_reddit_post": "The post found was NSFW and cannot be shown here, please try again."
   },

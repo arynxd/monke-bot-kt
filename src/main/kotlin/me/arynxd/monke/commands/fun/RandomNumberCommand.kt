@@ -7,8 +7,6 @@ import me.arynxd.monke.objects.argument.types.ArgumentLong
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.util.sendError
-import me.arynxd.monke.util.sendSuccess
 import kotlin.random.Random
 
 @Suppress("UNUSED")
@@ -44,11 +42,23 @@ class RandomNumberCommand : Command(
         val upperBound = event.getArgument<Long>(1)
 
         if (lowerBound >= upperBound) {
-            val error = TranslationHandler.getString(event.getLanguage(), "command.rng.response.lower_>_upper")
-            sendError(event.message, error)
+            event.reply {
+                exception()
+                title(
+                    TranslationHandler.getString(
+                        language = event.getLanguage(),
+                        key = "command.rng.response.lower_>_upper"
+                    )
+                )
+            }
             return
         }
 
-        sendSuccess(event.message, Random.nextLong(lowerBound, upperBound).toString())
+        event.reply {
+            success()
+            title("I choose ${Random.nextLong(lowerBound, upperBound)}!")
+            footer()
+            send()
+        }
     }
 }

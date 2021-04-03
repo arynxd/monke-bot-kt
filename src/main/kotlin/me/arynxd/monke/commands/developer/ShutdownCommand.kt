@@ -23,6 +23,7 @@ class ShutdownCommand : Command(
                     key = "command.shutdown.response.success"
                 )
             )
+            footer()
             await()
         }
 

@@ -47,7 +47,11 @@ class ArgumentMember(
 ) : Argument<Member>() {
 
     override suspend fun convert(input: String, event: CommandEvent): Member? {
-        val memberMentions = event.message.mentionedMembers.filter { !it.equals(event.guild.selfMember) }
+        val memberMentions = event.message.mentionedMembers.toMutableList()
+
+        if (isBotMention(event)) {
+            memberMentions.removeAt(0)
+        }
 
         if (memberMentions.isNotEmpty()) { //Direct mention
             return memberMentions[0]
@@ -70,5 +74,11 @@ class ArgumentMember(
         }
 
         return null
+    }
+
+    private fun isBotMention(event: CommandEvent): Boolean {
+        val content = event.message.contentRaw
+        val id = event.jda.selfUser.idLong
+        return content.startsWith("<@$id>") || content.startsWith("<@!$id>")
     }
 }

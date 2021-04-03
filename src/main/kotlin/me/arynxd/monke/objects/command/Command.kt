@@ -5,7 +5,6 @@ import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.plurifyInt
-import me.arynxd.monke.util.sendError
 import net.dv8tion.jda.api.Permission
 
 abstract class Command(
@@ -21,50 +20,93 @@ abstract class Command(
     val cooldown: Long = 1000L,
 
     val finalCheck: (CommandEvent) -> Boolean = { true },
-    val finalCheckFail: (CommandEvent) -> Unit = {},
+    val finalCheckFail: (CommandEvent) -> Unit = { },
 
     val memberPermissions: List<Permission> = emptyList(),
     val botPermissions: List<Permission> = emptyList(),
 ) {
 
     suspend fun isExecutable(commandEvent: CommandEvent): Boolean {
+        val language = commandEvent.getLanguage()
 
         if (hasFlag(CommandFlag.DISABLED) || isDisabled) {
-            sendError(commandEvent.message, TranslationHandler.getString(Language.EN_US, "command_error.disabled"))
+            commandEvent.reply {
+                exception()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command_error.disabled"
+                    )
+                )
+                footer()
+                send()
+            }
             return false
         }
 
         if (hasFlag(CommandFlag.DEVELOPER_ONLY) && !commandEvent.isDeveloper()) {
-            sendError(
-                commandEvent.message,
-                TranslationHandler.getString(Language.EN_US, "command_error.developer_only")
-            )
+            commandEvent.reply {
+                exception()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command_error.developer_only"
+                    )
+                )
+                footer()
+                send()
+            }
             return false
         }
 
         if (!arguments.isConfigurationValid()) {
-            sendError(
-                commandEvent.message,
-                TranslationHandler.getString(Language.EN_US, "command_error.argument_config")
-            )
+            commandEvent.reply {
+                exception()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command_error.argument_config"
+                    )
+                )
+                footer()
+                send()
+            }
             return false
         }
 
         if (!commandEvent.member.hasPermission(commandEvent.channel, memberPermissions)) {
             val perms = memberPermissions.joinToString(separator = "\n") { it.getName() }
-            sendError(
-                commandEvent.message,
-                TranslationHandler.getString(Language.EN_US, "command_error.member_permission", perms)
-            )
+
+            commandEvent.reply {
+                exception()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command_error.member_permission",
+                        values = arrayOf(perms)
+                    )
+                )
+                footer()
+                send()
+            }
             return false
         }
 
         if (!commandEvent.selfMember.hasPermission(commandEvent.channel, botPermissions)) {
             val perms = botPermissions.joinToString(separator = "\n") { it.getName() }
-            sendError(
-                commandEvent.message,
-                TranslationHandler.getString(Language.EN_US, "command_error.bot_permission", perms)
-            )
+
+            commandEvent.reply {
+                exception()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command_error.bot_permission",
+                        values = arrayOf(perms)
+                    )
+                )
+                footer()
+                send()
+            }
             return false
         }
 
@@ -77,10 +119,18 @@ abstract class Command(
             .isOnCooldown(commandEvent.user, commandEvent.command)
 
         if (isOnCooldown) {
-            sendError(
-                commandEvent.message,
-                TranslationHandler.getString(Language.EN_US, "command_error.cooldown", cooldown)
-            )
+            commandEvent.reply {
+                exception()
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command_error.cooldown",
+                        values = arrayOf(cooldown)
+                    )
+                )
+                footer()
+                send()
+            }
             return false
         }
 
@@ -88,26 +138,47 @@ abstract class Command(
 
         if (argResult.isMissing()) {
             val requiredCount = argResult.missingArguments.size
+            val missing = argResult.missingArguments.joinToString { "*${it.name}* -- ${it.description}\n" }
 
-            sendError(commandEvent.message,
-                TranslationHandler.getString(Language.EN_US, "command_error.required_args",
-                    requiredCount,
-                    plurifyInt(requiredCount),
-                    argResult.missingArguments.joinToString { "*${it.name}* -- ${it.description}\n" }
+            commandEvent.reply {
+                exception()
+                description(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command_error.required_args",
+                        values = arrayOf(
+                            requiredCount,
+                            plurifyInt(requiredCount),
+                            missing
+                        )
+                    )
                 )
-            )
+                footer()
+                send()
+            }
             return false
         }
 
         if (argResult.isInvalid()) {
             val invalidCount = argResult.invalidArguments.size
+            val invalid = argResult.invalidArguments.joinToString { "*${it.name}* -- ${it.description}\n" }
 
-            sendError(commandEvent.message,
-                TranslationHandler.getString(Language.EN_US, "command_error.invalid_args",
-                    plurifyInt(invalidCount),
-                    argResult.invalidArguments.joinToString { "*${it.name}* -- ${it.description}\n" }
+            commandEvent.reply {
+                exception()
+                description(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command_error.invalid_args",
+                        values = arrayOf(
+                            invalidCount,
+                            plurifyInt(invalidCount),
+                            invalid
+                        )
+                    )
                 )
-            )
+                footer()
+                send()
+            }
 
             return false
         }

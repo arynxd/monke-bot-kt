@@ -1,6 +1,5 @@
 package me.arynxd.monke.commands.configuration
 
-import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
@@ -28,7 +27,7 @@ class LanguageCommand : Command(
     )
 ) {
     override suspend fun run(event: CommandEvent) {
-        val cache = event.getSettingsCache()
+        val cache = event.getDataCache()
         val language = cache.language
 
         if (!event.isArgumentPresent(0)) {
@@ -41,7 +40,7 @@ class LanguageCommand : Command(
                         language.commonName
                     )
                 )
-                footerIcon()
+                footer()
                 send()
             }
             return
@@ -58,7 +57,7 @@ class LanguageCommand : Command(
                         values = arrayOf(language.commonName)
                     )
                 )
-                footerIcon()
+                footer()
                 send()
             }
             return
@@ -73,7 +72,7 @@ class LanguageCommand : Command(
                     values = arrayOf(newLanguage.commonName)
                 )
             )
-            footerIcon()
+            footer()
             send()
 
             cache.language = newLanguage

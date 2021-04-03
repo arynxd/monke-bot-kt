@@ -1,6 +1,5 @@
 package me.arynxd.monke.commands.misc
 
-import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
@@ -16,10 +15,11 @@ class UptimeCommand : Command(
     override suspend fun run(event: CommandEvent) {
         val language = event.getLanguage()
         val uptime = TranslationHandler.getString(language, "command.uptime.keyword.uptime")
-        event.sendEmbed(
-            Embed(
-                title = "$uptime: ${event.monke.getUptimeString()}"
-            )
-        )
+        event.reply {
+            success()
+            title("$uptime: ${event.monke.getUptimeString()}")
+            footer()
+            send()
+        }
     }
 }

@@ -1,11 +1,13 @@
 package me.arynxd.monke.objects.command
 
+import dev.minn.jda.ktx.Embed
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import me.arynxd.monke.util.ERROR_EMBED_COLOUR
 import me.arynxd.monke.util.SUCCESS_EMBED_COLOUR
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageEmbed
 import java.time.Instant
 
 class CommandReply(val event: CommandEvent) {
@@ -16,7 +18,7 @@ class CommandReply(val event: CommandEvent) {
         event.message.reply(embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
-            .queue()
+            .queue(callback)
     }
 
     suspend fun await(): Message {
@@ -38,39 +40,51 @@ class CommandReply(val event: CommandEvent) {
         embed.setColor(DEFAULT_EMBED_COLOUR)
     }
 
-    fun field(title: String, description: String, inline: Boolean = false) {
+    fun field(title: String?, description: String?, inline: Boolean = false) {
         embed.addField(title, description, inline)
+    }
+
+    fun fields(fields: Collection<MessageEmbed.Field>) {
+        fields.forEach { field(it.name, it.value, it.isInline) }
     }
 
     fun blankField(inline: Boolean = false) {
         embed.addBlankField(inline)
     }
 
-    fun title(title: String) {
-        embed.setTitle(title)
+    fun title(title: String?) {
+        if (title == null) {
+            embed.setTitle(title)
+            return
+        }
+        embed.setTitle(title.subSequence(0, title.length.coerceAtMost(MessageEmbed.TITLE_MAX_LENGTH)).toString())
     }
 
-    fun description(description: String) {
-        embed.setDescription(description)
+    fun description(description: String?) {
+        if (description == null) {
+            embed.setDescription(description)
+            return
+        }
+        embed.setDescription(description.subSequence(0, description.length.coerceAtMost(MessageEmbed.TEXT_MAX_LENGTH)))
     }
 
     fun timestamp() {
         embed.setTimestamp(Instant.now())
     }
 
-    fun footerIcon(text: String = event.user.asTag, url: String = event.user.effectiveAvatarUrl) {
+    fun footer(text: String = event.user.asTag, url: String = event.user.effectiveAvatarUrl) {
         embed.setFooter(text, url)
     }
 
-    fun thumbnail(url: String) {
+    fun thumbnail(url: String?) {
         embed.setThumbnail(url)
     }
 
-    fun image(url: String) {
+    fun image(url: String?) {
         embed.setImage(url)
     }
 
-    fun image(url: String, size: Int) {
+    fun image(url: String?, size: Int?) {
         embed.setImage("$url?size=$size")
     }
 
@@ -84,7 +98,37 @@ class CommandReply(val event: CommandEvent) {
         }
     }
 
-    operator fun invoke(body: CommandReply.() -> Unit) {
-        body()
+    fun build() = embed.build()
+
+    fun save(): CommandReply {
+        return this
+    }
+
+    companion object {
+        fun sendError(message: Message, text: String) {
+            val user = message.author
+            message.reply(
+                Embed(
+                    description = text,
+                    color = ERROR_EMBED_COLOUR.rgb,
+                    footerText = user.name,
+                    timestamp = Instant.now(),
+                    footerIcon = user.effectiveAvatarUrl
+                )
+            ).mentionRepliedUser(false).queue()
+        }
+
+        fun sendSuccess(message: Message, text: String) {
+            val user = message.author
+            message.reply(
+                Embed(
+                    description = text,
+                    color = SUCCESS_EMBED_COLOUR.rgb,
+                    timestamp = Instant.now(),
+                    footerText = user.name,
+                    footerIcon = user.effectiveAvatarUrl
+                )
+            ).mentionRepliedUser(false).queue()
+        }
     }
 }

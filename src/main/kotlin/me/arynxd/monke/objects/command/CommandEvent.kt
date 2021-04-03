@@ -4,8 +4,8 @@ import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.Monke
 import me.arynxd.monke.events.GuildMessageEvent
 import me.arynxd.monke.handlers.ConfigHandler
-import me.arynxd.monke.handlers.GuildSettingsHandler
-import me.arynxd.monke.objects.database.GuildSettings
+import me.arynxd.monke.handlers.GuildDataHandler
+import me.arynxd.monke.objects.cache.GuildData
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import net.dv8tion.jda.api.JDA
@@ -52,22 +52,35 @@ class CommandEvent(
 
     suspend fun reply(function: suspend CommandReply.() -> Unit) = function(CommandReply(this))
 
+    fun replyAsync(function: CommandReply.() -> Unit) = function(CommandReply(this))
+
     fun isDeveloper(): Boolean = monke.handlers.get(ConfigHandler::class).config.developers.contains(user.id)
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> getArgument(indie: Int): T = args[indie] as T
+    fun <T> getArgument(indie: Int): T {
+        if (!isArgumentPresent(indie) || indie < 0) {
+            throw NoSuchElementException("Argument $indie does not exist")
+        }
+        return args[indie] as T
+    }
+
     @Suppress("UNCHECKED_CAST")
-    fun <T> getVararg(start: Int): MutableList<T> =
-        args
-            .subList(start, args.size)
+    fun <T> getVararg(start: Int): MutableList<T> {
+        if (start > args.size || start < 0) {
+            throw NoSuchElementException("Variable argument $start does not exist")
+        }
+
+        return args.subList(start, args.size)
             .map { it as T }
             .toMutableList()
+    }
+
 
     fun isArgumentPresent(indie: Int): Boolean = indie < args.size
 
-    fun getPrefix(): String = getSettingsCache().prefix
+    fun getPrefix(): String = getDataCache().prefix
 
-    fun getLanguage(): Language = getSettingsCache().language
+    fun getLanguage(): Language = getDataCache().language
 
-    fun getSettingsCache(): GuildSettings = monke.handlers.get(GuildSettingsHandler::class).getCache(guildIdLong)
+    fun getDataCache(): GuildData = monke.handlers.get(GuildDataHandler::class).getCache(guildIdLong)
 }

@@ -5,8 +5,6 @@ import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.util.sendError
-import me.arynxd.monke.util.sendSuccess
 
 @Suppress("UNUSED")
 class LeaveCommand : Command(
@@ -15,18 +13,33 @@ class LeaveCommand : Command(
     category = CommandCategory.MUSIC,
 
     finalCheck = { it.member.voiceState?.channel != null && it.selfMember.voiceState?.channel != null },
-    finalCheckFail = { sendError(it.message, "You or I are not in a voice channel.") }
+    finalCheckFail = {
+        it.replyAsync {
+            exception()
+            title("You or I are not in a voice channel.")
+            footer()
+            send()
+        }
+    }
 ) {
     override suspend fun run(event: CommandEvent) {
         val audioManager = event.guild.audioManager
         val musicHandler = event.monke.handlers.get(MusicHandler::class)
         musicHandler.leaveChannel(event.guild)
 
-        sendSuccess(
-            event.message, TranslationHandler.getString(
-                event.getLanguage(),
-                "music.channel_left", audioManager.connectedChannel!!.name
+        event.reply {
+            success()
+            title(
+                TranslationHandler.getString(
+                    language = event.getLanguage(),
+                    key = "music.channel_left",
+                    values = arrayOf(
+                        audioManager.connectedChannel?.name ?: throw IllegalStateException("Voice channel not present")
+                    )
+                )
             )
-        )
+            footer()
+            send()
+        }
     }
 }
