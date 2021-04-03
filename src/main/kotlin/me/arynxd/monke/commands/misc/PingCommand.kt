@@ -1,11 +1,9 @@
 package me.arynxd.monke.commands.misc
 
-import dev.minn.jda.ktx.Embed
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.util.SUCCESS_EMBED_COLOUR
 
 @Suppress("UNUSED")
 class PingCommand : Command(

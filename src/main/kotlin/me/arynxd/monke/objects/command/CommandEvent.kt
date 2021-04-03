@@ -31,25 +31,6 @@ class CommandEvent(
     val selfMember = event.guild.selfMember
     val guildIdLong = event.guild.idLong
 
-    @Deprecated("Replace with CommandEvent#reply")
-    fun sendEmbed(embed: MessageEmbed) {
-        val user = message.author
-
-        message.reply(
-            Embed(
-                title = embed.title,
-                description = embed.description,
-                image = embed.image?.url,
-                thumbnail = embed.thumbnail?.url,
-                fields = embed.fields,
-                color = DEFAULT_EMBED_COLOUR.rgb,
-                footerText = embed.footer?.text ?: user.name,
-                timestamp = if (embed.footer?.text == null) Instant.now() else null,
-                footerIcon = user.effectiveAvatarUrl
-            )
-        ).mentionRepliedUser(false).queue()
-    }
-
     suspend fun reply(function: suspend CommandReply.() -> Unit) = function(CommandReply(this))
 
     fun replyAsync(function: CommandReply.() -> Unit) = function(CommandReply(this))
