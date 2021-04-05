@@ -9,6 +9,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.handlers.LOGGER
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
@@ -48,7 +49,7 @@ class GoogleCommand : Command(
 
             if (links.isEmpty() || names.isEmpty() || descriptions.isEmpty()) {
                 event.replyAsync {
-                    exception()
+                    type(CommandReply.Type.EXCEPTION)
                     title(
                         TranslationHandler.getString(
                             language = language,
@@ -62,7 +63,7 @@ class GoogleCommand : Command(
             }
 
             event.replyAsync {
-                success()
+                type(CommandReply.Type.SUCCESS)
                 title("*${names[0].text()}*")
                 description("${links[0].attr("href")} \n\n ${descriptions[0].text()}")
                 footer()
@@ -72,7 +73,7 @@ class GoogleCommand : Command(
         } catch (exception: Exception) {
             val error = TranslationHandler.getString(language, "internal_error.web_service_error", "Google")
             event.replyAsync {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,

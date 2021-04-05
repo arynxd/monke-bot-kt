@@ -7,6 +7,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 
 @Suppress("UNUSED")
 class PrefixCommand : Command(
@@ -31,7 +32,7 @@ class PrefixCommand : Command(
 
         if (!event.isArgumentPresent(0)) {
             event.reply {
-                information()
+                type(CommandReply.Type.INFORMATION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -48,7 +49,7 @@ class PrefixCommand : Command(
 
         if (prefix == cache.prefix) {
             event.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -62,7 +63,7 @@ class PrefixCommand : Command(
         }
 
         event.reply {
-            success()
+            type(CommandReply.Type.SUCCESS)
             title(
                 TranslationHandler.getString(
                     language = language,

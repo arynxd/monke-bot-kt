@@ -11,6 +11,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.util.isValidUrl
 
 @Suppress("UNUSED")
@@ -32,7 +33,7 @@ class PlayCommand : Command(
     finalCheck = { it.member.voiceState?.channel != null },
     finalCheckFail = {
         it.replyAsync {
-            exception()
+            type(CommandReply.Type.EXCEPTION)
             title("You are not in a voice channel.")
             footer()
             send()
@@ -47,7 +48,7 @@ class PlayCommand : Command(
 
         if (musicManager.channel != channel) {
             event.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title("I'm locked to ${musicManager.channel.asMention} for this session.")
                 footer()
                 send()
@@ -58,7 +59,7 @@ class PlayCommand : Command(
 
         if (musicManager.voiceChannel != voiceChannel) {
             event.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title("Join ${musicManager.voiceChannel.name} to use my music commands.")
                 footer()
                 send()
@@ -83,7 +84,7 @@ class PlayCommand : Command(
 
 
                 event.replyAsync {
-                    success()
+                    type(CommandReply.Type.SUCCESS)
                     title(message)
                     footer()
                     send()
@@ -101,7 +102,7 @@ class PlayCommand : Command(
 
 
                 event.replyAsync {
-                    success()
+                    type(CommandReply.Type.SUCCESS)
                     title(message)
                     footer()
                     send()
@@ -110,7 +111,7 @@ class PlayCommand : Command(
 
             override fun noMatches() {
                 event.replyAsync {
-                    exception()
+                    type(CommandReply.Type.EXCEPTION)
                     title("No matches were found for `$query`")
                     footer()
                     send()
@@ -119,7 +120,7 @@ class PlayCommand : Command(
 
             override fun loadFailed(exception: FriendlyException) {
                 event.replyAsync {
-                    exception()
+                    type(CommandReply.Type.EXCEPTION)
                     title("Something went wrong when loading that track, ${exception.cause}")
                     footer()
                     send()

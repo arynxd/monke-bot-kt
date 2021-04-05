@@ -4,10 +4,7 @@ import dev.minn.jda.ktx.await
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.handlers.TranslationHandler
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandFlag
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.exception.TestException
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 
@@ -24,7 +21,7 @@ class TestCommand : Command(
         val language = event.getLanguage()
 
         event.reply {
-            success()
+            type(CommandReply.Type.SUCCESS)
             title(
                 TranslationHandler.getString(
                     language = language,
@@ -36,7 +33,7 @@ class TestCommand : Command(
         }
 
         event.reply {
-            exception()
+            type(CommandReply.Type.EXCEPTION)
             title(
                 TranslationHandler.getString(
                     language = language,
@@ -48,7 +45,7 @@ class TestCommand : Command(
         }
 
         event.reply {
-            information()
+            type(CommandReply.Type.INFORMATION)
             title(
                 TranslationHandler.getString(
                     language = language,
@@ -71,7 +68,7 @@ class TestCommand : Command(
                 }
 
                 event.reply {
-                    success()
+                    type(CommandReply.Type.SUCCESS)
                     title(
                         TranslationHandler.getString(
                             language = language,
@@ -85,7 +82,7 @@ class TestCommand : Command(
             }
         } catch (exception: TimeoutCancellationException) {
             event.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,

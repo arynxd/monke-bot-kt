@@ -7,6 +7,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentUser
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 
 @Suppress("UNUSED")
 class AvatarCommand : Command(
@@ -32,7 +33,7 @@ class AvatarCommand : Command(
         val user = if (event.isArgumentPresent(0)) event.getArgument(0) else event.user
 
         event.reply {
-            information()
+            type(CommandReply.Type.INFORMATION)
             title(
                 TranslationHandler.getString(
                     language = language,

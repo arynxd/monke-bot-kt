@@ -5,6 +5,7 @@ import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 
 @Suppress("UNUSED")
 class LeaveCommand : Command(
@@ -15,7 +16,7 @@ class LeaveCommand : Command(
     finalCheck = { it.member.voiceState?.channel != null && it.selfMember.voiceState?.channel != null },
     finalCheckFail = {
         it.replyAsync {
-            exception()
+            type(CommandReply.Type.EXCEPTION)
             title("You or I are not in a voice channel.")
             footer()
             send()
@@ -28,7 +29,7 @@ class LeaveCommand : Command(
         musicHandler.leaveChannel(event.guild)
 
         event.reply {
-            success()
+            type(CommandReply.Type.SUCCESS)
             title(
                 TranslationHandler.getString(
                     language = event.getLanguage(),

@@ -8,10 +8,7 @@ import me.arynxd.monke.objects.Paginator
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentCommand
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.SubCommand
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import net.dv8tion.jda.api.entities.MessageEmbed
 
@@ -78,7 +75,7 @@ class HelpCommand : Command(
                 language = event.getLanguage(),
                 key = "command.help.keyword.help_for"
             )
-            information()
+            type(CommandReply.Type.INFORMATION)
             title("$keywordFor $prefix${command.getName(language)}")
             fields(fields)
             footer()

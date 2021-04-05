@@ -31,7 +31,7 @@ abstract class Command(
 
         if (hasFlag(CommandFlag.DISABLED) || isDisabled) {
             commandEvent.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -46,7 +46,7 @@ abstract class Command(
 
         if (hasFlag(CommandFlag.DEVELOPER_ONLY) && !commandEvent.isDeveloper()) {
             commandEvent.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -61,7 +61,7 @@ abstract class Command(
 
         if (!arguments.isConfigurationValid()) {
             commandEvent.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -78,7 +78,7 @@ abstract class Command(
             val perms = memberPermissions.joinToString(separator = "\n") { it.getName() }
 
             commandEvent.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -96,7 +96,7 @@ abstract class Command(
             val perms = botPermissions.joinToString(separator = "\n") { it.getName() }
 
             commandEvent.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -120,7 +120,7 @@ abstract class Command(
 
         if (isOnCooldown) {
             commandEvent.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -141,7 +141,7 @@ abstract class Command(
             val missing = argResult.missingArguments.joinToString { "*${it.name}* -- ${it.description}\n" }
 
             commandEvent.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 description(
                     TranslationHandler.getString(
                         language = language,
@@ -164,7 +164,7 @@ abstract class Command(
             val invalid = argResult.invalidArguments.joinToString { "*${it.name}* -- ${it.description}\n" }
 
             commandEvent.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 description(
                     TranslationHandler.getString(
                         language = language,

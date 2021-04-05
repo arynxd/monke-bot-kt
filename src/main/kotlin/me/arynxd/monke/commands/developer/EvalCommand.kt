@@ -115,7 +115,7 @@ class EvalCommand : Command(
             reply.footer()
 
         if (isSuccessful) {
-            reply.success()
+            reply.type(CommandReply.Type.SUCCESS)
             reply.field(
                 title = TranslationHandler.getString(language, "command.eval.keyword.result"),
                 description = output,
@@ -124,7 +124,7 @@ class EvalCommand : Command(
 
         }
         else {
-            reply.exception()
+            reply.type(CommandReply.Type.EXCEPTION)
             reply.field(
                 title = TranslationHandler.getString(language, "command.eval.keyword.error"),
                 description = output,

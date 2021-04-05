@@ -4,6 +4,7 @@ import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 
 @Suppress("UNUSED")
 class UptimeCommand : Command(
@@ -16,7 +17,7 @@ class UptimeCommand : Command(
         val language = event.getLanguage()
         val uptime = TranslationHandler.getString(language, "command.uptime.keyword.uptime")
         event.reply {
-            success()
+            type(CommandReply.Type.SUCCESS)
             title("$uptime: ${event.monke.getUptimeString()}")
             footer()
             send()

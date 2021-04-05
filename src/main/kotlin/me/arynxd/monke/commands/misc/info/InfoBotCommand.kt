@@ -2,10 +2,7 @@ package me.arynxd.monke.commands.misc.info
 
 import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.handlers.TranslationHandler
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.SubCommand
+import me.arynxd.monke.objects.command.*
 
 class InfoBotCommand(parent: Command) : SubCommand(
     name = "bot",
@@ -30,7 +27,7 @@ class InfoBotCommand(parent: Command) : SubCommand(
         val uptime = TranslationHandler.getString(language, "command.info.child.bot.keyword.uptime")
 
         event.reply {
-            information()
+            type(CommandReply.Type.INFORMATION)
             title("${event.jda.selfUser.name} information")
 
             field(jvmVersion, monke.getJavaVersion(), true)

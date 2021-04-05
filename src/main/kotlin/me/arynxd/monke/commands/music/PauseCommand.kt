@@ -4,6 +4,7 @@ import me.arynxd.monke.handlers.MusicHandler
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 
 @Suppress("UNUSED")
 class PauseCommand : Command(
@@ -14,7 +15,7 @@ class PauseCommand : Command(
     finalCheck = { it.member.voiceState?.channel != null },
     finalCheckFail = {
         it.replyAsync {
-            exception()
+            type(CommandReply.Type.EXCEPTION)
             title("You or I are not in a voice channel.")
             footer()
             send()
@@ -30,7 +31,7 @@ class PauseCommand : Command(
 
         if (musicManager.player.isPaused) {
             event.reply {
-                success()
+                type(CommandReply.Type.SUCCESS)
                 title("Un-paused the player")
                 footer()
                 send()
@@ -40,7 +41,7 @@ class PauseCommand : Command(
         }
 
         event.reply {
-            success()
+            type(CommandReply.Type.SUCCESS)
             title("Paused the player")
             footer()
             send()

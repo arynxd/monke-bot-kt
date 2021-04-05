@@ -9,6 +9,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentURL
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.ratelimit.RateLimitedAction
 import me.arynxd.monke.util.getIcon
 import net.dv8tion.jda.api.Permission
@@ -53,7 +54,7 @@ class StealCommand : Command(
 
         if (!limiter.canTake(RateLimitedAction.EMOJI_CREATE)) {
             event.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -67,7 +68,7 @@ class StealCommand : Command(
 
         if (icon == null) {
             event.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -83,7 +84,7 @@ class StealCommand : Command(
         event.guild.createEmote(name, icon).queue(
             {
                 event.replyAsync {
-                    success()
+                    type(CommandReply.Type.SUCCESS)
                     title(
                         TranslationHandler.getString(
                             language = language,
@@ -97,7 +98,7 @@ class StealCommand : Command(
             },
             {
                 event.replyAsync {
-                    exception()
+                    type(CommandReply.Type.EXCEPTION)
                     title(
                         TranslationHandler.getString(
                             language = language,

@@ -4,10 +4,7 @@ import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentLong
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandFlag
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.util.prettyPrintJson
 import me.arynxd.monke.util.splitStringCodeblock
 import net.dv8tion.jda.api.requests.Request
@@ -52,13 +49,13 @@ class JsonCommand : Command(
             }
 
             event.replyAsync {
-                success()
+                type(CommandReply.Type.SUCCESS)
                 footer()
                 chunks(json)
             }
         }.queue(null) {
             event.replyAsync {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = event.getLanguage(),

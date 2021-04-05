@@ -1,10 +1,7 @@
 package me.arynxd.monke.commands.developer
 
 import me.arynxd.monke.handlers.TranslationHandler
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandFlag
+import me.arynxd.monke.objects.command.*
 import kotlin.system.exitProcess
 
 @Suppress("UNUSED")
@@ -16,7 +13,7 @@ class ShutdownCommand : Command(
 ) {
     override suspend fun run(event: CommandEvent) {
         event.reply {
-            success()
+            type(CommandReply.Type.SUCCESS)
             title(
                 TranslationHandler.getString(
                     language = event.getLanguage(),

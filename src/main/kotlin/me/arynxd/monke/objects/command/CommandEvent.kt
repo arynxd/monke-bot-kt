@@ -1,18 +1,13 @@
 package me.arynxd.monke.objects.command
 
-import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.Monke
 import me.arynxd.monke.events.GuildMessageEvent
 import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.handlers.GuildDataHandler
 import me.arynxd.monke.objects.cache.GuildData
 import me.arynxd.monke.objects.translation.Language
-import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.MessageChannel
-import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.User
-import java.time.Instant
 
 class CommandEvent(
     val event: GuildMessageEvent,
@@ -24,7 +19,6 @@ class CommandEvent(
     val jda: JDA = event.jda
     val channel = event.channel
     val user: User = event.user
-    val messageChannel: MessageChannel = event.channel
     val guild = event.guild
     val message = event.message
     val member = event.member
@@ -55,7 +49,6 @@ class CommandEvent(
             .map { it as T }
             .toMutableList()
     }
-
 
     fun isArgumentPresent(indie: Int): Boolean = indie < args.size
 

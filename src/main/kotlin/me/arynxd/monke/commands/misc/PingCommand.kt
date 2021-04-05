@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.await
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 
 @Suppress("UNUSED")
 class PingCommand : Command(
@@ -16,7 +17,7 @@ class PingCommand : Command(
 
     override suspend fun run(event: CommandEvent) {
         event.reply {
-            success()
+            type(CommandReply.Type.SUCCESS)
             title("Pong!")
             val description = "**REST Ping**: ${event.jda.restPing.await()}ms\n\n" +
                     "**Gateway Ping**: ${event.jda.gatewayPing}ms"

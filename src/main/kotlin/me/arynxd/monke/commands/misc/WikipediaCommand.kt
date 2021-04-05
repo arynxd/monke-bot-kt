@@ -7,6 +7,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.util.getWikipediaPage
 import me.arynxd.monke.util.parseDateTime
 
@@ -41,7 +42,7 @@ class WikipediaCommand : Command(
         val page = getWikipediaPage(event, subject)
         if (page == null) {
             event.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -62,7 +63,7 @@ class WikipediaCommand : Command(
         )
 
         event.reply {
-            success()
+            type(CommandReply.Type.SUCCESS)
             title(page.getTitle())
             description(page.getExtract() ?: "null")
             footer(lastEdited)

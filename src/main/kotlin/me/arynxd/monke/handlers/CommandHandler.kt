@@ -126,13 +126,14 @@ class CommandHandler @JvmOverloads constructor(
             }
             catch (exception: Exception) {
                 event.reply {
-                    exception()
+                    type(CommandReply.Type.EXCEPTION)
                     title("Something went wrong whilst executing that command. Please report this to the devs!")
-                    description("What broke:\n $exception")
                     footer()
                     send()
                 }
-                LOGGER.error("Command '${event.command.name}' had an uncaught exception", exception)
+                event.monke.handlers
+                    .get(ExceptionHandler::class)
+                    .handle(exception, "From command '${event.command.name}'")
             }
         }
     }

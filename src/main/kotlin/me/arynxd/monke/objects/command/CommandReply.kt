@@ -8,13 +8,19 @@ import me.arynxd.monke.util.SUCCESS_EMBED_COLOUR
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
+import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 import java.time.Instant
 
 class CommandReply(val event: CommandEvent) {
     private val embed = EmbedBuilder()
     private val mentions = mutableListOf<Message.MentionType>()
+    private var type = Type.UNKNOWN
 
     fun send(callback: ((Message) -> Unit) = { }) {
+        if (type == Type.UNKNOWN) {
+            throw IllegalStateException("Type is not set")
+        }
         event.message.reply(embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
@@ -22,23 +28,25 @@ class CommandReply(val event: CommandEvent) {
     }
 
     suspend fun await(): Message {
+        if (type == Type.UNKNOWN) {
+            throw IllegalStateException("Type is not set")
+        }
         return event.message.reply(embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
             .await()
     }
 
-    fun exception() {
-        embed.setColor(ERROR_EMBED_COLOUR)
+    fun type(type: Type) {
+        this.type = type
+        embed.setColor(when(type) {
+            Type.SUCCESS -> SUCCESS_EMBED_COLOUR
+            Type.EXCEPTION -> ERROR_EMBED_COLOUR
+            Type.INFORMATION -> DEFAULT_EMBED_COLOUR
+            else -> throw IllegalArgumentException("Type $type is invalid")
+        })
     }
 
-    fun success() {
-        embed.setColor(SUCCESS_EMBED_COLOUR)
-    }
-
-    fun information() {
-        embed.setColor(DEFAULT_EMBED_COLOUR)
-    }
 
     fun field(title: String?, description: String?, inline: Boolean) {
         embed.addField(
@@ -130,5 +138,12 @@ class CommandReply(val event: CommandEvent) {
                 )
             ).mentionRepliedUser(false).queue()
         }
+    }
+
+    enum class Type {
+        UNKNOWN,
+        INFORMATION,
+        EXCEPTION,
+        SUCCESS
     }
 }

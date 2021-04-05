@@ -6,6 +6,7 @@ import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.web.RedditPost
 import me.arynxd.monke.objects.web.WIKIPEDIA_API
@@ -59,7 +60,7 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
     val error = TranslationHandler.getString(language, "command_error.nsfw_reddit_post")
     if (!event.channel.isNSFW && (post.isNSFW() != true || post.isSpoiled() != true)) {
         event.replyAsync {
-            exception()
+            type(CommandReply.Type.EXCEPTION)
             title(error)
             footer()
             send()
@@ -83,7 +84,7 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
     )
 
     event.replyAsync {
-        success()
+        type(CommandReply.Type.SUCCESS)
         title(post.getTitle())
         description(description)
         image(post.getURL())

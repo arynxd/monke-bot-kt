@@ -6,6 +6,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 import net.dv8tion.jda.api.entities.MessageEmbed
 
 @Suppress("UNUSED")
@@ -42,7 +43,7 @@ class UwUCommand : Command(
                     }
                 }.joinToString(separator = "")
 
-            success()
+            type(CommandReply.Type.SUCCESS)
             description(sentence)
             footer()
             send()

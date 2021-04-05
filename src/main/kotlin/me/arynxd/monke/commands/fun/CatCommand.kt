@@ -4,6 +4,7 @@ import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.util.checkAndSendPost
 import me.arynxd.monke.util.getPosts
 import kotlin.random.Random
@@ -26,7 +27,7 @@ class CatCommand : Command(
 
         if (posts.isEmpty()) {
             event.reply {
-                exception()
+                type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
                         language = language,

@@ -7,6 +7,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentLanguage
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.translation.Language
 
 @Suppress("UNUSED")
@@ -32,7 +33,7 @@ class LanguageCommand : Command(
 
         if (!event.isArgumentPresent(0)) {
             event.reply {
-                information()
+                type(CommandReply.Type.INFORMATION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -49,7 +50,7 @@ class LanguageCommand : Command(
         val newLanguage = event.getArgument<Language>(0)
         if (language == newLanguage) {
             event.reply {
-                information()
+                type(CommandReply.Type.INFORMATION)
                 title(
                     TranslationHandler.getString(
                         language = language,
@@ -64,7 +65,7 @@ class LanguageCommand : Command(
         }
 
         event.reply {
-            information()
+            type(CommandReply.Type.INFORMATION)
             title(
                 TranslationHandler.getString(
                     language = newLanguage,

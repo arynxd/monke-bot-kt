@@ -5,10 +5,7 @@ import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentServer
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.SubCommand
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.parseDateTime
 import net.dv8tion.jda.api.entities.Guild
@@ -45,7 +42,7 @@ class InfoServerCommand(parent: Command) : SubCommand(
         val emotes = TranslationHandler.getString(language, "command.info.keyword.emotes")
 
         event.reply {
-            information()
+            type(CommandReply.Type.INFORMATION)
             title("$informationFor **${guild.name}**")
 
             field(isPartnered, getFeature(guild, "PARTNERED", language), true)
