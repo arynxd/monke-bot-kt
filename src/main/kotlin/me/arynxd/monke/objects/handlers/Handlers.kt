@@ -8,6 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Constructor
 import java.util.*
+import kotlin.reflect.KClass
 import kotlin.system.exitProcess
 
 const val HANDLER_PACKAGE = "me.arynxd.monke.handlers"
@@ -16,19 +17,19 @@ val LOGGER: Logger = LoggerFactory.getLogger(Monke::class.java)
 
 class Handlers(val monke: Monke) {
     private val classGraph: ClassGraph = ClassGraph().acceptPackages(HANDLER_PACKAGE)
-    val handlers: Map<Class<*>, Handler> = loadHandlers()
+    val handlers: Map<KClass<*>, Handler> = loadHandlers()
     val okHttpClient: OkHttpClient = OkHttpClient()
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> get(clazz: Class<T>): T {
+    fun <T : Any> get(clazz: KClass<T>): T {
         if (!handlers.containsKey(clazz)) {
             throw HandlerException("Handler '${clazz.simpleName}' was not found.")
         }
         return handlers[clazz] as T
     }
 
-    private fun loadHandlers(): Map<Class<*>, Handler> {
-        val handlers = mutableMapOf<Class<*>, Handler>()
+    private fun loadHandlers(): Map<KClass<*>, Handler> {
+        val handlers = mutableMapOf<KClass<*>, Handler>()
         classGraph.scan().use { result ->
             for (cls in result.allClasses) {
 
@@ -57,16 +58,15 @@ class Handlers(val monke: Monke) {
                     continue
                 }
 
-                handlers[instance.javaClass] = instance
+                handlers[instance::class] = instance
             }
         }
 
-        return handlers.toMap()
+        return Collections.unmodifiableMap(handlers.toMap())
     }
 
-
     fun enableHandlers() {
-        val enabled = mutableListOf<Class<out Handler>>()
+        val enabled = mutableListOf<KClass<out Handler>>()
         val queue = LinkedList(handlers.values)
         var i = 0
 
@@ -78,7 +78,7 @@ class Handlers(val monke: Monke) {
                 exitProcess(1)
             }
             if (enabled.containsAll(handler.dependencies)) {
-                enabled.add(handler.javaClass)
+                enabled.add(handler::class)
                 handler.onEnable()
                 i = 0
                 continue
@@ -92,7 +92,6 @@ class Handlers(val monke: Monke) {
 
     fun disableHandlers() {
         handlers.values.forEach {
-            LOGGER.info("Handler - ${it.javaClass.simpleName} stopping..")
             it.onDisable()
             LOGGER.info("Handler - ${it.javaClass.simpleName} stopped.")
         }

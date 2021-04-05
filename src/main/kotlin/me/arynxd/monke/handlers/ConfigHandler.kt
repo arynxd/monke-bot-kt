@@ -28,6 +28,7 @@ class ConfigHandler(
                     token = "token",
                     developers = listOf("1".repeat(10)),
                     logChannel = "channel-id",
+                    logWebhook = "webhook-url",
                     preferredLanguage = "en_US",
 
                     database = DatabaseConfiguration(
@@ -67,6 +68,7 @@ class ConfigHandler(
         val token: String,
         val developers: List<String>,
         val logChannel: String,
+        val logWebhook: String,
         val preferredLanguage: String,
         val database: DatabaseConfiguration,
         val api: APIConfiguration,

@@ -4,12 +4,8 @@ import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentLong
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandFlag
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.util.prettyPrintJson
-import me.arynxd.monke.util.sendError
 import me.arynxd.monke.util.splitStringCodeblock
 import net.dv8tion.jda.api.requests.Request
 import net.dv8tion.jda.api.requests.Response
@@ -35,22 +31,40 @@ class JsonCommand : Command(
         )
     ),
 
-) {
+    ) {
     override suspend fun run(event: CommandEvent) {
         val channel = event.channel
         val jda = event.jda
         val id = event.getArgument<Long>(0).toString()
-        val notFound = TranslationHandler.getString(event.getLanguage(), "command.json.message_not_found")
-        RestActionImpl<Any>(jda,
-            Route.Messages.GET_MESSAGE.compile(channel.id, id)) { response: Response, _: Request<Any?>? ->
-            val json = splitStringCodeblock(prettyPrintJson(response.getObject().toString()))
 
-            for (part in json) {
-                channel.sendMessage("```json\n${part.replace("`", "").replace("\\\"", "\"")}```")
-                    .allowedMentions(emptyList())
-                    .queue()
+        RestActionImpl<Any>(
+            jda,
+            Route.Messages.GET_MESSAGE.compile(channel.id, id)
+        ) { response: Response, _: Request<Any?>? ->
+            val json = splitStringCodeblock(prettyPrintJson(response.getObject().toString())).map {
+                "```json\n${
+                    it.replace("`", "")
+                        .replace("\\\"", "\"")
+                }```"
             }
 
-        }.queue(null) { sendError(event.message, notFound) }
+            event.replyAsync {
+                type(CommandReply.Type.SUCCESS)
+                footer()
+                chunks(json)
+            }
+        }.queue(null) {
+            event.replyAsync {
+                type(CommandReply.Type.EXCEPTION)
+                title(
+                    TranslationHandler.getString(
+                        language = event.getLanguage(),
+                        key = "command.json.message_not_found"
+                    )
+                )
+                footer()
+                send()
+            }
+        }
     }
 }

@@ -5,26 +5,26 @@ import com.zaxxer.hikari.HikariDataSource
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
-import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.convertToString
 import me.arynxd.monke.util.loadResource
 import org.ktorm.database.Database
 import org.ktorm.support.postgresql.PostgreSqlDialect
+import kotlin.reflect.KClass
 import kotlin.system.exitProcess
 
 class DatabaseHandler @JvmOverloads constructor(
     override val monke: Monke,
-    override val dependencies: List<Class<out Handler>> = listOf(
-        ConfigHandler::class.java,
-        TranslationHandler::class.java
+    override val dependencies: List<KClass<out Handler>> = listOf(
+        ConfigHandler::class,
+        TranslationHandler::class
     )
 ) : Handler() {
-    private lateinit var pool: HikariDataSource
-    lateinit var database: Database
+    private val pool: HikariDataSource by lazy { getHikari() }
+    val database: Database by lazy { getKtorm() }
 
-    override fun onEnable() {
+    private fun getHikari(): HikariDataSource {
         val hikariConfig = HikariConfig()
-        val configuration = monke.handlers.get(ConfigHandler::class.java).config.database
+        val configuration = monke.handlers.get(ConfigHandler::class).config.database
 
         hikariConfig.driverClassName = configuration.driverName
         hikariConfig.jdbcUrl = configuration.jdbcURL
@@ -39,19 +39,27 @@ class DatabaseHandler @JvmOverloads constructor(
         hikariConfig.poolName = "DatabasePool"
 
         try {
-            pool = HikariDataSource(hikariConfig)
-            database = Database.connect(
-                dataSource = pool,
-                dialect = PostgreSqlDialect()
-            )
-            initTables()
-        } catch (exception: Exception) {
+            return HikariDataSource(hikariConfig)
+        }
+        catch (exception: Exception) {
             LOGGER.error(
-                TranslationHandler.getString(Language.EN_US, "internal_error.database_offline"), exception
+                TranslationHandler.getInternalString(
+                    key = "internal_error.database_offline",
+                    values = arrayOf(exception)
+                )
             )
             exitProcess(1)
         }
     }
+
+    override fun onEnable() {
+        initTables()
+    }
+
+    private fun getKtorm() = Database.connect(
+        dataSource = pool,
+        dialect = PostgreSqlDialect()
+    )
 
     override fun onDisable() {
         pool.close()

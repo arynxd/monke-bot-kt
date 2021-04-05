@@ -1,6 +1,5 @@
 package me.arynxd.monke.commands.misc
 
-import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
@@ -8,11 +7,9 @@ import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.util.cutString
+import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.util.getWikipediaPage
 import me.arynxd.monke.util.parseDateTime
-import me.arynxd.monke.util.sendError
-import net.dv8tion.jda.api.entities.MessageEmbed
 
 @Suppress("UNUSED")
 class WikipediaCommand : Command(
@@ -43,18 +40,34 @@ class WikipediaCommand : Command(
         val language = event.getLanguage()
 
         val page = getWikipediaPage(event, subject)
-        val tooVague = TranslationHandler.getString(language, "command.wiki.response.not_found")
         if (page == null) {
-            sendError(event.message, tooVague)
+            event.reply {
+                type(CommandReply.Type.EXCEPTION)
+                title(
+                    TranslationHandler.getString(
+                        language = language,
+                        key = "command.wiki.response.not_found"
+                    )
+                )
+                send()
+            }
             return
         }
 
-        val lastEdited = TranslationHandler.getString(language, "command.wiki.keyword.last_edited", parseDateTime(page.getTimestamp())?: "null")
-        event.sendEmbed(Embed(
-            image = if (event.channel.isNSFW) page.getThumbnail() else null,
-            title = page.getTitle(),
-            description = cutString(page.getExtract()?: "null", MessageEmbed.TEXT_MAX_LENGTH),
-            footerText = lastEdited)
+        val lastEdited = TranslationHandler.getString(
+            language = language,
+            key = "command.wiki.keyword.last_edited",
+            values = arrayOf(
+                parseDateTime(page.getTimestamp()) ?: "null"
+            )
         )
+
+        event.reply {
+            type(CommandReply.Type.SUCCESS)
+            title(page.getTitle())
+            description(page.getExtract() ?: "null")
+            footer(lastEdited)
+            send()
+        }
     }
 }

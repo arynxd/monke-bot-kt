@@ -1,10 +1,10 @@
 package me.arynxd.monke.commands.misc
 
-import dev.minn.jda.ktx.Embed
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 
 @Suppress("UNUSED")
 class PingCommand : Command(
@@ -16,10 +16,18 @@ class PingCommand : Command(
     ) {
 
     override suspend fun run(event: CommandEvent) {
-        event.sendEmbed(Embed(
-            title = "Pong!",
-            description = "**REST Ping**: ${event.jda.restPing.await()}ms\n\n" +
-                          "**Gateway Ping**: ${event.jda.gatewayPing}ms"
-        ))
+        event.reply {
+            type(CommandReply.Type.SUCCESS)
+            title("Pong!")
+            val description = "**REST Ping**: ${event.jda.restPing.await()}ms\n\n" +
+                    "**Gateway Ping**: ${event.jda.gatewayPing}ms"
+            description(description)
+            footer()
+            var time = System.currentTimeMillis()
+            val message = await()
+            time = System.currentTimeMillis() - time
+            description(description + "\n\n **Message**: ${time}ms")
+            message.editMessage(build()).queue()
+        }
     }
 }

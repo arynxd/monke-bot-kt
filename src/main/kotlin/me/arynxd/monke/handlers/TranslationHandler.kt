@@ -1,24 +1,25 @@
 package me.arynxd.monke.handlers
 
 import me.arynxd.monke.Monke
+import me.arynxd.monke.objects.exception.TranslationException
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.translation.Language
-import me.arynxd.monke.objects.exception.TranslationException
 import me.arynxd.monke.objects.translation.TranslatedLanguage
 import me.arynxd.monke.util.convertToString
 import me.arynxd.monke.util.loadResource
 import net.dv8tion.jda.api.exceptions.ParsingException
 import net.dv8tion.jda.api.utils.data.DataObject
+import kotlin.reflect.KClass
 
 val KEY_REGEX: Regex = Regex("\\.")
+
 class TranslationHandler @JvmOverloads constructor(
     override val monke: Monke,
-    override val dependencies: List<Class<out Handler>> = listOf(ConfigHandler::class.java)
+    override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
 ) : Handler() {
-
     override fun onEnable() {
-        val lang = Language.getLanguageByName(monke.handlers.get(ConfigHandler::class.java).config.preferredLanguage)
+        val lang = Language.getLanguageByName(monke.handlers.get(ConfigHandler::class).config.preferredLanguage)
         if (lang == null) {
             LOGGER.warn("Language specified in the config file was invalid, falling back to defaults.")
             internalLanguage = Language.DEFAULT
@@ -40,7 +41,7 @@ class TranslationHandler @JvmOverloads constructor(
         }
 
         fun getString(language: Language, key: String, vararg values: Any): String {
-            val json = languages[language]?.data?: throw TranslationException(
+            val json = languages[language]?.data ?: throw TranslationException(
                 getInternalString("internal_error.language_not_found", language.code)
             )
 
@@ -56,7 +57,11 @@ class TranslationHandler @JvmOverloads constructor(
                     data.getObject(path[i])
                 else
                     throw TranslationException(
-                        getInternalString("internal_error.language_key_not_found", path.joinToString(separator = "."), language.code)
+                        getInternalString(
+                            "internal_error.language_key_not_found",
+                            path.joinToString(separator = "."),
+                            language.code
+                        )
                     )
             }
 
@@ -65,7 +70,11 @@ class TranslationHandler @JvmOverloads constructor(
                     data.getString(path.last())
                 else
                     throw TranslationException(
-                        getInternalString("internal_error.language_key_not_found", path.joinToString(separator = "."), language.code)
+                        getInternalString(
+                            "internal_error.language_key_not_found",
+                            path.joinToString(separator = "."),
+                            language.code
+                        )
                     )
 
 
@@ -82,7 +91,9 @@ class TranslationHandler @JvmOverloads constructor(
             val supportedLanguages = convertToString(
                 loadResource("assets/translation/supported_languages.txt")
             ).split("/")
+
             val result = mutableMapOf<Language, TranslatedLanguage>()
+
             for (language in supportedLanguages) {
                 val json = try {
                     DataObject.fromJson(convertToString(loadResource("assets/translation/$language.json")))

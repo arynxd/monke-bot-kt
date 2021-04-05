@@ -6,12 +6,7 @@ import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.handlers.Handler
 import net.dv8tion.jda.api.entities.User
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.util.concurrent.TimeUnit
-import kotlin.math.absoluteValue
 
 class CooldownHandler(
     override val monke: Monke,
@@ -20,7 +15,7 @@ class CooldownHandler(
     private val users: LoadingCache<Long, CooledUser> =
         Caffeine.newBuilder()
             .expireAfterAccess(5, TimeUnit.MINUTES)
-            .build() { CooledUser() }
+            .build { CooledUser() }
 
     fun isOnCooldown(user: User, command: Command): Boolean {
         return users[user.idLong]!!.isOnCooldown(command)
@@ -42,12 +37,12 @@ class CooldownHandler(
         }
 
         fun getRemaining(command: Command): Long {
-            return commands[command]?: 0L
+            return commands[command] ?: 0L
         }
 
         fun isOnCooldown(command: Command): Boolean {
             val cooldown = commands[command] ?: return false
-            return System.currentTimeMillis() < cooldown
+            return System.currentTimeMillis() <= cooldown
         }
     }
 }

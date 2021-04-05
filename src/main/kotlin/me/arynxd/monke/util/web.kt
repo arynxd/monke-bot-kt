@@ -1,11 +1,12 @@
 package me.arynxd.monke.util
 
-import dev.minn.jda.ktx.Embed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.web.RedditPost
 import me.arynxd.monke.objects.web.WIKIPEDIA_API
@@ -23,6 +24,7 @@ const val HASTEBIN_SERVER = "https://hastebin.monkebot.ml/"
 suspend fun getPosts(subreddit: String, monke: Monke): List<RedditPost> {
     val request: Request = Request.Builder()
         .url("https://www.reddit.com/r/$subreddit/.json")
+        .addHeader("User-Agent", "Monkebot/${MONKE_VERSION} (Discord bot)")
         .build()
 
     val response = monke.handlers.okHttpClient.newCall(request).await()
@@ -56,26 +58,39 @@ suspend fun getPosts(subreddit: String, monke: Monke): List<RedditPost> {
 fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
     val language = event.getLanguage()
     val error = TranslationHandler.getString(language, "command_error.nsfw_reddit_post")
-    if (event.channel.isNSFW && (post.isNSFW() != false || post.isSpoiled() != false)) {
-        sendError(event.message, error)
+    if (!event.channel.isNSFW && (post.isNSFW() != true || post.isSpoiled() != true)) {
+        event.replyAsync {
+            type(CommandReply.Type.EXCEPTION)
+            title(error)
+            footer()
+            send()
+        }
+        return
     }
 
-    val description = TranslationHandler.getString(language, "command_response.reddit_description",
-            post.getSubreddit()?: "null",
-            post.getAuthor()?: "null"
+    val description = TranslationHandler.getString(
+        language, "command_response.reddit_description",
+        post.getSubreddit() ?: "null",
+        post.getAuthor() ?: "null"
     )
 
-    val footer = TranslationHandler.getString(language, "command_response.reddit_footer",
-            post.getUpvotes()?: "0",
-            post.getDownvotes()?: "0"
+    val footer = TranslationHandler.getString(
+        language = language,
+        key = "command_response.reddit_footer",
+        values = arrayOf(
+            post.getUpvotes() ?: "0",
+            post.getDownvotes() ?: "0"
+        )
     )
 
-    event.sendEmbed(Embed(
-        title = post.getTitle(),
-        description = description,
-        image = post.getURL(),
-        footerText = footer
-    ))
+    event.replyAsync {
+        type(CommandReply.Type.SUCCESS)
+        title(post.getTitle())
+        description(description)
+        image(post.getURL())
+        footer(footer)
+        send()
+    }
 }
 
 suspend fun getWikipediaPage(event: CommandEvent, subject: String): WikipediaPage? {
@@ -106,7 +121,7 @@ suspend fun postBin(text: String, client: OkHttpClient): String? {
                 .header("User-Agent", "Mozilla/5.0 Monke")
                 .build()
         ).execute().let { response ->
-            if(!response.isSuccessful)
+            if (!response.isSuccessful)
                 null
             else
                 HASTEBIN_SERVER + DataObject.fromJson(
