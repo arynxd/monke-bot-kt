@@ -1,6 +1,6 @@
 # project files
 config.json
-/config
+plugins/
 
 # eclipse files
 .classpath
