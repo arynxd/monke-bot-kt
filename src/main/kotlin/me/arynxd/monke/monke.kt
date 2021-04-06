@@ -5,6 +5,7 @@ import me.arynxd.monke.events.Events
 import me.arynxd.monke.handlers.*
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
+import me.arynxd.monke.objects.plugins.Plugins
 import me.arynxd.monke.util.parseUptime
 import me.arynxd.monke.util.plurifyLong
 import net.dv8tion.jda.api.JDA
@@ -24,6 +25,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import javax.security.auth.login.LoginException
 import kotlin.random.Random
@@ -34,8 +36,9 @@ fun main() {
 }
 
 class Monke : ListenerAdapter() {
-    val scheduler = Executors.newScheduledThreadPool(10)
+    val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(10)
     val handlers = Handlers(this)
+    val plugins = Plugins(this)
 
     init {
         handlers.enableHandlers()
@@ -109,6 +112,9 @@ class Monke : ListenerAdapter() {
 
         MessageAction.setDefaultMentionRepliedUser(false)
         MessageAction.setDefaultMentions(emptyList())
+
+        LOGGER.info("Loading plugins")
+        plugins.load()
     }
 
     private fun initGuilds() {
