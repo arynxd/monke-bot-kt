@@ -8,8 +8,6 @@ import me.arynxd.monke.util.SUCCESS_EMBED_COLOUR
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 import java.time.Instant
 
 class CommandReply(val event: CommandEvent) {
@@ -39,12 +37,14 @@ class CommandReply(val event: CommandEvent) {
 
     fun type(type: Type) {
         this.type = type
-        embed.setColor(when(type) {
-            Type.SUCCESS -> SUCCESS_EMBED_COLOUR
-            Type.EXCEPTION -> ERROR_EMBED_COLOUR
-            Type.INFORMATION -> DEFAULT_EMBED_COLOUR
-            else -> throw IllegalArgumentException("Type $type is invalid")
-        })
+        embed.setColor(
+            when (type) {
+                Type.SUCCESS -> SUCCESS_EMBED_COLOUR
+                Type.EXCEPTION -> ERROR_EMBED_COLOUR
+                Type.INFORMATION -> DEFAULT_EMBED_COLOUR
+                else -> throw IllegalArgumentException("Type $type is invalid")
+            }
+        )
     }
 
 

@@ -1,8 +1,6 @@
 package me.arynxd.monke.handlers
 
 import club.minnced.discord.webhook.WebhookClient
-import club.minnced.discord.webhook.WebhookClientBuilder
-import club.minnced.discord.webhook.send.WebhookEmbed
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import dev.minn.jda.ktx.Embed
@@ -26,12 +24,14 @@ class ExceptionHandler @JvmOverloads constructor(
     fun handle(throwable: Throwable, information: String = "null") {
         LOGGER.error("An uncaught exception has occurred: ($information)", throwable)
         val ex = throwable.stackTraceToString()
-        val embed = WebhookEmbedBuilder.fromJDA(Embed(
-            title = "An uncaught exception has occurred",
-            color = ERROR_EMBED_COLOUR.rgb,
-            description = ex.substring(0, ex.length.coerceAtMost(MessageEmbed.TEXT_MAX_LENGTH)),
-            timestamp = Instant.now(),
-        )).build()
+        val embed = WebhookEmbedBuilder.fromJDA(
+            Embed(
+                title = "An uncaught exception has occurred",
+                color = ERROR_EMBED_COLOUR.rgb,
+                description = ex.substring(0, ex.length.coerceAtMost(MessageEmbed.TEXT_MAX_LENGTH)),
+                timestamp = Instant.now(),
+            )
+        ).build()
 
         val message = WebhookMessageBuilder()
             .setAvatarUrl(avatarUrl)

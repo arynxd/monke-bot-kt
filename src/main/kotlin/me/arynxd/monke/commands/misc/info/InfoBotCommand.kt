@@ -35,7 +35,7 @@ class InfoBotCommand(parent: Command) : SubCommand(
             field(monkeVersion, MONKE_VERSION, true)
 
             field(threadCount, monke.getThreadCount().toString(), true)
-            field(memoryUsage, "${monke.getMemoryFormatted()} [ ${monke.getMemoryPercent()}% ]", true)
+            field(memoryUsage, monke.getMemoryFormatted(), true)
             field(cpuUsage, "${monke.getCPUUsage()}%", true)
 
             field(totalUsers, monke.getUserCount().toString(), true)

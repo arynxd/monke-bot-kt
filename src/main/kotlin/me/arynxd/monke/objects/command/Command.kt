@@ -138,7 +138,8 @@ abstract class Command(
 
         if (argResult.isMissing()) {
             val requiredCount = argResult.missingArguments.size
-            val missing = argResult.missingArguments.joinToString { "*${it.name}* -- ${it.description}\n" }
+            val missing =
+                argResult.missingArguments.joinToString(separator = "") { "*${it.name}* -- ${it.description}\n" }
 
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
@@ -161,7 +162,8 @@ abstract class Command(
 
         if (argResult.isInvalid()) {
             val invalidCount = argResult.invalidArguments.size
-            val invalid = argResult.invalidArguments.joinToString { "*${it.name}* -- ${it.description}\n" }
+            val invalid =
+                argResult.invalidArguments.joinToString(separator = "") { "*${it.name}* -- ${it.description}\n" }
 
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
@@ -170,7 +172,6 @@ abstract class Command(
                         language = language,
                         key = "command_error.invalid_args",
                         values = arrayOf(
-                            invalidCount,
                             plurifyInt(invalidCount),
                             invalid
                         )

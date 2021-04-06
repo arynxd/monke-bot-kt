@@ -187,10 +187,6 @@ class Monke : ListenerAdapter() {
         return (getTotalMemory() - getFreeMemory() shr 20).toString() + "MB / " + (getMaxMemory() shr 20) + "MB"
     }
 
-    fun getMemoryPercent(): String {
-        return ((getTotalMemory() - getFreeMemory()).toInt() / getMaxMemory() * 100).toString()
-    }
-
     fun getCPUUsage(): String {
         return DecimalFormat("#.##").format(ManagementFactory.getOperatingSystemMXBean().systemLoadAverage)
     }

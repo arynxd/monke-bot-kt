@@ -12,11 +12,11 @@ class Paginator(
     val message: Message,
     val pages: List<MessageEmbed>,
 ) {
-    var lastUsed = System.currentTimeMillis()
-
-    private var page = 0
     private val author = message.author
     private lateinit var sentMessage: Message
+    private var page = 0
+
+    var lastUsed = System.currentTimeMillis()
 
     suspend fun paginate() {
         if (pages.isEmpty()) {

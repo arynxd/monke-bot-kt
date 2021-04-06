@@ -386,6 +386,11 @@
       "response": {
         "cleared": "Cleared %0 message%1"
       }
+    },
+    "plugin": {
+      "name": "plugin",
+      "description": "Controls the currently running plugins.",
+      "aliases": ""
     }
   }
 }
