@@ -40,14 +40,14 @@ class Plugins(val monke: Monke) {
             val jarPath = file.path
             val pluginName = file.name.substring(0, file.name.length - ".jar".length)
 
-            LOGGER.info("Plugin - loading plugin $pluginName")
+            LOGGER.info("Plugin - loading plugin $pluginName.jar")
             val jarFile = JarFile(jarPath)
 
             jarFile.use { jar ->
                 val loadedMain = getMainClass(jar, jarPath)
 
                 if (loadedMain == null) {
-                    LOGGER.warn("Plugin - could not load config for plugin '$pluginName'")
+                    LOGGER.warn("Plugin - could not load config for plugin '$pluginName.jar'")
                     return@use
                 }
 
@@ -55,7 +55,7 @@ class Plugins(val monke: Monke) {
                 val mainClass = loadedMain.second
 
                 if (mainClass == null) {
-                    LOGGER.warn("Plugin - could not load main class for plugin '$pluginName' check the config and try again.")
+                    LOGGER.warn("Plugin - could not load main class for plugin '$pluginName.jar' check the config and try again.")
                     return@use
                 }
 
@@ -63,14 +63,14 @@ class Plugins(val monke: Monke) {
                 val constructor = constructors.find { it.parameters.isEmpty() }
 
                 if (constructors.isEmpty() || constructor == null) {
-                    LOGGER.warn("Plugin - no valid constructors found for plugin '$pluginName'")
+                    LOGGER.warn("Plugin - no valid constructors found for plugin '$pluginName.jar'")
                     return@use
                 }
 
                 val main = constructor.newInstance()
 
                 if (main !is IPlugin) {
-                    LOGGER.warn("Plugin - main class for plugin '$pluginName' was not valid")
+                    LOGGER.warn("Plugin - main class for plugin '$pluginName.jar' was not valid")
                     return@use
                 }
 
@@ -78,7 +78,7 @@ class Plugins(val monke: Monke) {
                     main.onEnable(monke)
                 } catch (exception: Exception) {
                     LOGGER.error(
-                        "Plugin - plugin '$pluginName' had an uncaught error at startup. Is it up to date? Current version: (${config.version})",
+                        "Plugin - plugin '$pluginName.jar' had an uncaught error at startup. Is it up to date? Current version: (${config.version})",
                         exception
                     )
                     main.onDisable()
@@ -91,7 +91,7 @@ class Plugins(val monke: Monke) {
                 }
 
                 plugins[config.name] = LoadedPlugin(main, config)
-                LOGGER.info("Plugin - loaded plugin $pluginName")
+                LOGGER.info("Plugin - loaded plugin $pluginName.jar (${config.name} ${config.version})")
             }
         }
     }
@@ -118,12 +118,11 @@ class Plugins(val monke: Monke) {
         val mainClassEntry = file.getJarEntry("plugin.json") ?: return null
 
         val config = try {
-            Json {
-                isLenient = true
-            }.decodeFromString<PluginConfig>(convertToString(file.getInputStream(mainClassEntry)))
-        } catch (exception: Exception) {
-            return null
-        }
+                Json { isLenient = true }.decodeFromString<PluginConfig>(convertToString(file.getInputStream(mainClassEntry)))
+            }
+            catch (exception: Exception) {
+                return null
+            }
 
         val classLoader = URLClassLoader(arrayOf(URL("jar:file:$jarPath!/")), javaClass.classLoader)
 
@@ -135,10 +134,11 @@ class Plugins(val monke: Monke) {
                     .replace('/', '.')
 
                 return try {
-                    Pair(config, classLoader.loadClass(loaderName))
-                } catch (exception: ClassNotFoundException) {
-                    null
-                }
+                        Pair(config, classLoader.loadClass(loaderName))
+                    }
+                    catch (exception: ClassNotFoundException) {
+                        null
+                    }
             }
         }
         return null
