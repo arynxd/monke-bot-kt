@@ -16,6 +16,7 @@ import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.markdownSanitize
 import java.lang.reflect.Constructor
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.LinkedHashMap
 import kotlin.reflect.KClass
 
@@ -30,7 +31,7 @@ class CommandHandler @JvmOverloads constructor(
     )
 ) : Handler() {
     private val classGraph: ClassGraph = ClassGraph().acceptPackages(COMMAND_PACKAGE)
-    val commandMap: LinkedHashMap<String, Command> by lazy { loadCommands() }
+    val commandMap: ConcurrentHashMap<String, Command> by lazy { loadCommands() }
 
     fun handle(event: GuildMessageEvent) {
         val prefix = monke.handlers.get(GuildDataHandler::class).getCache(event.guild.idLong).prefix
@@ -130,6 +131,7 @@ class CommandHandler @JvmOverloads constructor(
                     footer()
                     send()
                 }
+
                 event.monke.handlers
                     .get(ExceptionHandler::class)
                     .handle(exception, "From command '${event.command.name}'")
@@ -137,8 +139,8 @@ class CommandHandler @JvmOverloads constructor(
         }
     }
 
-    private fun loadCommands(): LinkedHashMap<String, Command> {
-        val commands: LinkedHashMap<String, Command> = LinkedHashMap()
+    private fun loadCommands(): ConcurrentHashMap<String, Command> {
+        val commands: ConcurrentHashMap<String, Command> = ConcurrentHashMap()
         classGraph.scan().use { result ->
             for (cls in result.allClasses) {
                 val constructors: Array<Constructor<*>> = cls.loadClass().declaredConstructors
@@ -147,7 +149,8 @@ class CommandHandler @JvmOverloads constructor(
                     continue
                 }
 
-                val instance: Any = constructors[0].newInstance()
+                val instance = constructors[0].newInstance()
+
                 if (instance is SubCommand) {
                     continue
                 }

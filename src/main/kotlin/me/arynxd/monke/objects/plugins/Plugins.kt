@@ -4,20 +4,21 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import me.arynxd.monke.Monke
+import me.arynxd.monke.handlers.ExceptionHandler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.util.convertToString
 import me.arynxd.plugin_api.IPlugin
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
+import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarFile
 
 class Plugins(val monke: Monke) {
-    private val plugins = mutableMapOf<String, LoadedPlugin>()
+    private val plugins = ConcurrentHashMap<String, LoadedPlugin>()
+    private val pluginsFolder = File("plugins")
 
     fun load() {
-        val pluginsFolder = File("plugins")
-
         if (!pluginsFolder.exists()) {
             LOGGER.info("Plugin - plugins folder did not exist, aborting plugin loading")
             pluginsFolder.mkdir()
@@ -44,56 +45,61 @@ class Plugins(val monke: Monke) {
             val jarFile = JarFile(jarPath)
 
             jarFile.use { jar ->
-                val loadedMain = getMainClass(jar, jarPath)
+                val pluginInfo = getPluginInfo(jar, jarPath)
 
-                if (loadedMain == null) {
-                    LOGGER.warn("Plugin - could not load config for plugin '$pluginName.jar'")
+                val config = pluginInfo.first
+                val mainClass = pluginInfo.second
+
+                if (config == null) {
+                    LOGGER.warn("Plugin - could not load config for plugin '$pluginName.jar' check the config and try again.")
                     return@use
                 }
-
-                val config = loadedMain.first
-                val mainClass = loadedMain.second
 
                 if (mainClass == null) {
                     LOGGER.warn("Plugin - could not load main class for plugin '$pluginName.jar' check the config and try again.")
                     return@use
                 }
 
-                val constructors = mainClass.constructors
-                val constructor = constructors.find { it.parameters.isEmpty() }
+                val constructor = mainClass.constructors.find { it.parameters.isEmpty() }
 
-                if (constructors.isEmpty() || constructor == null) {
+                if (constructor == null) {
                     LOGGER.warn("Plugin - no valid constructors found for plugin '$pluginName.jar'")
                     return@use
                 }
+                val mainClassInstance = constructor.newInstance()
 
-                val main = constructor.newInstance()
-
-                if (main !is IPlugin) {
-                    LOGGER.warn("Plugin - main class for plugin '$pluginName.jar' was not valid")
+                if (mainClassInstance !is IPlugin) {
+                    LOGGER.warn("Plugin - main class for plugin '$pluginName.jar' does not implement IPlugin")
                     return@use
                 }
 
-                try {
-                    main.onEnable(monke)
-                } catch (exception: Exception) {
-                    LOGGER.error(
-                        "Plugin - plugin '$pluginName.jar' had an uncaught error at startup. Is it up to date? Current version: (${config.version})",
-                        exception
-                    )
-                    main.onDisable()
-                    return@use
-                }
-
-                if (plugins.containsKey(config.name)) {
-                    LOGGER.warn("Duplicate plugin '${config.name}', skipping.")
-                    return@use
-                }
-
-                plugins[config.name] = LoadedPlugin(main, config)
-                LOGGER.info("Plugin - loaded plugin $pluginName.jar (${config.name} ${config.version})")
+                tryEnablePlugin(mainClassInstance, pluginName, config)
             }
         }
+    }
+
+    private fun tryEnablePlugin(plugin: IPlugin, fileName: String, config: PluginConfig) {
+        try {
+            plugin.onEnable(monke)
+        }
+        catch (exception: Exception) {
+            LOGGER.error(
+                "Plugin - plugin '$fileName.jar' had an uncaught error at startup. Is it up to date? Current version: (${config.version})",
+                exception
+            )
+            plugin.onDisable()
+            monke.handlers.get(ExceptionHandler::class)
+                .handle(exception, "A plugin had an uncaught exception")
+            return
+        }
+
+        if (plugins.containsKey(config.name)) {
+            LOGGER.warn("Duplicate plugin '${config.name}', skipping.")
+            return
+        }
+
+        plugins[config.name] = LoadedPlugin(plugin, config)
+        LOGGER.info("Plugin - loaded plugin $fileName.jar (${config.name} ${config.version})")
     }
 
     fun reload() {
@@ -113,15 +119,18 @@ class Plugins(val monke: Monke) {
 
     fun getByName(name: String) = plugins[name]
 
-    private fun getMainClass(file: JarFile, jarPath: String): Pair<PluginConfig, Class<*>?>? {
+    //Gets information about a given plugin (Config file and Main class)
+    //Returns null in both elements if the config file cannot be loaded
+    //Returns null in the second element if the main class cannot be loaded, but the config file loaded ok
+    private fun getPluginInfo(file: JarFile, jarPath: String): Pair<PluginConfig?, Class<*>?> {
         val entries = file.entries()
-        val mainClassEntry = file.getJarEntry("plugin.json") ?: return null
+        val mainClassEntry = file.getJarEntry("plugin.json") ?: return Pair(null, null)
 
         val config = try {
                 Json { isLenient = true }.decodeFromString<PluginConfig>(convertToString(file.getInputStream(mainClassEntry)))
             }
             catch (exception: Exception) {
-                return null
+                return Pair(null, null)
             }
 
         val classLoader = URLClassLoader(arrayOf(URL("jar:file:$jarPath!/")), javaClass.classLoader)
@@ -137,11 +146,11 @@ class Plugins(val monke: Monke) {
                         Pair(config, classLoader.loadClass(loaderName))
                     }
                     catch (exception: ClassNotFoundException) {
-                        null
+                        Pair(config, null)
                     }
             }
         }
-        return null
+        return Pair(config, null)
     }
 
     fun getPluginList(): String {

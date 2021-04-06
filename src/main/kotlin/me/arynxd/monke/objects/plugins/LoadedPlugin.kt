@@ -2,9 +2,8 @@ package me.arynxd.monke.objects.plugins
 
 import me.arynxd.plugin_api.IPlugin
 
-class LoadedPlugin(
+data class LoadedPlugin(
     val plugin: IPlugin,
-    val config: PluginConfig
-) {
-    var isEnabled = true
-}
+    val config: PluginConfig,
+    var isEnabled: Boolean = true
+)
