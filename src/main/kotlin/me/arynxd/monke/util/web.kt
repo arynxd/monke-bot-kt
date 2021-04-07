@@ -58,7 +58,7 @@ suspend fun getPosts(subreddit: String, monke: Monke): List<RedditPost> {
 fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
     val language = event.getLanguage()
     val error = TranslationHandler.getString(language, "command_error.nsfw_reddit_post")
-    if (!event.channel.isNSFW && (post.isNSFW() != true || post.isSpoiled() != true)) {
+    if (!event.channel.isNSFW && (post.isNSFW() != false || post.isSpoiled() != false)) {
         event.replyAsync {
             type(CommandReply.Type.EXCEPTION)
             title(error)
