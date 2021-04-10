@@ -1,3 +1,5 @@
+jdk:
+  - openjdk14
 install:
    - echo $(java -version)
    - ./gradlew shadowJar publishToMavenLocal
