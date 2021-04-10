@@ -1,5 +1,3 @@
-jdk:
-  - openjdk15
 install:
    - echo $(java -version)
    - ./gradlew shadowJar publishToMavenLocal
