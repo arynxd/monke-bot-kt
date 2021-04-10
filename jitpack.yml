@@ -1,4 +1,8 @@
 jdk:
-  - openjdk15
+  - adoptopenjdk15
+before_install:
+   - sdk install java 15-open
+   - sdk use java 15-open
 install:
+   - echo $(java -version)
    - ./gradlew shadowJar
