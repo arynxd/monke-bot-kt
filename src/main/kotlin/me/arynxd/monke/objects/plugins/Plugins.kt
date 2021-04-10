@@ -69,7 +69,7 @@ class Plugins(val monke: Monke) {
                 val mainClassInstance = constructor.newInstance()
 
                 if (mainClassInstance !is IPlugin) {
-                    LOGGER.warn("Plugin - main class for plugin '$pluginName.jar' does not implement IPlugin")
+                    LOGGER.warn("Plugin - main class for plugin '$pluginName.jar' does not implement me.arynxd.plugin_api.IPlugin")
                     return@use
                 }
 
