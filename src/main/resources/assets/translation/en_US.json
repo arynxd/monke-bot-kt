@@ -30,7 +30,8 @@
   },
   "cancel_reason": {
     "timeout": "%0 timed out.",
-    "bot_shutdown": "Bot was shutdown.",
+    "bot_shutdown": "Bot was shutdown."
+  },
   "command_error": {
     "disabled": "That command is disabled, please try again later.",
     "developer_only": "That command is for developers only.",
