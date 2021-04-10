@@ -1,0 +1,4 @@
+jdk:
+  - openjdk15
+install:
+   - ./gradlew clean shadowJar
