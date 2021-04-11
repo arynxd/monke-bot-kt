@@ -60,20 +60,21 @@ class Plugins(val monke: Monke) {
                     return@use
                 }
 
+                if (!IPlugin::class.java.isAssignableFrom(mainClass)) {
+                    LOGGER.warn("Plugin - main class for plugin '$pluginName.jar' does not implement IPlugin or a subtype of it.")
+                    return@use
+                }
+
                 val constructor = mainClass.constructors.find { it.parameters.isEmpty() }
 
                 if (constructor == null) {
-                    LOGGER.warn("Plugin - no valid constructors found for plugin '$pluginName.jar'")
-                    return@use
-                }
-                val mainClassInstance = constructor.newInstance()
-
-                if (mainClassInstance !is IPlugin) {
-                    LOGGER.warn("Plugin - main class for plugin '$pluginName.jar' does not implement me.arynxd.plugin_api.IPlugin")
+                    LOGGER.warn("Plugin - no empty constructors found for plugin '$pluginName.jar'")
                     return@use
                 }
 
-                tryEnablePlugin(mainClassInstance, pluginName, config)
+                val mainInstance = constructor.newInstance() as IPlugin
+
+                tryEnablePlugin(mainInstance, pluginName, config)
             }
         }
     }

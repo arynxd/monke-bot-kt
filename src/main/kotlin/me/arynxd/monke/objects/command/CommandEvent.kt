@@ -56,5 +56,5 @@ class CommandEvent(
 
     fun getLanguage(): Language = getDataCache().language
 
-    fun getDataCache(): GuildData = monke.handlers.get(GuildDataHandler::class).getCache(guildIdLong)
+    fun getDataCache(): GuildData = monke.handlers.get(GuildDataHandler::class).getData(guildIdLong)
 }

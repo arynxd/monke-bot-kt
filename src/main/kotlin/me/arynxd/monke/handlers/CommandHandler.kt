@@ -15,9 +15,7 @@ import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.markdownSanitize
 import java.lang.reflect.Constructor
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.LinkedHashMap
 import kotlin.reflect.KClass
 
 const val COMMAND_PACKAGE = "me.arynxd.monke.commands"
@@ -34,7 +32,7 @@ class CommandHandler @JvmOverloads constructor(
     val commandMap: ConcurrentHashMap<String, Command> by lazy { loadCommands() }
 
     fun handle(event: GuildMessageEvent) {
-        val prefix = monke.handlers.get(GuildDataHandler::class).getCache(event.guild.idLong).prefix
+        val prefix = monke.handlers.get(GuildDataHandler::class).getData(event.guild.idLong).prefix
 
         val contentRaw = event.message.contentRaw
 
@@ -61,7 +59,7 @@ class CommandHandler @JvmOverloads constructor(
         val command: Command? = commandMap[query]
 
         if (command == null) {
-            val language = monke.handlers.get(GuildDataHandler::class).getCache(event.guild.idLong).language
+            val language = monke.handlers.get(GuildDataHandler::class).getData(event.guild.idLong).language
             CommandReply.sendError(
                 message = event.message,
                 text = TranslationHandler.getString(
