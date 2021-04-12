@@ -7,7 +7,7 @@ import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.plurifyInt
 import net.dv8tion.jda.api.Permission
 
-abstract class Command(
+abstract class Command @JvmOverloads constructor(
     val name: String,
     val description: String,
     val category: CommandCategory,

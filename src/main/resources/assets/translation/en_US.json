@@ -394,6 +394,11 @@
       "name": "plugin",
       "description": "Controls the currently running plugins.",
       "aliases": ""
+    },
+    "TESTESTESTST": {
+      "name": "pain",
+      "description": "pain",
+      "aliases": "pain"
     }
   }
 }

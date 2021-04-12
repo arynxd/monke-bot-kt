@@ -15,7 +15,7 @@ class CommandReply(val event: CommandEvent) {
     private val mentions = mutableListOf<Message.MentionType>()
     private var type = Type.UNKNOWN
 
-    fun send(callback: ((Message) -> Unit) = { }) {
+    fun send(callback: ((Message) -> Unit)) {
         if (type == Type.UNKNOWN) {
             throw IllegalStateException("Type is not set")
         }
@@ -24,6 +24,10 @@ class CommandReply(val event: CommandEvent) {
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
             .queue(callback)
+    }
+
+    fun send() {
+        send {}
     }
 
     suspend fun await(): Message {

@@ -49,6 +49,7 @@ class ConfigHandler(
                     )
                 )
             )
+
             File(CONFIG_FILE_NAME).writeText(defaults)
         }
     }

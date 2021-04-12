@@ -15,7 +15,6 @@ import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.handlers.whenEnabled
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.markdownSanitize
-import java.lang.reflect.Constructor
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
@@ -29,7 +28,7 @@ class CommandHandler @JvmOverloads constructor(
         GuildDataHandler::class
     )
 ) : Handler() {
-    private val classGraph: ClassGraph = ClassGraph().acceptPackages(COMMAND_PACKAGE)
+    private val classGraph = ClassGraph().acceptPackages(COMMAND_PACKAGE)
     val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
 
     fun handle(event: GuildMessageEvent) {
@@ -37,7 +36,7 @@ class CommandHandler @JvmOverloads constructor(
 
         val contentRaw = event.message.contentRaw
 
-        val content: String = markdownSanitize(
+        val content = markdownSanitize(
             when {
                 isBotMention(event) -> contentRaw.substring(contentRaw.indexOf(char = '>') + 1, contentRaw.length)
 
@@ -49,15 +48,16 @@ class CommandHandler @JvmOverloads constructor(
             }
         ).replace(SUBSTITUTION_REGEX, "")
 
-        val args: MutableList<String> = content.split(Regex("\\s+")).toMutableList()
-        args.removeIf { it.isBlank() }
+        val args = content.split(Regex("\\s+"))
+            .filter { it.isNotBlank() }
+            .toMutableList()
 
         if (args.isEmpty()) {
             return
         }
 
-        val query: String = args.removeAt(0).toLowerCase()
-        val command: Command? = commandMap[query]
+        val query = args.removeAt(0).toLowerCase()
+        val command = commandMap[query]
 
         if (command == null) {
             val language = monke.handlers.get(GuildDataHandler::class).getData(event.guild.idLong).language
@@ -100,8 +100,8 @@ class CommandHandler @JvmOverloads constructor(
     }
 
     private fun isBotMention(event: GuildMessageEvent): Boolean {
-        val content: String = event.message.contentRaw
-        val id: Long = event.jda.selfUser.idLong
+        val content = event.message.contentRaw
+        val id = event.jda.selfUser.idLong
         return content.startsWith("<@$id>") || content.startsWith("<@!$id>")
     }
 
@@ -139,11 +139,32 @@ class CommandHandler @JvmOverloads constructor(
         }
     }
 
+    fun registerCommand(command: Command): Boolean {
+        return registerCommand(command, commandMap)
+    }
+
+    fun registerCommand(command: Command, map: ConcurrentHashMap<String, Command>): Boolean {
+        for (language in Language.getLanguages()) {
+            val name = command.getName(language).toLowerCase()
+            if (map.containsKey(name)) {
+                return false
+            }
+            map[name] = command
+            for (alias in command.aliases) {
+                if (map.containsKey(alias)) {
+                    return false
+                }
+                map[alias.toLowerCase()] = command
+            }
+        }
+        return true
+    }
+
     private fun loadCommands(): ConcurrentHashMap<String, Command> {
-        val commands: ConcurrentHashMap<String, Command> = ConcurrentHashMap()
-        classGraph.scan().use { result ->
-            for (cls in result.allClasses) {
-                val constructors: Array<Constructor<*>> = cls.loadClass().declaredConstructors
+        val commands = ConcurrentHashMap<String, Command> ()
+        classGraph.scan().use {
+            for (cls in it.allClasses) {
+                val constructors = cls.loadClass().declaredConstructors
 
                 if (constructors.isEmpty() || constructors[0].parameterCount > 0) {
                     continue
@@ -165,21 +186,13 @@ class CommandHandler @JvmOverloads constructor(
                     continue
                 }
 
-                if (commands.containsKey(instance.name)) {
+                if (!registerCommand(instance, commands)) {
                     LOGGER.warn(
                         TranslationHandler.getInternalString(
                             "internal_error.duplicate_command",
                             cls.simpleName
                         )
                     )
-                    continue
-                }
-
-                for (language in Language.getLanguages()) {
-                    commands[instance.getName(language).toLowerCase()] = instance
-                    for (alias in instance.aliases) {
-                        commands[alias.toLowerCase()] = instance
-                    }
                 }
             }
         }
