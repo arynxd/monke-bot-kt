@@ -29,4 +29,10 @@ class GuildDataHandler @JvmOverloads constructor(
                 onConflict { set(GUILDS.GUILD_ID, guildId) } //Do nothing
             }
     }
+
+    override fun onEnable() {
+        monke.jda.guilds.forEach {
+            initGuild(it.idLong)
+        }
+    }
 }

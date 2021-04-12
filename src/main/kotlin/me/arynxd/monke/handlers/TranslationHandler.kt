@@ -96,11 +96,11 @@ class TranslationHandler @JvmOverloads constructor(
 
             for (language in supportedLanguages) {
                 val json = try {
-                    DataObject.fromJson(convertToString(loadResource("assets/translation/$language.json")))
-                }
-                catch (exception: ParsingException) {
-                    throw TranslationException("Language $language is corrupt.")
-                }
+                        DataObject.fromJson(convertToString(loadResource("assets/translation/$language.json")))
+                    }
+                    catch (exception: ParsingException) {
+                        throw TranslationException("Language $language is corrupt.")
+                    }
                 result[Language.getLanguageByCode(language)] = TranslatedLanguage(json)
             }
 

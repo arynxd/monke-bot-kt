@@ -7,6 +7,7 @@ import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
+import me.arynxd.monke.objects.handlers.whenEnabled
 import me.arynxd.monke.util.ERROR_EMBED_COLOUR
 import net.dv8tion.jda.api.entities.MessageEmbed
 import java.time.Instant
@@ -17,8 +18,8 @@ class ExceptionHandler @JvmOverloads constructor(
     override val monke: Monke,
     override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
 ) : Handler() {
-    private val webhookUrl: String by lazy { monke.handlers.get(ConfigHandler::class).config.logWebhook }
-    private val avatarUrl: String by lazy { monke.jda.selfUser.effectiveAvatarUrl }
+    private val webhookUrl: String by whenEnabled { monke.handlers.get(ConfigHandler::class).config.logWebhook }
+    private val avatarUrl: String by whenEnabled { monke.jda.selfUser.effectiveAvatarUrl }
     private val webhookClient: WebhookClient by lazy { WebhookClient.withUrl(webhookUrl) }
 
     fun handle(throwable: Throwable, information: String = "null") {

@@ -12,6 +12,7 @@ import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.command.SubCommand
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
+import me.arynxd.monke.objects.handlers.whenEnabled
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.markdownSanitize
 import java.lang.reflect.Constructor
@@ -29,7 +30,7 @@ class CommandHandler @JvmOverloads constructor(
     )
 ) : Handler() {
     private val classGraph: ClassGraph = ClassGraph().acceptPackages(COMMAND_PACKAGE)
-    val commandMap: ConcurrentHashMap<String, Command> by lazy { loadCommands() }
+    val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
 
     fun handle(event: GuildMessageEvent) {
         val prefix = monke.handlers.get(GuildDataHandler::class).getData(event.guild.idLong).prefix

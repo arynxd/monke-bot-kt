@@ -6,6 +6,7 @@ import me.arynxd.monke.objects.exception.HandlerException
 import okhttp3.OkHttpClient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.lang.Exception
 import java.lang.reflect.Constructor
 import java.util.*
 import kotlin.reflect.KClass
@@ -20,12 +21,13 @@ class Handlers(val monke: Monke) {
     val handlers: Map<KClass<*>, Handler> = loadHandlers()
     val okHttpClient: OkHttpClient = OkHttpClient()
 
-    @Suppress("UNCHECKED_CAST")
     fun <T : Any> get(clazz: KClass<T>): T {
         if (!handlers.containsKey(clazz)) {
             throw HandlerException("Handler '${clazz.simpleName}' was not found.")
         }
-        return handlers[clazz] as T
+        @Suppress("UNCHECKED_CAST")
+        return handlers[clazz] as? T
+            ?: throw IllegalArgumentException("Class $clazz is not mapped to a valid handler")
     }
 
     private fun loadHandlers(): Map<KClass<*>, Handler> {
@@ -52,7 +54,7 @@ class Handlers(val monke: Monke) {
                     continue
                 }
 
-                val instance: Any = constructor.newInstance(monke)
+                val instance = constructor.newInstance(monke)
                 if (instance !is Handler) {
                     LOGGER.warn("Non Handler class ( ${cls.simpleName} ) found in handlers package!")
                     continue
@@ -79,7 +81,14 @@ class Handlers(val monke: Monke) {
             }
             if (enabled.containsAll(handler.dependencies)) {
                 enabled.add(handler::class)
-                handler.onEnable()
+                try {
+                    handler.loadProps()
+                    handler.onEnable()
+                }
+                catch (exception: Exception) {
+                    LOGGER.error("A handler had an uncaught exception whilst enabling", exception)
+                    exitProcess(1)
+                }
                 i = 0
                 continue
             }

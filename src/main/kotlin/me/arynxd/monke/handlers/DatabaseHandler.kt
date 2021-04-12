@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
+import me.arynxd.monke.objects.handlers.whenEnabled
 import me.arynxd.monke.util.convertToString
 import me.arynxd.monke.util.loadResource
 import org.ktorm.database.Database
@@ -19,7 +20,7 @@ class DatabaseHandler @JvmOverloads constructor(
         TranslationHandler::class
     )
 ) : Handler() {
-    private val pool: HikariDataSource by lazy { getHikari() }
+    private val pool: HikariDataSource by whenEnabled { getHikari() }
     val database: Database by lazy { getKtorm() }
 
     private fun getHikari(): HikariDataSource {
@@ -38,18 +39,18 @@ class DatabaseHandler @JvmOverloads constructor(
 
         hikariConfig.poolName = "DatabasePool"
 
-        try {
-            return HikariDataSource(hikariConfig)
-        }
-        catch (exception: Exception) {
-            LOGGER.error(
-                TranslationHandler.getInternalString(
-                    key = "internal_error.database_offline",
-                    values = arrayOf(exception)
+        return try {
+                HikariDataSource(hikariConfig)
+            }
+            catch (exception: IllegalArgumentException) {
+                LOGGER.error(
+                    TranslationHandler.getInternalString(
+                        key = "internal_error.database_offline",
+                        values = arrayOf(exception)
+                    )
                 )
-            )
-            exitProcess(1)
-        }
+                exitProcess(1)
+            }
     }
 
     override fun onEnable() {

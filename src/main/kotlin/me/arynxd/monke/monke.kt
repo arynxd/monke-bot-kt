@@ -3,6 +3,7 @@ package me.arynxd.monke
 import dev.minn.jda.ktx.injectKTX
 import me.arynxd.monke.events.Events
 import me.arynxd.monke.handlers.*
+import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.plugins.Plugins
@@ -40,11 +41,7 @@ class Monke : ListenerAdapter() {
     val handlers = Handlers(this)
     val plugins = Plugins(this)
 
-    init {
-        handlers.enableHandlers()
-    }
-
-    val jda: JDA = build()
+    val jda = build()
 
     private fun build(): JDA {
         try {
@@ -65,8 +62,6 @@ class Monke : ListenerAdapter() {
                     CacheFlag.ROLE_TAGS,
                     CacheFlag.MEMBER_OVERRIDES
                 )
-
-                .injectKTX()
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .setHttpClient(handlers.okHttpClient)
                 .addEventListeners(
@@ -92,8 +87,18 @@ class Monke : ListenerAdapter() {
     }
 
     override fun onReady(event: ReadyEvent) {
-        initGuilds()
+        LOGGER.info("Loading handlers")
+        handlers.enableHandlers()
         initTasks()
+
+        handlers.get(MetricsHandler::class).guildCount.set(getGuildCount().toDouble())
+        handlers.get(MetricsHandler::class).userCount.set(getUserCount().toDouble())
+
+        MessageAction.setDefaultMentionRepliedUser(false)
+        MessageAction.setDefaultMentions(emptyList())
+
+        LOGGER.info("Loading plugins")
+        plugins.load()
 
         LOGGER.info(
             """
@@ -108,19 +113,6 @@ class Monke : ListenerAdapter() {
                         ${handlers.get(ConfigHandler::class).config.api.website}
         """.trimIndent()
         )
-
-        handlers.get(MetricsHandler::class).guildCount.set(getGuildCount().toDouble())
-        handlers.get(MetricsHandler::class).userCount.set(getUserCount().toDouble())
-
-        MessageAction.setDefaultMentionRepliedUser(false)
-        MessageAction.setDefaultMentions(emptyList())
-
-        LOGGER.info("Loading plugins")
-        plugins.load()
-    }
-
-    private fun initGuilds() {
-        jda.guildCache.forEach { handlers.get(GuildDataHandler::class).initGuild(it.idLong) }
     }
 
     private fun initTasks() {

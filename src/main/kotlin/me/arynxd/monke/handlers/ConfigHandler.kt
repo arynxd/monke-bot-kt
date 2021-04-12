@@ -16,7 +16,7 @@ class ConfigHandler(
     override val monke: Monke,
 ) : Handler() {
     private val formatter = Json { prettyPrint = true; isLenient = true }
-    val config: ConfigFile by lazy { loadFile() }
+    val config = loadFile()
 
     private fun initFile() {
         val configFile = File(CONFIG_FILE_NAME)
