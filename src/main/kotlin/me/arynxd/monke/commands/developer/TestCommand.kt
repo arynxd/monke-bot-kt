@@ -80,7 +80,8 @@ class TestCommand : Command(
                     send()
                 }
             }
-        } catch (exception: TimeoutCancellationException) {
+        }
+        catch (exception: TimeoutCancellationException) {
             event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(

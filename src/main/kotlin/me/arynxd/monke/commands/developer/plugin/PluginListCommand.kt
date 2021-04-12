@@ -1,7 +1,6 @@
 package me.arynxd.monke.commands.developer.plugin
 
 import me.arynxd.monke.objects.command.*
-import java.util.*
 
 class PluginListCommand(parent: Command) : SubCommand(
     name = "enable",

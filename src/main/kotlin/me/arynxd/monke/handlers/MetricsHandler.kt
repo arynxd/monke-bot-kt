@@ -89,7 +89,8 @@ class MetricsHandler @JvmOverloads constructor(
 
         try {
             HTTPServer(port)
-        } catch (exception: IOException) {
+        }
+        catch (exception: IOException) {
             LOGGER.error("MetricsHandler offline.", exception)
         }
     }

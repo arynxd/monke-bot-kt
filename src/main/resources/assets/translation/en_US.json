@@ -15,7 +15,6 @@
   "music": {
     "channel_left": "I left %0.",
     "not_in_channel": "I'm not in a voice channel currently.",
-
     "adding_to_queue": "Adding to queue %0.",
     "first_track_of": " (first track of playlist %0)",
     "nothing_found": "Nothing found by %0.",

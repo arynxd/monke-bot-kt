@@ -56,7 +56,8 @@ class ConfigHandler(
     private fun loadFile(): ConfigFile {
         try {
             return Json.decodeFromString(File(CONFIG_FILE_NAME).readLines().joinToString(separator = "\n"))
-        } catch (exception: Exception) {
+        }
+        catch (exception: Exception) {
             // This cannot be translated since.. the language comes from the config file
             LOGGER.error("Something went wrong with the JSON file, please ensure it is correct.", exception)
             exitProcess(1)

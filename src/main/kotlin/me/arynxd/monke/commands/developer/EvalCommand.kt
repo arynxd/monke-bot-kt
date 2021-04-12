@@ -137,7 +137,8 @@ class EvalCommand : Command(
         val out =
             try {
                 engine.eval(code)
-            } catch (exception: Exception) {
+            }
+            catch (exception: Exception) {
                 val st = exception.stackTraceToString()
                 successful = false
                 if (st.length > MessageEmbed.VALUE_MAX_LENGTH) {
@@ -156,7 +157,8 @@ class EvalCommand : Command(
             is RestAction<*> ->
                 try {
                     out.await().toString()
-                } catch (exception: ErrorResponseException) {
+                }
+                catch (exception: ErrorResponseException) {
                     successful = false
                     val st = exception.stackTraceToString()
                     if (st.length > MessageEmbed.VALUE_MAX_LENGTH) {

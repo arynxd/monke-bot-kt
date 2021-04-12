@@ -40,7 +40,8 @@ class DatabaseHandler @JvmOverloads constructor(
 
         try {
             return HikariDataSource(hikariConfig)
-        } catch (exception: Exception) {
+        }
+        catch (exception: Exception) {
             LOGGER.error(
                 TranslationHandler.getInternalString(
                     key = "internal_error.database_offline",

@@ -19,6 +19,7 @@ class CommandReply(val event: CommandEvent) {
         if (type == Type.UNKNOWN) {
             throw IllegalStateException("Type is not set")
         }
+
         event.message.reply(embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
@@ -29,6 +30,7 @@ class CommandReply(val event: CommandEvent) {
         if (type == Type.UNKNOWN) {
             throw IllegalStateException("Type is not set")
         }
+
         return event.message.reply(embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
@@ -47,68 +49,35 @@ class CommandReply(val event: CommandEvent) {
         )
     }
 
-
-    fun field(title: String?, description: String?, inline: Boolean) {
+    fun field(title: String?, description: String?, inline: Boolean) =
         embed.addField(
-            title?.substring(0, title.length.coerceAtMost(MessageEmbed.TITLE_MAX_LENGTH)),
-            description?.substring(0, description.length.coerceAtMost(MessageEmbed.VALUE_MAX_LENGTH)),
+            title?.take(MessageEmbed.TITLE_MAX_LENGTH),
+            description?.take(MessageEmbed.VALUE_MAX_LENGTH),
             inline
         )
-    }
 
-    fun fields(fields: Collection<MessageEmbed.Field>) {
-        fields.forEach { field(it.name, it.value, it.isInline) }
-    }
+    fun fields(fields: Collection<MessageEmbed.Field>) = fields.forEach { field(it.name, it.value, it.isInline) }
 
-    fun blankField(inline: Boolean) {
-        embed.addBlankField(inline)
-    }
+    fun blankField(inline: Boolean) = embed.addBlankField(inline)
 
-    fun title(title: String?) {
-        if (title == null) {
-            embed.setTitle(title)
-            return
-        }
-        embed.setTitle(title.subSequence(0, title.length.coerceAtMost(MessageEmbed.TITLE_MAX_LENGTH)).toString())
-    }
+    fun title(title: String?) = embed.setTitle(title?.take(MessageEmbed.TITLE_MAX_LENGTH))
 
-    fun description(description: String?) {
-        if (description == null) {
-            embed.setDescription(description)
-            return
-        }
-        embed.setDescription(description.subSequence(0, description.length.coerceAtMost(MessageEmbed.TEXT_MAX_LENGTH)))
-    }
+    fun description(description: String?) = embed.setDescription(description?.take(MessageEmbed.TEXT_MAX_LENGTH))
 
-    fun timestamp() {
-        embed.setTimestamp(Instant.now())
-    }
+    fun timestamp(time: Instant = Instant.now()) = embed.setTimestamp(time)
 
-    fun footer(text: String = event.user.asTag, url: String = event.user.effectiveAvatarUrl) {
-        embed.setFooter(text.substring(0, text.length.coerceAtMost(MessageEmbed.TEXT_MAX_LENGTH)), url)
-    }
+    fun footer(text: String = event.user.asTag, url: String = event.user.effectiveAvatarUrl) =
+        embed.setFooter(text.take(MessageEmbed.TEXT_MAX_LENGTH), url)
 
-    fun thumbnail(url: String?) {
-        embed.setThumbnail(url)
-    }
+    fun thumbnail(url: String?) = embed.setThumbnail(url)
 
-    fun image(url: String?) {
-        embed.setImage(url)
-    }
+    fun image(url: String?) = embed.setImage(url)
 
-    fun image(url: String?, size: Int?) {
-        embed.setImage("$url?size=$size")
-    }
+    fun image(url: String?, size: Int?) = embed.setImage("$url?size=$size")
 
-    fun mentions(vararg mentions: Message.MentionType) {
-        this.mentions.addAll(mentions)
-    }
+    fun mentions(vararg mentions: Message.MentionType) = this.mentions.addAll(mentions)
 
-    fun chunks(parts: List<Any>) {
-        for (part in parts) {
-            event.channel.sendMessage(part.toString()).queue()
-        }
-    }
+    fun chunks(parts: List<Any>) = parts.forEach { event.channel.sendMessage(it.toString()).queue() }
 
     fun build() = embed.build()
 

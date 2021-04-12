@@ -70,7 +70,8 @@ class GoogleCommand : Command(
                 send()
             }
 
-        } catch (exception: Exception) {
+        }
+        catch (exception: Exception) {
             val error = TranslationHandler.getString(language, "internal_error.web_service_error", "Google")
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)

@@ -27,7 +27,8 @@ class ArgumentUser(
         if (memberId != null) { //ID
             return try {
                 event.jda.retrieveUserById(memberId).await()
-            } catch (exception: ErrorResponseException) {
+            }
+            catch (exception: ErrorResponseException) {
                 return null
             }
         }

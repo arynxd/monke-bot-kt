@@ -11,7 +11,8 @@ import java.net.URL
 fun loadResource(fileName: String): InputStream {
     return try {
         Monke::class.java.classLoader.getResourceAsStream(fileName) ?: InputStream.nullInputStream()
-    } catch (exception: IOException) {
+    }
+    catch (exception: IOException) {
         InputStream.nullInputStream()
     }
 }
@@ -39,7 +40,8 @@ fun getIcon(url: URL): Icon? {
         url.openStream().use {
             Icon.from(it)
         }
-    } catch (exception: IOException) {
+    }
+    catch (exception: IOException) {
         return null
     }
 }

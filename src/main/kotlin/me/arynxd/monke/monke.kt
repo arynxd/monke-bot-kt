@@ -79,11 +79,13 @@ class Monke : ListenerAdapter() {
                     handlers.handlers.values.forEach { jda.addEventListeners(it) }
                 }.build()
 
-        } catch (exception: LoginException) {
+        }
+        catch (exception: LoginException) {
             LOGGER.error(TranslationHandler.getInternalString("internal_error.invalid_login"))
             exitProcess(1)
 
-        } catch (exception: IllegalArgumentException) {
+        }
+        catch (exception: IllegalArgumentException) {
             LOGGER.error(TranslationHandler.getInternalString("internal_error.invalid_build"))
             exitProcess(1)
         }

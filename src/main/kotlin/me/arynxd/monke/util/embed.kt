@@ -33,7 +33,8 @@ suspend fun awaitConfirmation(message: Message, user: User, monke: Monke): Boole
                 else -> null
             }
         }
-    } catch (exception: TimeoutCancellationException) {
+    }
+    catch (exception: TimeoutCancellationException) {
         null
     }
 }

@@ -128,11 +128,13 @@ class Plugins(val monke: Monke) {
         val mainClassEntry = file.getJarEntry("plugin.json") ?: return Pair(null, null)
 
         val config = try {
-                Json { isLenient = true }.decodeFromString<PluginConfig>(convertToString(file.getInputStream(mainClassEntry)))
-            }
-            catch (exception: Exception) {
-                return Pair(null, null)
-            }
+            Json {
+                isLenient = true
+            }.decodeFromString<PluginConfig>(convertToString(file.getInputStream(mainClassEntry)))
+        }
+        catch (exception: Exception) {
+            return Pair(null, null)
+        }
 
         val classLoader = URLClassLoader(arrayOf(URL("jar:file:$jarPath!/")), javaClass.classLoader)
 
@@ -144,11 +146,11 @@ class Plugins(val monke: Monke) {
                     .replace('/', '.')
 
                 return try {
-                        Pair(config, classLoader.loadClass(loaderName))
-                    }
-                    catch (exception: ClassNotFoundException) {
-                        Pair(config, null)
-                    }
+                    Pair(config, classLoader.loadClass(loaderName))
+                }
+                catch (exception: ClassNotFoundException) {
+                    Pair(config, null)
+                }
             }
         }
         return Pair(config, null)

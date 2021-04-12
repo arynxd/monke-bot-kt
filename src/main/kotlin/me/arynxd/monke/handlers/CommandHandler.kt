@@ -122,7 +122,8 @@ class CommandHandler @JvmOverloads constructor(
                 withTimeout(5000) { //5 Seconds
                     command.run(event)
                 }
-            } catch (exception: Exception) {
+            }
+            catch (exception: Exception) {
                 event.reply {
                     type(CommandReply.Type.EXCEPTION)
                     title("Something went wrong whilst executing that command. Please report this to the devs!")

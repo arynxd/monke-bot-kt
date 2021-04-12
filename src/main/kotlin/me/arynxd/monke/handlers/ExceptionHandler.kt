@@ -28,7 +28,7 @@ class ExceptionHandler @JvmOverloads constructor(
             Embed(
                 title = "An uncaught exception has occurred",
                 color = ERROR_EMBED_COLOUR.rgb,
-                description = ex.substring(0, ex.length.coerceAtMost(MessageEmbed.TEXT_MAX_LENGTH)),
+                description = ex.take(MessageEmbed.TEXT_MAX_LENGTH),
                 timestamp = Instant.now(),
             )
         ).build()
