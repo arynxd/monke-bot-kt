@@ -18,7 +18,7 @@ class Plugins(val monke: Monke) {
     private val plugins = ConcurrentHashMap<String, LoadedPlugin>()
     private val pluginsFolder = File("plugins")
 
-    fun load() {
+    fun loadPlugins() {
         if (!pluginsFolder.exists()) {
             LOGGER.info("Plugin - plugins folder did not exist, aborting plugin loading")
             pluginsFolder.mkdir()
@@ -74,12 +74,12 @@ class Plugins(val monke: Monke) {
 
                 val mainInstance = constructor.newInstance() as IPlugin
 
-                tryEnablePlugin(mainInstance, pluginName, config)
+                tryEnablePlugin(mainInstance, config, pluginName)
             }
         }
     }
 
-    private fun tryEnablePlugin(plugin: IPlugin, fileName: String, config: PluginConfig) {
+    private fun tryEnablePlugin(plugin: IPlugin, config: PluginConfig, fileName: String) {
         try {
             plugin.onEnable(monke)
         }
@@ -105,12 +105,12 @@ class Plugins(val monke: Monke) {
 
     fun reload() {
         LOGGER.info("Plugin - reloading all plugins")
-        disable()
-        plugins.clear()
-        load()
+        disablePlugins()
+        plugins.clear() //Drop all references to the plugin classes to avoid leaks
+        loadPlugins()
     }
 
-    fun disable() {
+    fun disablePlugins() {
         plugins.forEach {
             LOGGER.info("Plugin - disabling plugin ${it.key}")
             it.value.plugin.onDisable()
@@ -126,11 +126,10 @@ class Plugins(val monke: Monke) {
     private fun getPluginInfo(file: JarFile, jarPath: String): Pair<PluginConfig?, Class<*>?> {
         val entries = file.entries()
         val mainClassEntry = file.getJarEntry("plugin.json") ?: return Pair(null, null)
+        val parser = Json { isLenient = true }
 
         val config = try {
-            Json {
-                isLenient = true
-            }.decodeFromString<PluginConfig>(convertToString(file.getInputStream(mainClassEntry)))
+            parser.decodeFromString<PluginConfig>(convertToString(file.getInputStream(mainClassEntry)))
         }
         catch (exception: Exception) {
             return Pair(null, null)
@@ -142,8 +141,8 @@ class Plugins(val monke: Monke) {
             val entry = entries.nextElement()
             if (entry.realName == config.mainClass) {
                 val loaderName = entry.name
-                    .substring(0, config.mainClass.length - 6)
-                    .replace('/', '.')
+                    .substring(0, config.mainClass.length - 6) //Remove the .class extension
+                    .replace('/', '.') //Form it into a usable path
 
                 return try {
                     Pair(config, classLoader.loadClass(loaderName))

@@ -134,7 +134,6 @@ class MetricsHandler @JvmOverloads constructor(
         return monke.handlers.get(ConfigHandler::class)
             .config
             .prometheus
-            .port.toIntOrNull() ?:
-                throw HandlerException("Prometheus port was not a number.")
+            .port.toIntOrNull() ?: throw HandlerException("Prometheus port was not a number.")
     }
 }

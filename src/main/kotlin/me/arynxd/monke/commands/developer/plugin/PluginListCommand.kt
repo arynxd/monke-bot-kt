@@ -14,7 +14,8 @@ class PluginListCommand(parent: Command) : SubCommand(
             val plugins = event.monke.plugins.getPluginList().let {
                 if (it.isBlank()) {
                     return@let "No plugins loaded"
-                } else {
+                }
+                else {
                     return@let it
                 }
             }

@@ -27,7 +27,7 @@ class InfoUserCommand(parent: Command) : SubCommand(
 ) {
 
     override suspend fun run(event: CommandEvent) {
-        val member = if (event.isArgumentPresent(0)) event.getArgument(0) else event.member
+        val member = event.getArgument(0, event.member)
 
         val language = event.getLanguage()
 

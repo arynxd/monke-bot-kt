@@ -51,6 +51,8 @@ class RandomNumberCommand : Command(
                         key = "command.rng.response.lower_>_upper"
                     )
                 )
+                footer()
+                send()
             }
             return
         }

@@ -25,7 +25,7 @@ class ShutdownCommand : Command(
         }
 
         event.monke.handlers.disableHandlers()
-        event.monke.plugins.disable()
+        event.monke.plugins.disablePlugins()
         event.jda.shutdownNow()
         exitProcess(0)
     }

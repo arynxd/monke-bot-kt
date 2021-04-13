@@ -25,14 +25,14 @@ abstract class Handler : ListenerAdapter() {
 
     private fun <T> getDelegate(prop: KProperty<T>): Any? {
         return try {
-                javaClass.getDeclaredField("${prop.name}\$delegate").let {
-                    it.isAccessible = true
-                    it.get(this)
-                }
+            javaClass.getDeclaredField("${prop.name}\$delegate").let {
+                it.isAccessible = true
+                it.get(this)
             }
-            catch (exception: NoSuchFieldException) {
-                null
-            }
+        }
+        catch (exception: NoSuchFieldException) {
+            null
+        }
     }
 
     abstract val monke: Monke

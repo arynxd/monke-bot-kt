@@ -100,7 +100,8 @@ class HelpCommand : Command(
             if (command is SubCommand) {
                 "*${usage}:* \n $prefix$name ${command.arguments.getArgumentsList(language, command)} \n\n " +
                         if (command.hasArguments()) command.arguments.getArgumentsString(language, command) else ""
-            } else {
+            }
+            else {
                 "*${usage}:* \n $prefix$name ${command.arguments.getArgumentsList(language, command)} \n\n " +
                         if (command.hasArguments()) command.arguments.getArgumentsString(language, command) else ""
             }

@@ -1,9 +1,7 @@
 package me.arynxd.monke
 
-import dev.minn.jda.ktx.injectKTX
 import me.arynxd.monke.events.Events
 import me.arynxd.monke.handlers.*
-import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.plugins.Plugins
@@ -98,7 +96,7 @@ class Monke : ListenerAdapter() {
         MessageAction.setDefaultMentions(emptyList())
 
         LOGGER.info("Loading plugins")
-        plugins.load()
+        plugins.loadPlugins()
 
         LOGGER.info(
             """

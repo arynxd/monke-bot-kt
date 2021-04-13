@@ -19,8 +19,11 @@ class PingCommand : Command(
         event.reply {
             type(CommandReply.Type.SUCCESS)
             title("Pong!")
-            val description = "**REST Ping**: ${event.jda.restPing.await()}ms\n\n" +
-                    "**Gateway Ping**: ${event.jda.gatewayPing}ms"
+
+            val description =
+                "**REST Ping**: ${event.jda.restPing.await()}ms\n\n" +
+                "**Gateway Ping**: ${event.jda.gatewayPing}ms"
+
             description(description)
             footer()
             var time = System.currentTimeMillis()

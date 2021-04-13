@@ -40,17 +40,17 @@ class DatabaseHandler @JvmOverloads constructor(
         hikariConfig.poolName = "DatabasePool"
 
         return try {
-                HikariDataSource(hikariConfig)
-            }
-            catch (exception: IllegalArgumentException) {
-                LOGGER.error(
-                    TranslationHandler.getInternalString(
-                        key = "internal_error.database_offline",
-                        values = arrayOf(exception)
-                    )
+            HikariDataSource(hikariConfig)
+        }
+        catch (exception: IllegalArgumentException) {
+            LOGGER.error(
+                TranslationHandler.getInternalString(
+                    key = "internal_error.database_offline",
+                    values = arrayOf(exception)
                 )
-                exitProcess(1)
-            }
+            )
+            exitProcess(1)
+        }
     }
 
     override fun onEnable() {

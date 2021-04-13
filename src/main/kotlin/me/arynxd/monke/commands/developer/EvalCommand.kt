@@ -106,7 +106,8 @@ class EvalCommand : Command(
             description =
             if (script.length > MessageEmbed.VALUE_MAX_LENGTH) {
                 postBin(script, client) ?: "Something went wrong whilst uploading the code"
-            } else {
+            }
+            else {
                 "```kt\n$script```"
             },
             inline = false
@@ -121,7 +122,8 @@ class EvalCommand : Command(
                 inline = false
             )
 
-        } else {
+        }
+        else {
             reply.type(CommandReply.Type.EXCEPTION)
             reply.field(
                 title = TranslationHandler.getString(language, "command.eval.keyword.error"),
@@ -143,7 +145,8 @@ class EvalCommand : Command(
                 successful = false
                 if (st.length > MessageEmbed.VALUE_MAX_LENGTH) {
                     postBin(st, client) ?: "Something went wrong whilst uploading the stacktrace"
-                } else {
+                }
+                else {
                     st
                 }
 
@@ -153,17 +156,17 @@ class EvalCommand : Command(
             null -> {
                 "Null"
             }
-
             is RestAction<*> ->
                 try {
-                    out.await().toString()
+                    out.await()?.toString() ?: "Null"
                 }
                 catch (exception: ErrorResponseException) {
                     successful = false
                     val st = exception.stackTraceToString()
                     if (st.length > MessageEmbed.VALUE_MAX_LENGTH) {
                         postBin(st, client) ?: "Something went wrong whilst uploading the stacktrace"
-                    } else {
+                    }
+                    else {
                         st
                     }
                 }
@@ -175,10 +178,12 @@ class EvalCommand : Command(
                         language = language,
                         key = "command.eval.keyword.no_error"
                     )
-                } else {
+                }
+                else {
                     if (o.length > MessageEmbed.VALUE_MAX_LENGTH) {
                         postBin(o, client) ?: "Something went wrong whilst uploading the result"
-                    } else {
+                    }
+                    else {
                         o
                     }
                 }

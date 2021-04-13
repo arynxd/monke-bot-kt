@@ -21,8 +21,10 @@ class WikipediaPage(val dataObject: DataObject) {
     fun getThumbnail(): String? = if (dataObject.hasKey("thumbnail")) {
         if (dataObject.getObject("thumbnail")
                 .hasKey("source")
-        ) dataObject.getObject("thumbnail").getString("source") else null
-    } else null
+        ) dataObject.getObject("thumbnail").getString("source")
+        else null
+    }
+    else null
 
     enum class PageType(val param: String) {
         DISAMBIGUATION("disambiguation"),

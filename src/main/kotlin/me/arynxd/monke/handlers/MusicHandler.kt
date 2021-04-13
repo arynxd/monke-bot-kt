@@ -33,7 +33,6 @@ class MusicHandler constructor(
 
         val guildId: Long = guild.idLong
         return lock.withLock {
-
             val musicManager =
                 musicManagers[guildId] ?: GuildMusicManager(
                     channel = channel,

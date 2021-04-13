@@ -1,6 +1,5 @@
 package me.arynxd.monke.handlers
 
-import io.github.classgraph.ClassGraph
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
@@ -15,6 +14,8 @@ import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.handlers.whenEnabled
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.markdownSanitize
+import org.reflections.Reflections
+import org.reflections.scanners.SubTypesScanner
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
@@ -28,7 +29,7 @@ class CommandHandler @JvmOverloads constructor(
         GuildDataHandler::class
     )
 ) : Handler() {
-    private val classGraph = ClassGraph().acceptPackages(COMMAND_PACKAGE)
+    private val reflections = Reflections(COMMAND_PACKAGE, SubTypesScanner())
     val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
 
     fun handle(event: GuildMessageEvent) {
@@ -161,39 +162,38 @@ class CommandHandler @JvmOverloads constructor(
     }
 
     private fun loadCommands(): ConcurrentHashMap<String, Command> {
-        val commands = ConcurrentHashMap<String, Command> ()
-        classGraph.scan().use {
-            for (cls in it.allClasses) {
-                val constructors = cls.loadClass().declaredConstructors
+        val commands = ConcurrentHashMap<String, Command>()
+        val classes = reflections.getSubTypesOf(Command::class.java)
+        for (cls in classes) {
+            val constructors = cls.constructors
 
-                if (constructors.isEmpty() || constructors[0].parameterCount > 0) {
-                    continue
-                }
+            if (constructors.isEmpty() || constructors[0].parameterCount > 0) {
+                continue
+            }
 
-                val instance = constructors[0].newInstance()
+            val instance = constructors[0].newInstance()
 
-                if (instance is SubCommand) {
-                    continue
-                }
+            if (instance is SubCommand) {
+                continue
+            }
 
-                if (instance !is Command) {
-                    LOGGER.warn(
-                        TranslationHandler.getInternalString(
-                            "internal_error.non_command_class",
-                            cls.simpleName
-                        )
+            if (instance !is Command) {
+                LOGGER.warn(
+                    TranslationHandler.getInternalString(
+                        "internal_error.non_command_class",
+                        cls.simpleName
                     )
-                    continue
-                }
+                )
+                continue
+            }
 
-                if (!registerCommand(instance, commands)) {
-                    LOGGER.warn(
-                        TranslationHandler.getInternalString(
-                            "internal_error.duplicate_command",
-                            cls.simpleName
-                        )
+            if (!registerCommand(instance, commands)) {
+                LOGGER.warn(
+                    TranslationHandler.getInternalString(
+                        "internal_error.duplicate_command",
+                        cls.simpleName
                     )
-                }
+                )
             }
         }
         return commands

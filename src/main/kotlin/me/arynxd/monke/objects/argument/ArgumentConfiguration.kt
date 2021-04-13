@@ -58,7 +58,8 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
                 val result = pair.second.verify(pair.first, event)
                 if (result == null) {
                     invalidArguments.add(pair.second)
-                } else {
+                }
+                else {
                     validArguments.add(result)
                 }
             }
@@ -69,7 +70,8 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
                 val result = pair.second.verify(pair.first, event)
                 if (result == null) {
                     invalidArguments.add(pair.second)
-                } else {
+                }
+                else {
                     validArguments.add(result)
                 }
             }
@@ -79,7 +81,8 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
 
                 if (result == null) {
                     invalidArguments.add(expected[varargIndex])
-                } else {
+                }
+                else {
                     validArguments.add(result)
                 }
             }
