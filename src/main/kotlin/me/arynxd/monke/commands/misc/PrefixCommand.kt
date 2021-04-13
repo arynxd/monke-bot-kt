@@ -71,6 +71,7 @@ class PrefixCommand : Command(
                     values = arrayOf(prefix)
                 )
             )
+            send()
             cache.prefix = prefix
         }
     }

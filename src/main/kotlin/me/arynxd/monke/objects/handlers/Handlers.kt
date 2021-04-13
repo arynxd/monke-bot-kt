@@ -36,8 +36,9 @@ class Handlers(val monke: Monke) {
         val classes = reflections.getSubTypesOf(Handler::class.java)
 
         for (cls in classes) {
-            val constructor =
-                cls.constructors.firstOrNull { it.parameterCount == 1 && it.parameters[0].type == Monke::class.java }
+            val constructor = cls
+                .constructors
+                .firstOrNull { it.parameterCount == 1 && it.parameters[0].type == Monke::class.java }
 
             // These cannot be translated because the TranslationHandler has not been loaded yet
             if (constructor == null) {
