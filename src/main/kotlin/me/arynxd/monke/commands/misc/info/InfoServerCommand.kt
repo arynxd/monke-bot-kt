@@ -1,40 +1,36 @@
 package me.arynxd.monke.commands.misc.info
 
-import dev.minn.jda.ktx.Embed
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentServer
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.SubCommand
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.parseDateTime
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.MessageEmbed
 
 @Suppress("UNUSED")
 class InfoServerCommand(parent: Command) : SubCommand(
     name = "server",
     description = "Shows information about a server.",
     category = CommandCategory.MISC,
+    flags = listOf(CommandFlag.ASYNC),
     parent = parent,
 
     arguments = ArgumentConfiguration(
         listOf(
             ArgumentServer(
                 name = "server",
-                description = "The server to show information for or 'this' for the current server.",
-                required = true,
+                description = "The server to show information for or nothing for the current server.",
+                required = false,
                 type = ArgumentType.REGULAR,
             )
         )
     )
 ) {
-    override suspend fun run(event: CommandEvent) {
-        val guild = event.getArgument<Guild>(0)
+    override suspend fun runSuspend(event: CommandEvent) {
+        val guild = event.getArgument(0, event.guild)
         val language = event.getLanguage()
 
         val informationFor = TranslationHandler.getString(language, "command.info.keyword.information_for_server")
@@ -46,26 +42,30 @@ class InfoServerCommand(parent: Command) : SubCommand(
         val createdAt = TranslationHandler.getString(language, "command.info.keyword.created_at")
         val emotes = TranslationHandler.getString(language, "command.info.keyword.emotes")
 
-        event.sendEmbed(Embed(
-            title = "$informationFor **${guild.name}**",
-            fields = listOf(
-                MessageEmbed.Field(isPartnered, getFeature(guild, "PARTNERED", language), true),
-                MessageEmbed.Field(isVerified, getFeature(guild, "VERIFIED", language), true),
-                MessageEmbed.Field(isPublic, getFeature(guild, "PUBLIC", language), true),
-                MessageEmbed.Field(boostCount, guild.boostCount.toString(), true),
-                MessageEmbed.Field(memberCount, "${guild.memberCount} / ${guild.maxMembers}", true),
-                MessageEmbed.Field(createdAt, parseDateTime(guild.timeCreated), true),
-                MessageEmbed.Field(emotes, getEmoteString(guild, language), false),
-            ),
-            thumbnail = guild.iconUrl
-        ))
+        event.reply {
+            type(CommandReply.Type.INFORMATION)
+            title("$informationFor **${guild.name}**")
+
+            field(isPartnered, getFeature(guild, "PARTNERED", language), true)
+            field(isVerified, getFeature(guild, "VERIFIED", language), true)
+            field(isPublic, getFeature(guild, "PUBLIC", language), true)
+
+            field(boostCount, guild.boostCount.toString(), true)
+            field(memberCount, "${guild.memberCount} / ${guild.maxMembers}", true)
+            field(createdAt, parseDateTime(guild.timeCreated), true)
+
+            field(emotes, getEmoteString(guild, language), false)
+            thumbnail(guild.iconUrl)
+            footer()
+            send()
+        }
     }
 
     private fun getFeature(guild: Guild, feature: String, language: Language): String {
         return if (guild.features.contains(feature))
-                    TranslationHandler.getString(language, "keyword.yes")
-               else
-                    TranslationHandler.getString(language, "keyword.no")
+            TranslationHandler.getString(language, "keyword.yes")
+        else
+            TranslationHandler.getString(language, "keyword.no")
     }
 
     private suspend fun getEmoteString(guild: Guild, language: Language): String {
@@ -76,16 +76,29 @@ class InfoServerCommand(parent: Command) : SubCommand(
 
         val none = TranslationHandler.getString(language, "keyword.none")
 
-        val animated = if (emotes.none { it.isAnimated }) none else emotes.filter { it.isAnimated }
-            .joinToString(separator = " ") { it.asMention }
-        val regular = if (emotes.none { !it.isAnimated }) none else emotes.filter { !it.isAnimated }
-            .joinToString(separator = " ") { it.asMention }
+        val animated =
+            if (emotes.none { it.isAnimated })
+                none
+            else
+                emotes.filter { it.isAnimated }
+                    .joinToString(separator = " ") { it.asMention }
 
-        return TranslationHandler.getString(language, "command.info.child.server.response.emote",
+        val regular =
+            if (emotes.none { !it.isAnimated })
+                none
+            else
+                emotes.filter { !it.isAnimated }
+                    .joinToString(separator = " ") { it.asMention }
+
+        return TranslationHandler.getString(
+            language = language,
+            key = "command.info.child.server.response.emote",
+            values = arrayOf(
                 emotes.size,
                 guild.maxEmotes,
                 animated,
                 regular
+            )
         )
     }
 }

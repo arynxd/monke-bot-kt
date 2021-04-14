@@ -1,22 +1,18 @@
 package me.arynxd.monke.commands.misc.info
 
-import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentMember
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.SubCommand
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.util.parseDateTime
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.MessageEmbed
 
 class InfoUserCommand(parent: Command) : SubCommand(
     name = "user",
     description = "Shows information about a user.",
     category = CommandCategory.MISC,
+    flags = listOf(CommandFlag.ASYNC),
     parent = parent,
 
     arguments = ArgumentConfiguration(
@@ -31,11 +27,8 @@ class InfoUserCommand(parent: Command) : SubCommand(
     )
 ) {
 
-    override suspend fun run(event: CommandEvent) {
-        val member = if (event.isArgumentPresent(0))
-                        event.getArgument(0)
-                     else
-                         event.member
+    override suspend fun runSuspend(event: CommandEvent) {
+        val member = event.getArgument(0, event.member)
 
         val language = event.getLanguage()
 
@@ -47,18 +40,18 @@ class InfoUserCommand(parent: Command) : SubCommand(
         val roles = TranslationHandler.getString(language, "command.info.keyword.roles")
         val noRoles = TranslationHandler.getString(language, "command.info.keyword.no_roles")
 
-        event.sendEmbed(Embed(
-            title = "$information: **" + member.user.asTag + "**",
-            fields = listOf(
-                MessageEmbed.Field(boosting,
-                    if (member.timeBoosted == null) notBoosting else parseDateTime(member.timeBoosted),
-                    true),
-                MessageEmbed.Field(joinedAt, parseDateTime(member.timeJoined), true),
-                MessageEmbed.Field(createdAt, parseDateTime(member.timeCreated), true),
-                MessageEmbed.Field(roles, getCondensedRoles(member, noRoles), true),
-            ),
-            thumbnail = member.user.effectiveAvatarUrl
-        ))
+        event.reply {
+            type(CommandReply.Type.INFORMATION)
+            title("$information: **${member.user.asTag}**")
+            field(boosting, parseDateTime(member.timeBoosted) ?: notBoosting, true)
+            field(joinedAt, parseDateTime(member.timeJoined), true)
+            field(createdAt, parseDateTime(member.timeCreated), true)
+            field(roles, getCondensedRoles(member, noRoles), true)
+
+            footer()
+            thumbnail(member.user.effectiveAvatarUrl)
+            send()
+        }
     }
 
     private fun getCondensedRoles(member: Member, error: String): String {

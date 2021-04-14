@@ -20,7 +20,8 @@ class ArgumentURL(
     override suspend fun convert(input: String, event: CommandEvent): URL? {
         return try {
             return withContext(Dispatchers.IO) { URL(input) }
-        } catch (exception: MalformedURLException) {
+        }
+        catch (exception: MalformedURLException) {
             null
         }
     }

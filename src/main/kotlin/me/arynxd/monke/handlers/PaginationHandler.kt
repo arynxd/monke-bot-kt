@@ -7,12 +7,12 @@ import kotlinx.coroutines.launch
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.Paginator
 import me.arynxd.monke.objects.handlers.Handler
-import me.arynxd.monke.objects.translation.Language
+import kotlin.reflect.KClass
 
 class PaginationHandler @JvmOverloads constructor(
     override val monke: Monke,
-    override val dependencies: List<Class<out Handler>> = listOf(TranslationHandler::class.java)
-) : Handler {
+    override val dependencies: List<KClass<out Handler>> = listOf(TranslationHandler::class)
+) : Handler() {
     private val paginators: MutableMap<Paginator, Job> = mutableMapOf()
 
     fun addPaginator(paginator: Paginator) {
@@ -26,18 +26,14 @@ class PaginationHandler @JvmOverloads constructor(
             .filter { (it.key.lastUsed + 30_000) < System.currentTimeMillis() } //Has the paginator been left for 30 seconds
             .forEach {
                 it.key.delete()
-                it.value.cancel(TranslationHandler.getString(Language.EN_US, "cancel_reason.timeout"))
+                it.value.cancel(TranslationHandler.getInternalString("cancel_reason.timeout"))
             }
-    }
-
-    override fun onEnable() {
-        //Unused
     }
 
     override fun onDisable() {
         paginators.entries.forEach {
             it.key.delete()
-            it.value.cancel(TranslationHandler.getString(Language.EN_US, "cancel_reason.bot_shutdown"))
+            it.value.cancel(TranslationHandler.getInternalString("cancel_reason.bot_shutdown"))
         }
     }
 }

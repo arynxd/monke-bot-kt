@@ -12,12 +12,14 @@
     "language_key_not_found": "Key %0 does not exist for language %1,",
     "language_not_found": "Language %0 not found."
   },
-
-  "cancel_reason": {
-    "timeout": "%0 timed out.",
-    "bot_shutdown": "Bot was shutdown."
+  "music": {
+    "channel_left": "I left %0.",
+    "not_in_channel": "I'm not in a voice channel currently.",
+    "adding_to_queue": "Adding to queue %0.",
+    "first_track_of": " (first track of playlist %0)",
+    "nothing_found": "Nothing found by %0.",
+    "could_not_play": "Could not play: %0."
   },
-
   "keyword": {
     "optional": "optional",
     "required": "required",
@@ -25,7 +27,10 @@
     "yes": "Yes",
     "no": "No"
   },
-
+  "cancel_reason": {
+    "timeout": "%0 timed out.",
+    "bot_shutdown": "Bot was shutdown."
+  },
   "command_error": {
     "disabled": "That command is disabled, please try again later.",
     "developer_only": "That command is for developers only.",
@@ -36,25 +41,41 @@
     "invalid_args": "Something went wrong with the following argument%0 \n %1",
     "rate_limited": "This command is on a server-wide cooldown, please try again later.",
     "cooldown": "You're on cooldown from that command (%0s remaining).",
-    "command_not_found": "Command `%0` was not found.\n Type %1help for help.",
+    "command_not_found": "Command `%0` was not found.\n Type **%1help** for help.",
     "corrupt_web_data": "The data provided by %0 was corrupt, please report this to the developers!",
     "nsfw_reddit_post": "The post found was NSFW and cannot be shown here, please try again."
   },
-
   "command_response": {
     "reddit_description": "Taken from %0 by %1",
     "reddit_footer": "%0 upvotes : %1 downvotes"
   },
-
   "command": {
     "category": {
       "developer": "Developer",
       "fun": "Fun",
       "misc": "Miscellaneous",
       "moderation": "Moderation",
-      "configuration": "Configuration"
+      "configuration": "Configuration",
+      "music": "Music"
     },
-
+    "play": {
+      "name": "play",
+      "description": "Plays a song.",
+      "argument": {
+        "song": {
+          "name": "song",
+          "description": "The name of the song."
+        }
+      }
+    },
+    "leave": {
+      "name": "leave",
+      "description": "Leaves the voice channel, if it's in one."
+    },
+    "pause": {
+      "name": "pause",
+      "description": "Pause and unpause the player."
+    },
     "language": {
       "name": "language",
       "description": "Gets and sets the language for this server.",
@@ -71,7 +92,6 @@
         "exists_response": "My language is already %0 here."
       }
     },
-
     "eval": {
       "name": "eval",
       "description": "Evaluates Kotlin code.",
@@ -91,7 +111,6 @@
         "result": "Result"
       }
     },
-
     "json": {
       "name": "json",
       "description": "Gets the JSON representation of a message.",
@@ -104,7 +123,6 @@
       },
       "message_not_found": "That message could not be found in this channel."
     },
-
     "shutdown": {
       "name": "shutdown",
       "description": "Shuts the bot down gracefully.",
@@ -114,7 +132,6 @@
         "success": "Shutting down..."
       }
     },
-
     "test": {
       "name": "test",
       "description": "Tests the bot's basic functionality.",
@@ -146,7 +163,6 @@
         "embed": "Embed"
       }
     },
-
     "avatar": {
       "name": "avatar",
       "description": "Shows the avatar of a user.",
@@ -161,13 +177,11 @@
         "avatar_for_user": "Avatar for user: %0"
       }
     },
-
     "cat": {
       "name": "cat",
       "description": "Shows cute cats from Reddit.",
       "aliases": "kitty"
     },
-
     "google": {
       "name": "google",
       "description": "Queries Google with the given text.",
@@ -182,7 +196,6 @@
         "no_results": "No results found."
       }
     },
-
     "rng": {
       "name": "rng",
       "description": "Gives you a random number in the specified range.",
@@ -201,7 +214,6 @@
         "lower_>_upper": "Number 1 must be lower than Number 2."
       }
     },
-
     "uwu": {
       "name": "uwu",
       "description": "UwUfies your sentence.",
@@ -213,7 +225,6 @@
         }
       }
     },
-
     "help": {
       "name": "help",
       "description": "Shows help menu, or help for a specific command.",
@@ -230,7 +241,6 @@
         "usage": "Usage"
       }
     },
-
     "info": {
       "name": "info",
       "description": "Shows information about various things.",
@@ -273,11 +283,9 @@
             "jvm_version": "JVM Version",
             "jda_version": "JDA Version",
             "monke_version": "Monke Version",
-
             "thread_count": "Thread Count",
             "memory_usage": "Memory Usage",
             "cpu_usage": "CPU Usage",
-
             "total_users": "Total Users",
             "total_servers": "Total Servers",
             "uptime": "Uptime"
@@ -292,7 +300,6 @@
         "created_at": "Created account at",
         "roles": "Roles",
         "no_roles": "No roles.",
-
         "information_for_server": "Information for server",
         "is_partnered": "Is partnered",
         "is_verified": "Is verified",
@@ -303,13 +310,11 @@
         "no_emotes": "No emotes"
       }
     },
-
     "ping": {
       "name": "ping",
       "description": "Shows the bot's ping to discord.",
       "aliases": "pong"
     },
-
     "prefix": {
       "name": "prefix",
       "description": "Gets and sets the prefix for this server.",
@@ -326,12 +331,10 @@
         "prefix_new": "My new prefix here is '%0'"
       }
     },
-
     "steal": {
       "name": "steal",
       "description": "Steals an emote and adds it here.",
       "aliases": "",
-
       "argument": {
         "name": {
           "name": "name",
@@ -348,17 +351,14 @@
         "emoji_add_error": "URL %0 could not be added. Your emote slots may be full, or that URL could not be parsed."
       }
     },
-
     "uptime": {
       "name": "uptime",
       "description": "Shows the bot's uptime.",
       "aliases": "",
-
       "keyword": {
         "uptime": "Uptime"
       }
     },
-
     "wiki": {
       "name": "wiki",
       "description": "Queries Wikipedia with the given text.",
@@ -369,16 +369,13 @@
           "description": "The subject to query Wikipedia with."
         }
       },
-
       "response": {
         "not_found": "Subject was too vague or not found."
       },
-
       "keyword": {
         "last_edited": "Page last edited at %0"
       }
     },
-
     "clear": {
       "name": "clear",
       "description": "Clears messages from this channel.",
@@ -392,6 +389,12 @@
       "response": {
         "cleared": "Cleared %0 message%1"
       }
+    },
+    "plugin": {
+      "name": "plugin",
+      "description": "Controls the currently running plugins.",
+      "aliases": ""
     }
   }
 }
+

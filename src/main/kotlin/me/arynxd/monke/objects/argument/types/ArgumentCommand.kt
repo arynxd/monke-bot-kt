@@ -15,6 +15,6 @@ class ArgumentCommand(
 ) : Argument<Command>() {
 
     override suspend fun convert(input: String, event: CommandEvent): Command? {
-        return event.monke.handlers.get(CommandHandler::class.java).commandMap[input]
+        return event.monke.handlers.get(CommandHandler::class).commandMap[input]
     }
 }

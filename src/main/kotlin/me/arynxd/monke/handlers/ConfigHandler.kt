@@ -12,12 +12,11 @@ import kotlin.system.exitProcess
 
 const val CONFIG_FILE_NAME = "config.json"
 
-class ConfigHandler @JvmOverloads constructor(
+class ConfigHandler(
     override val monke: Monke,
-    override val dependencies: List<Class<out Handler>> = listOf()
-) : Handler {
+) : Handler() {
     private val formatter = Json { prettyPrint = true; isLenient = true }
-    val config: ConfigFile by lazy { loadFile() }
+    val config = loadFile()
 
     private fun initFile() {
         val configFile = File(CONFIG_FILE_NAME)
@@ -29,6 +28,7 @@ class ConfigHandler @JvmOverloads constructor(
                     token = "token",
                     developers = listOf("1".repeat(10)),
                     logChannel = "channel-id",
+                    logWebhook = "webhook-url",
                     preferredLanguage = "en_US",
 
                     database = DatabaseConfiguration(
@@ -42,9 +42,14 @@ class ConfigHandler @JvmOverloads constructor(
                         website = "website",
                         discordInvite = "support-server-invite",
                         botInvite = "bot-invite",
+                    ),
+
+                    prometheus = PrometheusConfiguration(
+                        "-1"
                     )
                 )
             )
+
             File(CONFIG_FILE_NAME).writeText(defaults)
         }
     }
@@ -52,7 +57,8 @@ class ConfigHandler @JvmOverloads constructor(
     private fun loadFile(): ConfigFile {
         try {
             return Json.decodeFromString(File(CONFIG_FILE_NAME).readLines().joinToString(separator = "\n"))
-        } catch (exception: Exception) {
+        }
+        catch (exception: Exception) {
             // This cannot be translated since.. the language comes from the config file
             LOGGER.error("Something went wrong with the JSON file, please ensure it is correct.", exception)
             exitProcess(1)
@@ -64,9 +70,11 @@ class ConfigHandler @JvmOverloads constructor(
         val token: String,
         val developers: List<String>,
         val logChannel: String,
+        val logWebhook: String,
         val preferredLanguage: String,
         val database: DatabaseConfiguration,
-        val api: APIConfiguration
+        val api: APIConfiguration,
+        val prometheus: PrometheusConfiguration
     )
 
     @Serializable
@@ -84,11 +92,12 @@ class ConfigHandler @JvmOverloads constructor(
         val botInvite: String,
     )
 
+    @Serializable
+    data class PrometheusConfiguration(
+        val port: String
+    )
+
     override fun onEnable() {
         initFile()
-    }
-
-    override fun onDisable() {
-        // Unused
     }
 }

@@ -1,17 +1,10 @@
 package me.arynxd.monke
 
-import dev.minn.jda.ktx.injectKTX
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import me.arynxd.monke.events.guildEvents
-import me.arynxd.monke.events.messageEvents
-import me.arynxd.monke.handlers.ConfigHandler
-import me.arynxd.monke.handlers.GuildSettingsHandler
-import me.arynxd.monke.handlers.PaginationHandler
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.events.Events
+import me.arynxd.monke.handlers.*
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
+import me.arynxd.monke.objects.plugins.Plugins
 import me.arynxd.monke.util.parseUptime
 import me.arynxd.monke.util.plurifyLong
 import net.dv8tion.jda.api.JDA
@@ -22,6 +15,7 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import java.lang.management.ManagementFactory
@@ -29,6 +23,9 @@ import java.text.DecimalFormat
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import javax.security.auth.login.LoginException
 import kotlin.random.Random
 import kotlin.system.exitProcess
@@ -37,58 +34,71 @@ fun main() {
     Monke()
 }
 
-class Monke: ListenerAdapter() {
+class Monke : ListenerAdapter() {
+    val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(10)
     val handlers = Handlers(this)
+    val plugins = Plugins(this)
 
-    init {
-        handlers.enableHandlers()
-    }
-
-    val jda: JDA = build()
+    val jda = build()
 
     private fun build(): JDA {
         try {
             return JDABuilder
-                .create(handlers.get(ConfigHandler::class.java).config.token,
+                .create(
+                    handlers.get(ConfigHandler::class).config.token,
                     GatewayIntent.GUILD_MEMBERS,
 
                     GatewayIntent.GUILD_MESSAGES,
                     GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                    GatewayIntent.GUILD_VOICE_STATES)
+                    GatewayIntent.GUILD_VOICE_STATES
+                )
 
                 .disableCache(
                     CacheFlag.ACTIVITY,
                     CacheFlag.EMOTE,
                     CacheFlag.CLIENT_STATUS,
                     CacheFlag.ROLE_TAGS,
-                    CacheFlag.MEMBER_OVERRIDES)
-
-                .injectKTX()
+                    CacheFlag.MEMBER_OVERRIDES
+                )
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .setHttpClient(handlers.okHttpClient)
-                .addEventListeners(this)
-
+                .addEventListeners(
+                    this,
+                    Events(this)
+                )
                 .setActivity(Activity.playing("loading up!"))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                .build()
-
-
-        } catch (exception: LoginException) {
+                .also { jda ->
+                    handlers.handlers.values.forEach { jda.addEventListeners(it) }
+                }.build()
+        }
+        catch (exception: LoginException) {
             LOGGER.error(TranslationHandler.getInternalString("internal_error.invalid_login"))
             exitProcess(1)
 
-        } catch (exception: IllegalArgumentException) {
+        }
+        catch (exception: IllegalArgumentException) {
             LOGGER.error(TranslationHandler.getInternalString("internal_error.invalid_build"))
             exitProcess(1)
         }
     }
 
     override fun onReady(event: ReadyEvent) {
-        initGuilds()
-        initListeners()
+        LOGGER.info("Loading handlers")
+        handlers.enableHandlers()
         initTasks()
 
-        LOGGER.info("""
+        handlers.get(MetricsHandler::class).guildCount.set(getGuildCount().toDouble())
+        handlers.get(MetricsHandler::class).userCount.set(getUserCount().toDouble())
+
+        MessageAction.setDefaultMentionRepliedUser(false)
+        MessageAction.setDefaultMentions(emptyList())
+
+        LOGGER.info("Loading plugins")
+        plugins.loadPlugins()
+
+        LOGGER.info(
+            """
             
               __  __             _        _           _   
              |  \/  |           | |      | |         | |  
@@ -97,32 +107,20 @@ class Monke: ListenerAdapter() {
              | |  | | (_) | | | |   <  __/ |_) | (_) | |_ 
              |_|  |_|\___/|_| |_|_|\_\___|_.__/ \___/ \__|
                                                             
-                        ${handlers.get(ConfigHandler::class.java).config.api.website}
-        """.trimIndent())
-    }
-
-    private fun initGuilds() {
-        jda.guildCache.forEach() { handlers.get(GuildSettingsHandler::class.java).initGuild(it.idLong) }
-    }
-
-    private fun initListeners() {
-        messageEvents()
-        guildEvents()
+                        ${handlers.get(ConfigHandler::class).config.api.website}
+        """.trimIndent()
+        )
     }
 
     private fun initTasks() {
-        GlobalScope.launch {
-            while (true) {
-                handlers.get(PaginationHandler::class.java).cleanup()
-                delay(15_000)
-            }
+        val taskHandler = handlers.get(TaskHandler::class)
+
+        taskHandler.addRepeatingTask(30, TimeUnit.SECONDS) {
+            handlers.get(PaginationHandler::class).cleanup()
         }
 
-        GlobalScope.launch {
-            while (true) {
-                switchStatus()
-                delay(180_000) //2 Minutes
-            }
+        taskHandler.addRepeatingTask(2, TimeUnit.MINUTES) {
+            switchStatus()
         }
     }
 
@@ -180,10 +178,6 @@ class Monke: ListenerAdapter() {
         return (getTotalMemory() - getFreeMemory() shr 20).toString() + "MB / " + (getMaxMemory() shr 20) + "MB"
     }
 
-    fun getMemoryPercent(): String {
-        return ((getTotalMemory() - getFreeMemory()).toInt() / getMaxMemory() * 100).toString()
-    }
-
     fun getCPUUsage(): String {
         return DecimalFormat("#.##").format(ManagementFactory.getOperatingSystemMXBean().systemLoadAverage)
     }
@@ -191,8 +185,10 @@ class Monke: ListenerAdapter() {
     fun getUptimeString(): String {
         val millis = ManagementFactory.getRuntimeMXBean().uptime
         return parseUptime(
-            Duration.between(LocalDateTime.now().minus(millis, ChronoUnit.MILLIS),
-            LocalDateTime.now())
+            Duration.between(
+                LocalDateTime.now().minus(millis, ChronoUnit.MILLIS),
+                LocalDateTime.now()
+            )
         )
     }
 }

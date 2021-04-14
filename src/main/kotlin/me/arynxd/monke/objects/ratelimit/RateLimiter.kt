@@ -45,7 +45,7 @@ class RateLimiter {
         }
 
         fun take() {
-            usage ++
+            usage++
             lastUsed = System.currentTimeMillis()
         }
     }

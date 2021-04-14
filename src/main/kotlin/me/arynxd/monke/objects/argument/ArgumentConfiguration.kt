@@ -24,7 +24,8 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
         }
 
         if (requiredIndex != -1 && expected.subList(0, requiredIndex)
-                .find { !it.required } != null) { //Is there an optional before a required
+                .find { !it.required } != null
+        ) { //Is there an optional before a required
             return false
         }
 
@@ -40,11 +41,15 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
         val varargIndex = expected.indexOfLast { it.type == ArgumentType.VARARG }
 
         if (args.size < expected.count { it.required }) { //Missing required args
-            return ArgumentResult(missingArguments = expected.subList(args.size, expected.size).filter { it.required }) //Collect missing args
+            return ArgumentResult(
+                missingArguments = expected.subList(args.size, expected.size)
+                    .filter { it.required }) //Collect missing args
         }
 
         if (args.size < varargIndex) { // Missing args before a vararg (extra checks)
-            return ArgumentResult(missingArguments = expected.subList(args.size, expected.size).filter { it.required }) //Collect missing args
+            return ArgumentResult(
+                missingArguments = expected.subList(args.size, expected.size)
+                    .filter { it.required }) //Collect missing args
         }
 
 
@@ -53,7 +58,8 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
                 val result = pair.second.verify(pair.first, event)
                 if (result == null) {
                     invalidArguments.add(pair.second)
-                } else {
+                }
+                else {
                     validArguments.add(result)
                 }
             }
@@ -64,7 +70,8 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
                 val result = pair.second.verify(pair.first, event)
                 if (result == null) {
                     invalidArguments.add(pair.second)
-                } else {
+                }
+                else {
                     validArguments.add(result)
                 }
             }
@@ -74,7 +81,8 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
 
                 if (result == null) {
                     invalidArguments.add(expected[varargIndex])
-                } else {
+                }
+                else {
                     validArguments.add(result)
                 }
             }
@@ -92,7 +100,12 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
         val req = TranslationHandler.getString(language, "keyword.required")
         val opt = TranslationHandler.getString(language, "keyword.optional")
         return expected.joinToString(separator = "\n\n", prefix = "*Arguments:*\n") {
-            "<${it.getName(language, command)}> " + (if (it.required) "**($req)**" else "($opt)") + "\n ${it.getDescription(language, command)}"
+            "<${
+                it.getName(
+                    language,
+                    command
+                )
+            }> " + (if (it.required) "**($req)**" else "($opt)") + "\n ${it.getDescription(language, command)}"
         }
     }
 

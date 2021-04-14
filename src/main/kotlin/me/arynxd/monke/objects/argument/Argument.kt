@@ -22,15 +22,15 @@ abstract class Argument<T> {
 
     fun getDescription(language: Language, command: Command): String {
         val commandName = if (command is SubCommand)
-                            "${command.parent.getName(language)}.child.${command.getName(language)}"
-                          else command.name
+            "${command.parent.getName(language)}.child.${command.getName(language)}"
+        else command.name
         return TranslationHandler.getString(language, "command.$commandName.argument.$name.description")
     }
 
     fun getName(language: Language, command: Command): String {
         val commandName = if (command is SubCommand)
-                            "${command.parent.getName(language)}.child.${command.getName(language)}"
-                          else command.name
+            "${command.parent.getName(language)}.child.${command.getName(language)}"
+        else command.name
         return TranslationHandler.getString(language, "command.$commandName.argument.$name.name")
     }
 }

@@ -1,6 +1,5 @@
 package me.arynxd.monke.commands.`fun`
 
-import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
@@ -8,7 +7,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentUser
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
-import net.dv8tion.jda.api.entities.User
+import me.arynxd.monke.objects.command.CommandReply
 
 @Suppress("UNUSED")
 class AvatarCommand : Command(
@@ -29,23 +28,22 @@ class AvatarCommand : Command(
     )
 ) {
 
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val language = event.getLanguage()
-        if (!event.isArgumentPresent(0)) {
-            val forUser = TranslationHandler.getString(language, "command.avatar.response.avatar_for_user", event.user.asTag)
-            event.sendEmbed(Embed(
-                title = forUser,
-                image = "${event.user.effectiveAvatarUrl}?size=2048"
-            ))
-            return
-        }
+        val user = if (event.isArgumentPresent(0)) event.getArgument(0) else event.user
 
-        val user = event.getArgument<User>(0)
-        val forUser = TranslationHandler.getString(language, "command.avatar.response.avatar_for_user", user.asTag)
-        event.sendEmbed(Embed(
-            title = forUser,
-            image = "${user.effectiveAvatarUrl}?size=2048"
-        ))
-        return
+        event.replyAsync {
+            type(CommandReply.Type.INFORMATION)
+            title(
+                TranslationHandler.getString(
+                    language = language,
+                    key = "command.avatar.response.avatar_for_user",
+                    user.asTag
+                )
+            )
+            image(user.effectiveAvatarUrl, 2048)
+            footer()
+            send()
+        }
     }
 }

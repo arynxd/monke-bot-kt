@@ -28,7 +28,13 @@ abstract class SubCommand(
     botPermissions = botPermissions,
 
     ) {
-    abstract override suspend fun run(event: CommandEvent)
+    override suspend fun runSuspend(event: CommandEvent) {
+        //Placeholder method
+    }
+
+    override fun runSync(event: CommandEvent) {
+        //Placeholder method
+    }
 
     override fun getName(language: Language): String {
         return TranslationHandler.getString(language, "command.${parent.name}.child.$name.name")

@@ -8,10 +8,7 @@ import me.arynxd.monke.objects.Paginator
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentCommand
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.SubCommand
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import net.dv8tion.jda.api.entities.MessageEmbed
 
@@ -35,14 +32,14 @@ class HelpCommand : Command(
     ),
 
     ) {
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val prefix = event.getPrefix()
         if (event.isArgumentPresent(0)) {
-            event.sendEmbed(getHelp(event, event.getArgument(0)))
+            getHelp(event, event.getArgument(0))
             return
         }
 
-        event.monke.handlers.get(PaginationHandler::class.java).addPaginator(
+        event.monke.handlers.get(PaginationHandler::class).addPaginator(
             Paginator(
                 monke = event.monke,
                 pages = getHelpPages(prefix, event),
@@ -51,21 +48,39 @@ class HelpCommand : Command(
         )
     }
 
-    private fun getHelp(event: CommandEvent, command: Command): MessageEmbed {
+    private fun getHelp(event: CommandEvent, command: Command) {
         val prefix = event.getPrefix()
-        val fields = mutableListOf(MessageEmbed.Field("**$prefix${command.name}**", getDescription(command, event, command.name), true))
+        val fields = mutableListOf(
+            MessageEmbed.Field(
+                "**$prefix${command.name}**",
+                getDescription(command, event, command.name),
+                true
+            )
+        )
         val language = event.getLanguage()
         if (command.hasChildren()) {
-            fields.addAll(command.children.map {
-                MessageEmbed.Field(
-                        "**$prefix${it.parent.getName(language)} ${it.getName(language)}**",
-                        getDescription(command, event, "${it.parent.getName(language)} ${it.getName(language)}"), true)
-            })
+            for (child in command.children) {
+                fields.add(
+                    MessageEmbed.Field(
+                        "**$prefix${child.parent.getName(language)} ${child.getName(language)}**",
+                        getDescription(child, event, "${child.parent.getName(language)} ${child.getName(language)}"),
+                        true
+                    )
+                )
+            }
         }
-        return Embed(
-            title = "${TranslationHandler.getString(event.getLanguage(), "command.help.keyword.help_for")} $prefix${command.getName(language)}",
-            fields = fields
-        )
+
+        event.replyAsync {
+            val keywordFor = TranslationHandler.getString(
+                language = event.getLanguage(),
+                key = "command.help.keyword.help_for"
+            )
+            type(CommandReply.Type.INFORMATION)
+            title("$keywordFor $prefix${command.getName(language)}")
+            fields(fields)
+            footer()
+            send()
+        }
     }
 
     private fun getDescription(command: Command, event: CommandEvent, name: String): String {
@@ -75,29 +90,49 @@ class HelpCommand : Command(
         val description = TranslationHandler.getString(language, "command.help.keyword.description")
         val usage = TranslationHandler.getString(language, "command.help.keyword.usage")
 
-        val commandDescription = if (command is SubCommand)
-                                    command.getDescription(language) // Get the child's info
-                                 else command.getDescription(language) // Get the parent's info
+        val commandDescription =
+            if (command is SubCommand)
+                "*${description}:* ${command.getDescription(language)}" // Get the child's info
+            else
+                "*${description}:* ${command.getDescription(language)}" // Get the parent's info
 
-        return "*${description}:* \n ${commandDescription}\n\n" +
+        val args =
+            if (command is SubCommand) {
                 "*${usage}:* \n $prefix$name ${command.arguments.getArgumentsList(language, command)} \n\n " +
-                if (command.hasArguments()) command.arguments.getArgumentsString(language, command) else ""
+                        if (command.hasArguments()) command.arguments.getArgumentsString(language, command) else ""
+            }
+            else {
+                "*${usage}:* \n $prefix$name ${command.arguments.getArgumentsList(language, command)} \n\n " +
+                        if (command.hasArguments()) command.arguments.getArgumentsString(language, command) else ""
+            }
+
+        return "\n $commandDescription\n\n $args"
     }
 
     private fun getHelpPages(prefix: String, event: CommandEvent): List<MessageEmbed> {
-        val result: MutableList<MessageEmbed> = mutableListOf()
-        val commands: List<Command> = event.monke.handlers.get(CommandHandler::class.java).commandMap.values.distinct()
+        val result = mutableListOf<MessageEmbed>()
+        val commands =
+            event.monke.handlers.get(CommandHandler::class).commandMap.values.distinct().groupBy { it.category }
         val pageCount = CommandCategory.values().size
         val language = event.getLanguage()
 
         for (category in CommandCategory.values()) {
-            val categoryCommands = commands.filter { it.category == category }
-            result.add(Embed(
-                title = category.getName(language),
-                description = categoryCommands.joinToString(separator = "\n") { "`$prefix${it.getName(language)}` - *${it.getDescription(language)}*" },
-                color = DEFAULT_EMBED_COLOUR.rgb,
-                footerText = "Page ${category.ordinal + 1} / $pageCount"
-            ))
+            val categoryCommands =
+                commands[category] ?: throw IllegalStateException("Category $category was not present")
+            result.add(
+                Embed(
+                    title = category.getName(language),
+                    description = categoryCommands.joinToString(separator = "\n") {
+                        "`$prefix${it.getName(language)}` - *${
+                            it.getDescription(
+                                language
+                            )
+                        }*"
+                    },
+                    color = DEFAULT_EMBED_COLOUR.rgb,
+                    footerText = "Page ${category.ordinal + 1} / $pageCount"
+                )
+            )
         }
         return result
     }
