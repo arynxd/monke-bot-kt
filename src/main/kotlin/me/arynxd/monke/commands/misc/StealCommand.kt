@@ -45,7 +45,7 @@ class StealCommand : Command(
     ))
 ) {
 
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val name = event.getArgument<String>(0)
         val url = event.getArgument<URL>(1)
         val language = event.getLanguage()
@@ -53,7 +53,7 @@ class StealCommand : Command(
         val limiter = event.monke.handlers.get(RateLimitHandler::class).getRateLimiter(event.guildIdLong)
 
         if (!limiter.canTake(RateLimitedAction.EMOJI_CREATE)) {
-            event.reply {
+            event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
@@ -67,7 +67,7 @@ class StealCommand : Command(
         }
 
         if (icon == null) {
-            event.reply {
+            event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(

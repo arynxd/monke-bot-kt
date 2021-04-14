@@ -32,7 +32,7 @@ class JsonCommand : Command(
     ),
 
     ) {
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val channel = event.channel
         val jda = event.jda
         val id = event.getArgument<Long>(0).toString()

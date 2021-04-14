@@ -33,14 +33,15 @@ class MusicHandler constructor(
 
         val guildId: Long = guild.idLong
         return lock.withLock {
-
-            val musicManager: GuildMusicManager =
+            val musicManager =
                 musicManagers[guildId] ?: GuildMusicManager(
                     channel = channel,
                     voiceChannel = voiceChannel,
                     guild = guild,
                     manager = playerManager
-                ).also { musicManagers[guildId] = it }
+                ).also {
+                    musicManagers[guildId] = it
+                }
 
             guild.audioManager.sendingHandler = musicManager.getSendHandler()
 

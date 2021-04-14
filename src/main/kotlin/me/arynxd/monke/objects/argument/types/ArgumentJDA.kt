@@ -62,7 +62,8 @@ class ArgumentMember(
         if (memberId != null) { //ID
             return try {
                 event.guild.retrieveMemberById(memberId).await()
-            } catch (exception: ErrorResponseException) {
+            }
+            catch (exception: ErrorResponseException) {
                 return null
             }
         }

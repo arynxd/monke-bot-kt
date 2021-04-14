@@ -32,10 +32,18 @@ class CommandEvent(
     fun isDeveloper(): Boolean = monke.handlers.get(ConfigHandler::class).config.developers.contains(user.id)
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> getArgument(indie: Int): T {
-        if (!isArgumentPresent(indie) || indie < 0) {
+    fun <T> getArgument(indie: Int, default: T? = null): T {
+        if (indie < 0) {
             throw NoSuchElementException("Argument $indie does not exist")
         }
+
+        if (!isArgumentPresent(indie)) {
+            if (default == null) {
+                throw NoSuchElementException("Argument $indie does not exist")
+            }
+            return default
+        }
+
         return args[indie] as T
     }
 
@@ -56,5 +64,5 @@ class CommandEvent(
 
     fun getLanguage(): Language = getDataCache().language
 
-    fun getDataCache(): GuildData = monke.handlers.get(GuildDataHandler::class).getCache(guildIdLong)
+    fun getDataCache(): GuildData = monke.handlers.get(GuildDataHandler::class).getData(guildIdLong)
 }

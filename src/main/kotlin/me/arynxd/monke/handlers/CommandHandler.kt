@@ -1,22 +1,20 @@
 package me.arynxd.monke.handlers
 
-import io.github.classgraph.ClassGraph
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.Monke
 import me.arynxd.monke.events.GuildMessageEvent
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandReply
-import me.arynxd.monke.objects.command.SubCommand
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
+import me.arynxd.monke.objects.handlers.whenEnabled
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.markdownSanitize
-import java.lang.reflect.Constructor
-import java.util.*
-import kotlin.collections.LinkedHashMap
+import org.reflections.Reflections
+import org.reflections.scanners.SubTypesScanner
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
 const val COMMAND_PACKAGE = "me.arynxd.monke.commands"
@@ -29,15 +27,15 @@ class CommandHandler @JvmOverloads constructor(
         GuildDataHandler::class
     )
 ) : Handler() {
-    private val classGraph: ClassGraph = ClassGraph().acceptPackages(COMMAND_PACKAGE)
-    val commandMap: LinkedHashMap<String, Command> by lazy { loadCommands() }
+    private val reflections = Reflections(COMMAND_PACKAGE, SubTypesScanner())
+    val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
 
     fun handle(event: GuildMessageEvent) {
-        val prefix = monke.handlers.get(GuildDataHandler::class).getCache(event.guild.idLong).prefix
+        val prefix = monke.handlers.get(GuildDataHandler::class).getData(event.guild.idLong).prefix
 
         val contentRaw = event.message.contentRaw
 
-        val content: String = markdownSanitize(
+        val content = markdownSanitize(
             when {
                 isBotMention(event) -> contentRaw.substring(contentRaw.indexOf(char = '>') + 1, contentRaw.length)
 
@@ -49,18 +47,19 @@ class CommandHandler @JvmOverloads constructor(
             }
         ).replace(SUBSTITUTION_REGEX, "")
 
-        val args: MutableList<String> = content.split(Regex("\\s+")).toMutableList()
-        args.removeIf { it.isBlank() }
+        val args = content.split(Regex("\\s+"))
+            .filter { it.isNotBlank() }
+            .toMutableList()
 
         if (args.isEmpty()) {
             return
         }
 
-        val query: String = args.removeAt(0).toLowerCase()
-        val command: Command? = commandMap[query]
+        val query = args.removeAt(0).toLowerCase()
+        val command = commandMap[query]
 
         if (command == null) {
-            val language = monke.handlers.get(GuildDataHandler::class).getCache(event.guild.idLong).language
+            val language = monke.handlers.get(GuildDataHandler::class).getData(event.guild.idLong).language
             CommandReply.sendError(
                 message = event.message,
                 text = TranslationHandler.getString(
@@ -100,85 +99,117 @@ class CommandHandler @JvmOverloads constructor(
     }
 
     private fun isBotMention(event: GuildMessageEvent): Boolean {
-        val content: String = event.message.contentRaw
-        val id: Long = event.jda.selfUser.idLong
+        val content = event.message.contentRaw
+        val id = event.jda.selfUser.idLong
         return content.startsWith("<@$id>") || content.startsWith("<@!$id>")
     }
 
     private fun launchCommand(command: Command, event: CommandEvent) {
-        GlobalScope.launch {
-            if (!command.isExecutable(event)) {
-                return@launch
-            }
+        val isExecutable = runBlocking {
+            return@runBlocking command.isExecutable(event)
+        }
 
-            monke.handlers.get(CooldownHandler::class).addCommand(event.user, command)
-            monke.handlers.get(MetricsHandler::class).commandCounter.labels(
-                if (command is SubCommand)
-                    command.parent.name
-                else
-                    command.name
-            ).inc()
+        if (!isExecutable) {
+            return
+        }
 
-            try {
-                withTimeout(5000) { //5 Seconds
-                    command.run(event)
+        monke.handlers.get(CooldownHandler::class).addCommand(event.user, command)
+        monke.handlers.get(MetricsHandler::class).commandCounter.labels(
+            if (command is SubCommand)
+                command.parent.name
+            else
+                command.name
+        ).inc()
+
+        if (command.hasFlag(CommandFlag.ASYNC)) {
+            GlobalScope.launch {
+                try {
+                    withTimeout(5000) { //5 Seconds
+                        command.runSuspend(event)
+                    }
                 }
+                catch (exception: Exception) {
+                    handleException(event, exception)
+                }
+            }
+        }
+        else {
+            try {
+                command.runSync(event)
             }
             catch (exception: Exception) {
-                event.reply {
-                    type(CommandReply.Type.EXCEPTION)
-                    title("Something went wrong whilst executing that command. Please report this to the devs!")
-                    footer()
-                    send()
-                }
-                event.monke.handlers
-                    .get(ExceptionHandler::class)
-                    .handle(exception, "From command '${event.command.name}'")
+                handleException(event, exception)
             }
         }
     }
 
-    private fun loadCommands(): LinkedHashMap<String, Command> {
-        val commands: LinkedHashMap<String, Command> = LinkedHashMap()
-        classGraph.scan().use { result ->
-            for (cls in result.allClasses) {
-                val constructors: Array<Constructor<*>> = cls.loadClass().declaredConstructors
+    private fun handleException(event: CommandEvent, exception: Exception) {
+        event.replyAsync {
+            type(CommandReply.Type.EXCEPTION)
+            title("Something went wrong whilst executing that command. Please report this to the devs!")
+            footer()
+            send()
+        }
 
-                if (constructors.isEmpty() || constructors[0].parameterCount > 0) {
-                    continue
+        event.monke.handlers
+            .get(ExceptionHandler::class)
+            .handle(exception, "From command '${event.command.name}'")
+    }
+
+    fun registerCommand(command: Command): Boolean {
+        return registerCommand(command, commandMap)
+    }
+
+    private fun registerCommand(command: Command, map: ConcurrentHashMap<String, Command>): Boolean {
+        for (language in Language.getLanguages()) {
+            val name = command.getName(language).toLowerCase()
+            if (map.containsKey(name)) {
+                return false
+            }
+            map[name] = command
+            for (alias in command.aliases) {
+                if (map.containsKey(alias)) {
+                    return false
                 }
+                map[alias.toLowerCase()] = command
+            }
+        }
+        return true
+    }
 
-                val instance: Any = constructors[0].newInstance()
-                if (instance is SubCommand) {
-                    continue
-                }
+    private fun loadCommands(): ConcurrentHashMap<String, Command> {
+        val commands = ConcurrentHashMap<String, Command>()
+        val classes = reflections.getSubTypesOf(Command::class.java)
+        for (cls in classes) {
+            val constructors = cls.constructors
 
-                if (instance !is Command) {
-                    LOGGER.warn(
-                        TranslationHandler.getInternalString(
-                            "internal_error.non_command_class",
-                            cls.simpleName
-                        )
+            if (constructors.isEmpty() || constructors[0].parameterCount > 0) {
+                continue
+            }
+
+            val instance = constructors[0].newInstance()
+
+            if (instance is SubCommand) {
+                continue
+            }
+
+            if (instance !is Command) {
+                LOGGER.warn(
+                    TranslationHandler.getInternalString(
+                        "internal_error.non_command_class",
+                        cls.simpleName
                     )
-                    continue
-                }
+                )
+                continue
+            }
 
-                if (commands.containsKey(instance.name)) {
-                    LOGGER.warn(
-                        TranslationHandler.getInternalString(
-                            "internal_error.duplicate_command",
-                            cls.simpleName
-                        )
+            if (!registerCommand(instance, commands)) {
+                LOGGER.warn(
+                    TranslationHandler.getInternalString(
+                        "internal_error.duplicate_command",
+                        cls.simpleName
                     )
-                    continue
-                }
-
-                for (language in Language.getLanguages()) {
-                    commands[instance.getName(language).toLowerCase()] = instance
-                    for (alias in instance.aliases) {
-                        commands[alias.toLowerCase()] = instance
-                    }
-                }
+                )
             }
         }
         return commands

@@ -26,12 +26,12 @@ class PrefixCommand : Command(
     )),
 
     ) {
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val cache = event.getDataCache()
         val language = event.getLanguage()
 
         if (!event.isArgumentPresent(0)) {
-            event.reply {
+            event.replyAsync {
                 type(CommandReply.Type.INFORMATION)
                 title(
                     TranslationHandler.getString(
@@ -48,7 +48,7 @@ class PrefixCommand : Command(
         val prefix = event.getArgument<String>(0)
 
         if (prefix == cache.prefix) {
-            event.reply {
+            event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
@@ -62,7 +62,7 @@ class PrefixCommand : Command(
             return
         }
 
-        event.reply {
+        event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title(
                 TranslationHandler.getString(
@@ -71,6 +71,7 @@ class PrefixCommand : Command(
                     values = arrayOf(prefix)
                 )
             )
+            send()
             cache.prefix = prefix
         }
     }

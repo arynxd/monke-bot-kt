@@ -6,10 +6,7 @@ import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentString
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.handlers.LOGGER
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
@@ -21,6 +18,7 @@ class GoogleCommand : Command(
     description = "Queries Google with the given text.",
     category = CommandCategory.FUN,
     aliases = listOf("g"),
+    flags = listOf(CommandFlag.ASYNC),
     cooldown = 3000L,
 
     arguments = ArgumentConfiguration(
@@ -35,7 +33,7 @@ class GoogleCommand : Command(
         )
     )
 ) {
-    override suspend fun run(event: CommandEvent) = withContext(Dispatchers.IO) {
+    override suspend fun runSuspend(event: CommandEvent) = withContext(Dispatchers.IO) {
         val query = URLEncoder.encode(event.getVararg<String>(0).joinToString(" "), "utf-8")
         val language = event.getLanguage()
 
@@ -70,7 +68,8 @@ class GoogleCommand : Command(
                 send()
             }
 
-        } catch (exception: Exception) {
+        }
+        catch (exception: Exception) {
             val error = TranslationHandler.getString(language, "internal_error.web_service_error", "Google")
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)

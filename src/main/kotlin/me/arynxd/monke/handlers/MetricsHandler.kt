@@ -8,6 +8,7 @@ import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.exception.HandlerException
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
+import me.arynxd.monke.objects.handlers.whenEnabled
 import net.dv8tion.jda.api.events.DisconnectEvent
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.ResumedEvent
@@ -24,7 +25,7 @@ class MetricsHandler @JvmOverloads constructor(
     override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
 ) : Handler() {
 
-    private val port: Int by lazy { getPrometheusPort() }
+    private val port: Int by whenEnabled { getPrometheusPort() }
 
     private val musicEvents: Counter = Counter.build()
         .name("monkebot_track_event")
@@ -89,7 +90,8 @@ class MetricsHandler @JvmOverloads constructor(
 
         try {
             HTTPServer(port)
-        } catch (exception: IOException) {
+        }
+        catch (exception: IOException) {
             LOGGER.error("MetricsHandler offline.", exception)
         }
     }

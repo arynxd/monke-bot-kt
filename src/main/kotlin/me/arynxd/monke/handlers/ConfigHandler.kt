@@ -16,7 +16,7 @@ class ConfigHandler(
     override val monke: Monke,
 ) : Handler() {
     private val formatter = Json { prettyPrint = true; isLenient = true }
-    val config: ConfigFile by lazy { loadFile() }
+    val config = loadFile()
 
     private fun initFile() {
         val configFile = File(CONFIG_FILE_NAME)
@@ -49,6 +49,7 @@ class ConfigHandler(
                     )
                 )
             )
+
             File(CONFIG_FILE_NAME).writeText(defaults)
         }
     }
@@ -56,7 +57,8 @@ class ConfigHandler(
     private fun loadFile(): ConfigFile {
         try {
             return Json.decodeFromString(File(CONFIG_FILE_NAME).readLines().joinToString(separator = "\n"))
-        } catch (exception: Exception) {
+        }
+        catch (exception: Exception) {
             // This cannot be translated since.. the language comes from the config file
             LOGGER.error("Something went wrong with the JSON file, please ensure it is correct.", exception)
             exitProcess(1)

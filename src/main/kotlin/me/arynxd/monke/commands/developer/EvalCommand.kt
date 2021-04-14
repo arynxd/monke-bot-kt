@@ -21,7 +21,7 @@ class EvalCommand : Command(
     name = "eval",
     description = "Evaluates Kotlin code.",
     category = CommandCategory.DEVELOPER,
-    flags = listOf(CommandFlag.DEVELOPER_ONLY),
+    flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.ASYNC),
 
     arguments = ArgumentConfiguration(
         listOf(
@@ -63,7 +63,7 @@ class EvalCommand : Command(
 
     private val codeBlockRegex = Regex("```[A-Za-z]*")
 
-    override suspend fun run(event: CommandEvent) {
+    override suspend fun runSuspend(event: CommandEvent) {
         engine.put("jda", event.jda)
         engine.put("api", event.jda)
         engine.put("channel", event.channel)
@@ -88,31 +88,31 @@ class EvalCommand : Command(
         val isSuccessful = result.second
 
         val reply = CommandReply(event)
-            reply.title(
-                TranslationHandler.getString(
-                    language = language,
-                    key = "command.eval.keyword.evaluated_result"
-                )
+        reply.title(
+            TranslationHandler.getString(
+                language = language,
+                key = "command.eval.keyword.evaluated_result"
             )
+        )
 
-            reply.field(
-                title = TranslationHandler.getString(language, "command.eval.keyword.duration"),
-                description = "${System.currentTimeMillis() - startTime}ms",
-                inline = false
-            )
+        reply.field(
+            title = TranslationHandler.getString(language, "command.eval.keyword.duration"),
+            description = "${System.currentTimeMillis() - startTime}ms",
+            inline = false
+        )
 
-            reply.field(
-                title = TranslationHandler.getString(language, "command.eval.keyword.code"),
-                description =
-                    if (script.length > MessageEmbed.VALUE_MAX_LENGTH) {
-                        postBin(script, client) ?: "Something went wrong whilst uploading the code"
-                    }
-                    else {
-                        "```kt\n$script```"
-                    },
-                inline = false
-            )
-            reply.footer()
+        reply.field(
+            title = TranslationHandler.getString(language, "command.eval.keyword.code"),
+            description =
+            if (script.length > MessageEmbed.VALUE_MAX_LENGTH) {
+                postBin(script, client) ?: "Something went wrong whilst uploading the code"
+            }
+            else {
+                "```kt\n$script```"
+            },
+            inline = false
+        )
+        reply.footer()
 
         if (isSuccessful) {
             reply.type(CommandReply.Type.SUCCESS)
@@ -137,14 +137,14 @@ class EvalCommand : Command(
     private suspend fun doEval(code: String, language: Language, client: OkHttpClient): Pair<String, Boolean> {
         var successful = true
         val out =
-            try  {
+            try {
                 engine.eval(code)
             }
             catch (exception: Exception) {
                 val st = exception.stackTraceToString()
                 successful = false
                 if (st.length > MessageEmbed.VALUE_MAX_LENGTH) {
-                    postBin(st, client)?: "Something went wrong whilst uploading the stacktrace"
+                    postBin(st, client) ?: "Something went wrong whilst uploading the stacktrace"
                 }
                 else {
                     st
@@ -152,16 +152,19 @@ class EvalCommand : Command(
 
             }
 
-        val result = when(out) {
+        val result = when (out) {
+            null -> {
+                "Null"
+            }
             is RestAction<*> ->
                 try {
-                    out.await().toString()
+                    out.await()?.toString() ?: "Null"
                 }
                 catch (exception: ErrorResponseException) {
                     successful = false
                     val st = exception.stackTraceToString()
                     if (st.length > MessageEmbed.VALUE_MAX_LENGTH) {
-                        postBin(st, client)?: "Something went wrong whilst uploading the stacktrace"
+                        postBin(st, client) ?: "Something went wrong whilst uploading the stacktrace"
                     }
                     else {
                         st
@@ -178,7 +181,7 @@ class EvalCommand : Command(
                 }
                 else {
                     if (o.length > MessageEmbed.VALUE_MAX_LENGTH) {
-                        postBin(o, client)?: "Something went wrong whilst uploading the result"
+                        postBin(o, client) ?: "Something went wrong whilst uploading the result"
                     }
                     else {
                         o

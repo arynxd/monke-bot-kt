@@ -32,17 +32,16 @@ class ClearCommand : Command(
         )
     ),
     memberPermissions = listOf(Permission.MESSAGE_MANAGE),
-
     botPermissions = listOf(Permission.MESSAGE_MANAGE),
 
     ) {
 
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val limiter = event.monke.handlers.get(RateLimitHandler::class).getRateLimiter(event.guildIdLong)
         val language = event.getLanguage()
 
         if (!limiter.canTake(RateLimitedAction.BULK_DELETE)) {
-            event.reply {
+            event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
@@ -57,9 +56,11 @@ class ClearCommand : Command(
         }
 
         event.channel.iterableHistory
-            .takeAsync(event.getArgument<Int>(0) + 2)
-            .thenApply {
-                it.filter { m -> m.idLong != event.message.idLong }
+            .takeAsync(event.getArgument<Int>(0) + 2) //Account for 1 based indexing from the user + ignoring the users message
+            .thenApply { list ->
+                list.filter { //Dont remove the original message as we need to reply to it
+                    it.idLong != event.message.idLong
+                }
             }
             .thenAccept {
                 event.channel.purgeMessages(it)
@@ -77,8 +78,8 @@ class ClearCommand : Command(
                     )
                     footer()
                     send()
+                    limiter.take(RateLimitedAction.BULK_DELETE)
                 }
-                limiter.take(RateLimitedAction.BULK_DELETE)
             }
     }
 }

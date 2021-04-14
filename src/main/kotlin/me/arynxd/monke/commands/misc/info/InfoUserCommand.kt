@@ -12,6 +12,7 @@ class InfoUserCommand(parent: Command) : SubCommand(
     name = "user",
     description = "Shows information about a user.",
     category = CommandCategory.MISC,
+    flags = listOf(CommandFlag.ASYNC),
     parent = parent,
 
     arguments = ArgumentConfiguration(
@@ -26,8 +27,8 @@ class InfoUserCommand(parent: Command) : SubCommand(
     )
 ) {
 
-    override suspend fun run(event: CommandEvent) {
-        val member = if (event.isArgumentPresent(0)) event.getArgument(0) else event.member
+    override suspend fun runSuspend(event: CommandEvent) {
+        val member = event.getArgument(0, event.member)
 
         val language = event.getLanguage()
 

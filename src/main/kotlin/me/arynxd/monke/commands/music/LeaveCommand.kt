@@ -23,12 +23,12 @@ class LeaveCommand : Command(
         }
     }
 ) {
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val audioManager = event.guild.audioManager
         val musicHandler = event.monke.handlers.get(MusicHandler::class)
         musicHandler.leaveChannel(event.guild)
 
-        event.reply {
+        event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title(
                 TranslationHandler.getString(

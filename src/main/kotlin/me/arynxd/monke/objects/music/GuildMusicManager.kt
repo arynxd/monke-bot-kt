@@ -21,16 +21,14 @@ class GuildMusicManager(
     val channel: TextChannel by channel.ref()
     val voiceChannel: VoiceChannel by voiceChannel.ref()
 
-    fun getSendHandler(): AudioPlayerSendHandler = AudioPlayerSendHandler(player)
+    fun getSendHandler() = AudioPlayerSendHandler(player)
 
     fun play(track: AudioTrack, channel: VoiceChannel) {
         audioManager.openAudioConnection(channel)
         scheduler.queue(track)
     }
 
-    fun hasNext(): Boolean {
-        return scheduler.hasNext()
-    }
+    fun hasNext() = scheduler.hasNext()
 
     fun sendControlEmbed() {
         TODO("Unimplemented")

@@ -13,11 +13,11 @@ class TestCommand : Command(
     name = "test",
     description = "Tests the bot's basic functionality.",
     category = CommandCategory.DEVELOPER,
-    flags = listOf(CommandFlag.DEVELOPER_ONLY),
+    flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.ASYNC),
 
     ) {
 
-    override suspend fun run(event: CommandEvent) {
+    override suspend fun runSuspend(event: CommandEvent) {
         val language = event.getLanguage()
 
         event.reply {
@@ -80,7 +80,8 @@ class TestCommand : Command(
                     send()
                 }
             }
-        } catch (exception: TimeoutCancellationException) {
+        }
+        catch (exception: TimeoutCancellationException) {
             event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(

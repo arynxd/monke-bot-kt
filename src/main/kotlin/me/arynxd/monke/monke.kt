@@ -1,10 +1,10 @@
 package me.arynxd.monke
 
-import dev.minn.jda.ktx.injectKTX
 import me.arynxd.monke.events.Events
 import me.arynxd.monke.handlers.*
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
+import me.arynxd.monke.objects.plugins.Plugins
 import me.arynxd.monke.util.parseUptime
 import me.arynxd.monke.util.plurifyLong
 import net.dv8tion.jda.api.JDA
@@ -24,6 +24,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import javax.security.auth.login.LoginException
 import kotlin.random.Random
@@ -34,14 +35,11 @@ fun main() {
 }
 
 class Monke : ListenerAdapter() {
-    val scheduler = Executors.newScheduledThreadPool(10)
+    val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(10)
     val handlers = Handlers(this)
+    val plugins = Plugins(this)
 
-    init {
-        handlers.enableHandlers()
-    }
-
-    val jda: JDA = build()
+    val jda = build()
 
     private fun build(): JDA {
         try {
@@ -62,8 +60,6 @@ class Monke : ListenerAdapter() {
                     CacheFlag.ROLE_TAGS,
                     CacheFlag.MEMBER_OVERRIDES
                 )
-
-                .injectKTX()
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .setHttpClient(handlers.okHttpClient)
                 .addEventListeners(
@@ -75,20 +71,31 @@ class Monke : ListenerAdapter() {
                 .also { jda ->
                     handlers.handlers.values.forEach { jda.addEventListeners(it) }
                 }.build()
-
-        } catch (exception: LoginException) {
+        }
+        catch (exception: LoginException) {
             LOGGER.error(TranslationHandler.getInternalString("internal_error.invalid_login"))
             exitProcess(1)
 
-        } catch (exception: IllegalArgumentException) {
+        }
+        catch (exception: IllegalArgumentException) {
             LOGGER.error(TranslationHandler.getInternalString("internal_error.invalid_build"))
             exitProcess(1)
         }
     }
 
     override fun onReady(event: ReadyEvent) {
-        initGuilds()
+        LOGGER.info("Loading handlers")
+        handlers.enableHandlers()
         initTasks()
+
+        handlers.get(MetricsHandler::class).guildCount.set(getGuildCount().toDouble())
+        handlers.get(MetricsHandler::class).userCount.set(getUserCount().toDouble())
+
+        MessageAction.setDefaultMentionRepliedUser(false)
+        MessageAction.setDefaultMentions(emptyList())
+
+        LOGGER.info("Loading plugins")
+        plugins.loadPlugins()
 
         LOGGER.info(
             """
@@ -103,28 +110,18 @@ class Monke : ListenerAdapter() {
                         ${handlers.get(ConfigHandler::class).config.api.website}
         """.trimIndent()
         )
-
-        handlers.get(MetricsHandler::class).guildCount.set(getGuildCount().toDouble())
-        handlers.get(MetricsHandler::class).userCount.set(getUserCount().toDouble())
-
-        MessageAction.setDefaultMentionRepliedUser(false)
-        MessageAction.setDefaultMentions(emptyList())
-    }
-
-    private fun initGuilds() {
-        jda.guildCache.forEach { handlers.get(GuildDataHandler::class).initGuild(it.idLong) }
     }
 
     private fun initTasks() {
         val taskHandler = handlers.get(TaskHandler::class)
 
-        taskHandler.addTask({
+        taskHandler.addRepeatingTask(30, TimeUnit.SECONDS) {
             handlers.get(PaginationHandler::class).cleanup()
-        }, 30, TimeUnit.SECONDS)
+        }
 
-        taskHandler.addTask({
+        taskHandler.addRepeatingTask(2, TimeUnit.MINUTES) {
             switchStatus()
-        }, 2, TimeUnit.MINUTES)
+        }
     }
 
     private fun switchStatus() {
@@ -179,10 +176,6 @@ class Monke : ListenerAdapter() {
 
     fun getMemoryFormatted(): String {
         return (getTotalMemory() - getFreeMemory() shr 20).toString() + "MB / " + (getMaxMemory() shr 20) + "MB"
-    }
-
-    fun getMemoryPercent(): String {
-        return ((getTotalMemory() - getFreeMemory()).toInt() / getMaxMemory() * 100).toString()
     }
 
     fun getCPUUsage(): String {

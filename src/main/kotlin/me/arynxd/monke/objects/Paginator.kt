@@ -6,23 +6,22 @@ import me.arynxd.monke.handlers.TranslationHandler
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
+import net.dv8tion.jda.api.exceptions.ErrorHandler
+import net.dv8tion.jda.api.requests.ErrorResponse
 
 class Paginator(
     val monke: Monke,
     val message: Message,
     val pages: List<MessageEmbed>,
 ) {
-    var lastUsed = System.currentTimeMillis()
-
-    private var page = 0
     private val author = message.author
     private lateinit var sentMessage: Message
+    private var page = 0
+
+    var lastUsed = System.currentTimeMillis()
 
     suspend fun paginate() {
-        if (pages.isEmpty()) {
-            val error = TranslationHandler.getInternalString("internal_error.pagination_pages_empty")
-            throw IllegalArgumentException(error)
-        }
+        require(pages.isNotEmpty()) { TranslationHandler.getInternalString("internal_error.pagination_pages_empty") }
 
         sentMessage = message.reply(pages.first()).mentionRepliedUser(false).await()
         sentMessage.addReaction(Emoji.ARROW_LEFT.getAsReaction()).queue()
@@ -82,6 +81,6 @@ class Paginator(
     }
 
     fun delete() {
-        sentMessage.delete().queue(null, {})
+        sentMessage.delete().queue(null, ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE))
     }
 }

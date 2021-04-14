@@ -13,15 +13,15 @@ class TaskHandler(
     private val tasks = mutableMapOf<String, Future<*>>()
     private val scheduler = monke.scheduler
 
-    fun addTask(block: () -> Unit, name: String, delay: Long, unit: TimeUnit): ScheduledFuture<*> {
+    private fun addRepeatingTask(name: String, delay: Long, unit: TimeUnit, block: () -> Unit): ScheduledFuture<*> {
         val job = scheduler.scheduleAtFixedRate(block, 0, delay, unit)
         tasks[name] = job
         return job
     }
 
-    fun addTask(block: () -> Unit, delay: Long, unit: TimeUnit) = addTask(block, getName(), delay, unit)
+    fun addRepeatingTask(delay: Long, unit: TimeUnit, block: () -> Unit) = addRepeatingTask(getName(), delay, unit, block)
 
-    fun addTask(block: () -> Unit) = addTask(block, getName(), 0, TimeUnit.MILLISECONDS)
+    fun addRepeatingTask(block: () -> Unit) = addRepeatingTask(getName(), 0, TimeUnit.MILLISECONDS, block)
 
     fun <T> addOneShot(block: () -> T, name: String, delay: Long, unit: TimeUnit): Future<T> {
         val job = scheduler.schedule(block, delay, unit)

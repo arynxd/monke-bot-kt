@@ -15,6 +15,7 @@ class InfoServerCommand(parent: Command) : SubCommand(
     name = "server",
     description = "Shows information about a server.",
     category = CommandCategory.MISC,
+    flags = listOf(CommandFlag.ASYNC),
     parent = parent,
 
     arguments = ArgumentConfiguration(
@@ -28,8 +29,8 @@ class InfoServerCommand(parent: Command) : SubCommand(
         )
     )
 ) {
-    override suspend fun run(event: CommandEvent) {
-        val guild = if (event.isArgumentPresent(0)) event.getArgument(0) else event.guild
+    override suspend fun runSuspend(event: CommandEvent) {
+        val guild = event.getArgument(0, event.guild)
         val language = event.getLanguage()
 
         val informationFor = TranslationHandler.getString(language, "command.info.keyword.information_for_server")
@@ -75,10 +76,19 @@ class InfoServerCommand(parent: Command) : SubCommand(
 
         val none = TranslationHandler.getString(language, "keyword.none")
 
-        val animated = if (emotes.none { it.isAnimated }) none else emotes.filter { it.isAnimated }
-            .joinToString(separator = " ") { it.asMention }
-        val regular = if (emotes.none { !it.isAnimated }) none else emotes.filter { !it.isAnimated }
-            .joinToString(separator = " ") { it.asMention }
+        val animated =
+            if (emotes.none { it.isAnimated })
+                none
+            else
+                emotes.filter { it.isAnimated }
+                    .joinToString(separator = " ") { it.asMention }
+
+        val regular =
+            if (emotes.none { !it.isAnimated })
+                none
+            else
+                emotes.filter { !it.isAnimated }
+                    .joinToString(separator = " ") { it.asMention }
 
         return TranslationHandler.getString(
             language = language,

@@ -10,7 +10,7 @@ class InfoBotCommand(parent: Command) : SubCommand(
     category = CommandCategory.MISC,
     parent = parent,
 ) {
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val monke = event.monke
         val language = event.getLanguage()
 
@@ -26,7 +26,7 @@ class InfoBotCommand(parent: Command) : SubCommand(
         val totalServers = TranslationHandler.getString(language, "command.info.child.bot.keyword.total_servers")
         val uptime = TranslationHandler.getString(language, "command.info.child.bot.keyword.uptime")
 
-        event.reply {
+        event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title("${event.jda.selfUser.name} information")
 
@@ -35,7 +35,7 @@ class InfoBotCommand(parent: Command) : SubCommand(
             field(monkeVersion, MONKE_VERSION, true)
 
             field(threadCount, monke.getThreadCount().toString(), true)
-            field(memoryUsage, "${monke.getMemoryFormatted()} [ ${monke.getMemoryPercent()}% ]", true)
+            field(memoryUsage, monke.getMemoryFormatted(), true)
             field(cpuUsage, "${monke.getCPUUsage()}%", true)
 
             field(totalUsers, monke.getUserCount().toString(), true)

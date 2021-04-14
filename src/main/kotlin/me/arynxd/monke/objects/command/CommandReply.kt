@@ -8,8 +8,6 @@ import me.arynxd.monke.util.SUCCESS_EMBED_COLOUR
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 import java.time.Instant
 
 class CommandReply(val event: CommandEvent) {
@@ -17,20 +15,26 @@ class CommandReply(val event: CommandEvent) {
     private val mentions = mutableListOf<Message.MentionType>()
     private var type = Type.UNKNOWN
 
-    fun send(callback: ((Message) -> Unit) = { }) {
+    fun send(callback: ((Message) -> Unit)) {
         if (type == Type.UNKNOWN) {
             throw IllegalStateException("Type is not set")
         }
+
         event.message.reply(embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
             .queue(callback)
     }
 
+    fun send() {
+        send {}
+    }
+
     suspend fun await(): Message {
         if (type == Type.UNKNOWN) {
             throw IllegalStateException("Type is not set")
         }
+
         return event.message.reply(embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
@@ -39,76 +43,45 @@ class CommandReply(val event: CommandEvent) {
 
     fun type(type: Type) {
         this.type = type
-        embed.setColor(when(type) {
-            Type.SUCCESS -> SUCCESS_EMBED_COLOUR
-            Type.EXCEPTION -> ERROR_EMBED_COLOUR
-            Type.INFORMATION -> DEFAULT_EMBED_COLOUR
-            else -> throw IllegalArgumentException("Type $type is invalid")
-        })
-    }
-
-
-    fun field(title: String?, description: String?, inline: Boolean) {
-        embed.addField(
-            title?.substring(0, title.length.coerceAtMost(MessageEmbed.TITLE_MAX_LENGTH)),
-            description?.substring(0, description.length.coerceAtMost(MessageEmbed.VALUE_MAX_LENGTH)),
-            inline
+        embed.setColor(
+            when (type) {
+                Type.SUCCESS -> SUCCESS_EMBED_COLOUR
+                Type.EXCEPTION -> ERROR_EMBED_COLOUR
+                Type.INFORMATION -> DEFAULT_EMBED_COLOUR
+                else -> throw IllegalArgumentException("Type $type is invalid")
+            }
         )
     }
 
-    fun fields(fields: Collection<MessageEmbed.Field>) {
-        fields.forEach { field(it.name, it.value, it.isInline) }
-    }
+    fun field(title: String?, description: String?, inline: Boolean) =
+        embed.addField(
+            title?.take(MessageEmbed.TITLE_MAX_LENGTH),
+            description?.take(MessageEmbed.VALUE_MAX_LENGTH),
+            inline
+        )
 
-    fun blankField(inline: Boolean) {
-        embed.addBlankField(inline)
-    }
+    fun fields(fields: Collection<MessageEmbed.Field>) = fields.forEach { field(it.name, it.value, it.isInline) }
 
-    fun title(title: String?) {
-        if (title == null) {
-            embed.setTitle(title)
-            return
-        }
-        embed.setTitle(title.subSequence(0, title.length.coerceAtMost(MessageEmbed.TITLE_MAX_LENGTH)).toString())
-    }
+    fun blankField(inline: Boolean) = embed.addBlankField(inline)
 
-    fun description(description: String?) {
-        if (description == null) {
-            embed.setDescription(description)
-            return
-        }
-        embed.setDescription(description.subSequence(0, description.length.coerceAtMost(MessageEmbed.TEXT_MAX_LENGTH)))
-    }
+    fun title(title: String?) = embed.setTitle(title?.take(MessageEmbed.TITLE_MAX_LENGTH))
 
-    fun timestamp() {
-        embed.setTimestamp(Instant.now())
-    }
+    fun description(description: String?) = embed.setDescription(description?.take(MessageEmbed.TEXT_MAX_LENGTH))
 
-    fun footer(text: String = event.user.asTag, url: String = event.user.effectiveAvatarUrl) {
-        embed.setFooter(text.substring(0, text.length.coerceAtMost(MessageEmbed.TEXT_MAX_LENGTH)), url)
-    }
+    fun timestamp(time: Instant = Instant.now()) = embed.setTimestamp(time)
 
-    fun thumbnail(url: String?) {
-        embed.setThumbnail(url)
-    }
+    fun footer(text: String = event.user.asTag, url: String = event.user.effectiveAvatarUrl) =
+        embed.setFooter(text.take(MessageEmbed.TEXT_MAX_LENGTH), url)
 
-    fun image(url: String?) {
-        embed.setImage(url)
-    }
+    fun thumbnail(url: String?) = embed.setThumbnail(url)
 
-    fun image(url: String?, size: Int?) {
-        embed.setImage("$url?size=$size")
-    }
+    fun image(url: String?) = embed.setImage(url)
 
-    fun mentions(vararg mentions: Message.MentionType) {
-        this.mentions.addAll(mentions)
-    }
+    fun image(url: String?, size: Int?) = embed.setImage("$url?size=$size")
 
-    fun chunks(parts: List<Any>) {
-        for (part in parts) {
-            event.channel.sendMessage(part.toString()).queue()
-        }
-    }
+    fun mentions(vararg mentions: Message.MentionType) = this.mentions.addAll(mentions)
+
+    fun chunks(parts: List<Any>) = parts.forEach { event.channel.sendMessage(it.toString()).queue() }
 
     fun build() = embed.build()
 

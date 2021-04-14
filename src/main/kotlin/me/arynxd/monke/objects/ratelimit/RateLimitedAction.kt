@@ -9,8 +9,8 @@ enum class RateLimitedAction(
 ) {
     EMOJI_CREATE(
         maxAmount = 20,
-        refresh = 1, unit =
-        TimeUnit.DAYS
+        refresh = 1,
+        unit = TimeUnit.DAYS
     ),
 
     BULK_DELETE(

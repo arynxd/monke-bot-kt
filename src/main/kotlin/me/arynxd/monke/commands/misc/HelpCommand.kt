@@ -32,7 +32,7 @@ class HelpCommand : Command(
     ),
 
     ) {
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val prefix = event.getPrefix()
         if (event.isArgumentPresent(0)) {
             getHelp(event, event.getArgument(0))
@@ -100,7 +100,8 @@ class HelpCommand : Command(
             if (command is SubCommand) {
                 "*${usage}:* \n $prefix$name ${command.arguments.getArgumentsList(language, command)} \n\n " +
                         if (command.hasArguments()) command.arguments.getArgumentsString(language, command) else ""
-            } else {
+            }
+            else {
                 "*${usage}:* \n $prefix$name ${command.arguments.getArgumentsList(language, command)} \n\n " +
                         if (command.hasArguments()) command.arguments.getArgumentsString(language, command) else ""
             }

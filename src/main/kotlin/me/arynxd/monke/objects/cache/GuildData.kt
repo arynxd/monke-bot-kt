@@ -24,7 +24,11 @@ class GuildData(
             setSetting(GUILDS.LANGUAGE, value.code)
         }
 
-    val messageCache = MessageCache(this)
+    var logChannel: Long = getSetting(GUILDS.LOG_CHANNEL, -1)
+        set(value) {
+            field = value
+            setSetting(GUILDS.LOG_CHANNEL, value)
+        }
 
     private fun <T : Any> getSetting(field: Column<T>, default: T): T {
         val query = monke.handlers.get(DatabaseHandler::class).database

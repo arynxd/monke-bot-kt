@@ -4,10 +4,7 @@ import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentLanguage
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.translation.Language
 
 @Suppress("UNUSED")
@@ -27,12 +24,12 @@ class LanguageCommand : Command(
         )
     )
 ) {
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val cache = event.getDataCache()
         val language = cache.language
 
         if (!event.isArgumentPresent(0)) {
-            event.reply {
+            event.replyAsync {
                 type(CommandReply.Type.INFORMATION)
                 title(
                     TranslationHandler.getString(
@@ -49,7 +46,7 @@ class LanguageCommand : Command(
 
         val newLanguage = event.getArgument<Language>(0)
         if (language == newLanguage) {
-            event.reply {
+            event.replyAsync {
                 type(CommandReply.Type.INFORMATION)
                 title(
                     TranslationHandler.getString(
@@ -64,7 +61,7 @@ class LanguageCommand : Command(
             return
         }
 
-        event.reply {
+        event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title(
                 TranslationHandler.getString(

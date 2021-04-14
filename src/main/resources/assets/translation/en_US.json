@@ -15,7 +15,6 @@
   "music": {
     "channel_left": "I left %0.",
     "not_in_channel": "I'm not in a voice channel currently.",
-
     "adding_to_queue": "Adding to queue %0.",
     "first_track_of": " (first track of playlist %0)",
     "nothing_found": "Nothing found by %0.",
@@ -27,6 +26,10 @@
     "none": "None",
     "yes": "Yes",
     "no": "No"
+  },
+  "cancel_reason": {
+    "timeout": "%0 timed out.",
+    "bot_shutdown": "Bot was shutdown."
   },
   "command_error": {
     "disabled": "That command is disabled, please try again later.",
@@ -386,6 +389,11 @@
       "response": {
         "cleared": "Cleared %0 message%1"
       }
+    },
+    "plugin": {
+      "name": "plugin",
+      "description": "Controls the currently running plugins.",
+      "aliases": ""
     }
   }
 }
