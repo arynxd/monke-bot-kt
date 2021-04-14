@@ -8,10 +8,7 @@ import me.arynxd.monke.handlers.MusicHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentString
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.util.isValidUrl
 
 @Suppress("UNUSED")
@@ -19,10 +16,11 @@ class PlayCommand : Command(
     name = "play",
     description = "Plays music from youtube or soundcloud",
     category = CommandCategory.MUSIC,
+    flags = listOf(CommandFlag.ASYNC),
     arguments = ArgumentConfiguration(
         listOf(
             ArgumentString(
-                name = "Track",
+                name = "song",
                 description = "The track to play.",
                 required = true,
                 type = ArgumentType.VARARG
@@ -40,7 +38,7 @@ class PlayCommand : Command(
         }
     }
 ) {
-    override suspend fun run(event: CommandEvent) {
+    override suspend fun runSuspend(event: CommandEvent) {
         val channel = event.channel
         val voiceChannel = event.member.voiceState!!.channel!!
         val musicHandler = event.monke.handlers.get(MusicHandler::class)

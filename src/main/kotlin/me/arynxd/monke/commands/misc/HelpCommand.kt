@@ -32,7 +32,7 @@ class HelpCommand : Command(
     ),
 
     ) {
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val prefix = event.getPrefix()
         if (event.isArgumentPresent(0)) {
             getHelp(event, event.getArgument(0))

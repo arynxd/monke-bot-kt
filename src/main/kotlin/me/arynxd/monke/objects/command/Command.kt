@@ -6,6 +6,7 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.plurifyInt
 import net.dv8tion.jda.api.Permission
+import java.lang.IllegalStateException
 
 abstract class Command @JvmOverloads constructor(
     val name: String,
@@ -139,7 +140,9 @@ abstract class Command @JvmOverloads constructor(
         if (argResult.isMissing()) {
             val requiredCount = argResult.missingArguments.size
             val missing =
-                argResult.missingArguments.joinToString(separator = "") { "*${it.name}* -- ${it.description}\n" }
+                argResult.missingArguments.joinToString(separator = "") {
+                    "*${it.getName(language, commandEvent.command)}* -- ${it.getDescription(language, commandEvent.command)}\n"
+                }
 
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
@@ -163,7 +166,9 @@ abstract class Command @JvmOverloads constructor(
         if (argResult.isInvalid()) {
             val invalidCount = argResult.invalidArguments.size
             val invalid =
-                argResult.invalidArguments.joinToString(separator = "") { "*${it.name}* -- ${it.description}\n" }
+                argResult.invalidArguments.joinToString(separator = "") {
+                    "*${it.getName(language, commandEvent.command)}* -- ${it.getDescription(language, commandEvent.command)}\n"
+                }
 
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
@@ -215,5 +220,11 @@ abstract class Command @JvmOverloads constructor(
         return TranslationHandler.getString(language, "command.$name.aliases").split("/")
     }
 
-    abstract suspend fun run(event: CommandEvent)
+    open suspend fun runSuspend(event: CommandEvent) {
+        //Placeholder method
+    }
+
+    open fun runSync(event: CommandEvent) {
+        //Placeholder method
+    }
 }

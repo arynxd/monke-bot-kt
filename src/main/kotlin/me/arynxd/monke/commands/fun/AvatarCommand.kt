@@ -28,11 +28,11 @@ class AvatarCommand : Command(
     )
 ) {
 
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val language = event.getLanguage()
         val user = if (event.isArgumentPresent(0)) event.getArgument(0) else event.user
 
-        event.reply {
+        event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title(
                 TranslationHandler.getString(

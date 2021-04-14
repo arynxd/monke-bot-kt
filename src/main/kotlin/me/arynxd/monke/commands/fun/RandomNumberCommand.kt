@@ -38,12 +38,12 @@ class RandomNumberCommand : Command(
     )
 ) {
 
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val lowerBound = event.getArgument<Long>(0)
         val upperBound = event.getArgument<Long>(1)
 
         if (lowerBound >= upperBound) {
-            event.reply {
+            event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(
@@ -57,7 +57,7 @@ class RandomNumberCommand : Command(
             return
         }
 
-        event.reply {
+        event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title("I choose ${Random.nextLong(lowerBound, upperBound)}!")
             footer()

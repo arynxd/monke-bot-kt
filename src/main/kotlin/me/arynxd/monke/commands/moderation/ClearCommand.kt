@@ -36,12 +36,12 @@ class ClearCommand : Command(
 
     ) {
 
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val limiter = event.monke.handlers.get(RateLimitHandler::class).getRateLimiter(event.guildIdLong)
         val language = event.getLanguage()
 
         if (!limiter.canTake(RateLimitedAction.BULK_DELETE)) {
-            event.reply {
+            event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     TranslationHandler.getString(

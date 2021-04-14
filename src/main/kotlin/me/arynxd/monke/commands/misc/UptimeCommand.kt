@@ -13,10 +13,10 @@ class UptimeCommand : Command(
     category = CommandCategory.MISC,
 ) {
 
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val language = event.getLanguage()
         val uptime = TranslationHandler.getString(language, "command.uptime.keyword.uptime")
-        event.reply {
+        event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title("$uptime: ${event.monke.getUptimeString()}")
             footer()

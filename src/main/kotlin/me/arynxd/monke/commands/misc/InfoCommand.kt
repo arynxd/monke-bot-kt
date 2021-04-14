@@ -37,7 +37,7 @@ class InfoCommand : Command(
         )
     }
 
-    override suspend fun run(event: CommandEvent) {
-        event.command.children[0].run(event)
+    override suspend fun runSuspend(event: CommandEvent) {
+        event.command.children[0].runSuspend(event)
     }
 }

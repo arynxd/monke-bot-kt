@@ -21,7 +21,7 @@ class EvalCommand : Command(
     name = "eval",
     description = "Evaluates Kotlin code.",
     category = CommandCategory.DEVELOPER,
-    flags = listOf(CommandFlag.DEVELOPER_ONLY),
+    flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.ASYNC),
 
     arguments = ArgumentConfiguration(
         listOf(
@@ -63,7 +63,7 @@ class EvalCommand : Command(
 
     private val codeBlockRegex = Regex("```[A-Za-z]*")
 
-    override suspend fun run(event: CommandEvent) {
+    override suspend fun runSuspend(event: CommandEvent) {
         engine.put("jda", event.jda)
         engine.put("api", event.jda)
         engine.put("channel", event.channel)

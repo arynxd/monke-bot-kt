@@ -1,21 +1,19 @@
 package me.arynxd.monke.commands.misc
 
 import dev.minn.jda.ktx.await
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.command.*
 
 @Suppress("UNUSED")
 class PingCommand : Command(
     name = "ping",
     description = "Shows the bot's ping to discord.",
     category = CommandCategory.MISC,
+    flags = listOf(CommandFlag.ASYNC),
     aliases = listOf("pong"),
 
     ) {
 
-    override suspend fun run(event: CommandEvent) {
+    override suspend fun runSuspend(event: CommandEvent) {
         event.reply {
             type(CommandReply.Type.SUCCESS)
             title("Pong!")

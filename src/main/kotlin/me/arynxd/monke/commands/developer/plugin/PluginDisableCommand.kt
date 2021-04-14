@@ -23,10 +23,10 @@ class PluginDisableCommand(parent: Command) : SubCommand(
         )
     )
 ) {
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val plugin = event.getArgument<LoadedPlugin>(0)
         if (!plugin.isEnabled) {
-            event.reply {
+            event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title("Plugin '${plugin.config.name}' is already disabled.")
                 footer()
@@ -35,7 +35,7 @@ class PluginDisableCommand(parent: Command) : SubCommand(
             return
         }
 
-        event.reply {
+        event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title("Disabled plugin '${plugin.config.name}'")
             plugin.plugin.onDisable()

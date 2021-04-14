@@ -1,16 +1,14 @@
 package me.arynxd.monke.commands.music
 
 import me.arynxd.monke.handlers.MusicHandler
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.command.*
 
 @Suppress("UNUSED")
 class PauseCommand : Command(
     name = "pause",
     description = "Starts and stops the player.",
     category = CommandCategory.MUSIC,
+    flags = listOf(CommandFlag.ASYNC),
 
     finalCheck = { it.member.voiceState?.channel != null },
     finalCheckFail = {
@@ -22,7 +20,7 @@ class PauseCommand : Command(
         }
     }
 ) {
-    override suspend fun run(event: CommandEvent) {
+    override suspend fun runSuspend(event: CommandEvent) {
         val musicManager = event.monke.handlers.get(MusicHandler::class).getGuildMusicManager(
             guild = event.guild,
             channel = event.channel,

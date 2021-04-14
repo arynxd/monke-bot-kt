@@ -31,7 +31,7 @@ class WikipediaCommand : Command(
     ),
 
     ) {
-    override suspend fun run(event: CommandEvent) {
+    override suspend fun runSuspend(event: CommandEvent) {
         val subject = event.getVararg<String>(0).joinToString(separator = "_").let {
             if (it == "cbt") "Cock_and_ball_torture"
             else it

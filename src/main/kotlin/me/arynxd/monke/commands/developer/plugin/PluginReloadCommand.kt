@@ -23,9 +23,9 @@ class PluginReloadCommand(parent: Command) : SubCommand(
         )
     )
 ) {
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val plugin = event.getArgument<LoadedPlugin>(0)
-        event.reply {
+        event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title("Reloaded plugin '${plugin.config.name}'")
             plugin.plugin.onDisable()

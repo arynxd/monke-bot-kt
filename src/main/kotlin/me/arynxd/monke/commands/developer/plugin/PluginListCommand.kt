@@ -9,8 +9,8 @@ class PluginListCommand(parent: Command) : SubCommand(
     parent = parent,
     flags = listOf(CommandFlag.DEVELOPER_ONLY)
 ) {
-    override suspend fun run(event: CommandEvent) {
-        event.reply {
+    override fun runSync(event: CommandEvent) {
+        event.replyAsync {
             val plugins = event.monke.plugins.getPluginList().let {
                 if (it.isBlank()) {
                     return@let "No plugins loaded"

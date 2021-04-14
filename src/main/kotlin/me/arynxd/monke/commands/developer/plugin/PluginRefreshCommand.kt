@@ -9,9 +9,9 @@ class PluginRefreshCommand(parent: Command) : SubCommand(
     parent = parent,
     flags = listOf(CommandFlag.DEVELOPER_ONLY)
 ) {
-    override suspend fun run(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         event.monke.plugins.reload()
-        event.reply {
+        event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title("Reloaded all plugins!")
             footer()

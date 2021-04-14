@@ -15,6 +15,7 @@ class InfoServerCommand(parent: Command) : SubCommand(
     name = "server",
     description = "Shows information about a server.",
     category = CommandCategory.MISC,
+    flags = listOf(CommandFlag.ASYNC),
     parent = parent,
 
     arguments = ArgumentConfiguration(
@@ -28,7 +29,7 @@ class InfoServerCommand(parent: Command) : SubCommand(
         )
     )
 ) {
-    override suspend fun run(event: CommandEvent) {
+    override suspend fun runSuspend(event: CommandEvent) {
         val guild = event.getArgument(0, event.guild)
         val language = event.getLanguage()
 

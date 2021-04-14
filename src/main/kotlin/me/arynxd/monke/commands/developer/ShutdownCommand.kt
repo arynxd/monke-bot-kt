@@ -9,9 +9,9 @@ class ShutdownCommand : Command(
     name = "shutdown",
     description = "Shuts the bot down gracefully.",
     category = CommandCategory.DEVELOPER,
-    flags = listOf(CommandFlag.DEVELOPER_ONLY),
+    flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.ASYNC),
 ) {
-    override suspend fun run(event: CommandEvent) {
+    override suspend fun runSuspend(event: CommandEvent) {
         event.reply {
             type(CommandReply.Type.SUCCESS)
             title(

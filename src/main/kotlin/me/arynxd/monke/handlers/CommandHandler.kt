@@ -2,13 +2,11 @@ package me.arynxd.monke.handlers
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.Monke
 import me.arynxd.monke.events.GuildMessageEvent
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandReply
-import me.arynxd.monke.objects.command.SubCommand
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.handlers.whenEnabled
@@ -107,44 +105,62 @@ class CommandHandler @JvmOverloads constructor(
     }
 
     private fun launchCommand(command: Command, event: CommandEvent) {
-        GlobalScope.launch {
-            if (!command.isExecutable(event)) {
-                return@launch
-            }
+        val isExecutable = runBlocking {
+            return@runBlocking command.isExecutable(event)
+        }
 
-            monke.handlers.get(CooldownHandler::class).addCommand(event.user, command)
-            monke.handlers.get(MetricsHandler::class).commandCounter.labels(
-                if (command is SubCommand)
-                    command.parent.name
-                else
-                    command.name
-            ).inc()
+        if (!isExecutable) {
+            return
+        }
 
-            try {
-                withTimeout(5000) { //5 Seconds
-                    command.run(event)
+        monke.handlers.get(CooldownHandler::class).addCommand(event.user, command)
+        monke.handlers.get(MetricsHandler::class).commandCounter.labels(
+            if (command is SubCommand)
+                command.parent.name
+            else
+                command.name
+        ).inc()
+
+        if (command.hasFlag(CommandFlag.ASYNC)) {
+            GlobalScope.launch {
+                try {
+                    withTimeout(5000) { //5 Seconds
+                        command.runSuspend(event)
+                    }
                 }
-            }
-            catch (exception: Exception) {
-                event.reply {
-                    type(CommandReply.Type.EXCEPTION)
-                    title("Something went wrong whilst executing that command. Please report this to the devs!")
-                    footer()
-                    send()
+                catch (exception: Exception) {
+                    handleException(event, exception)
                 }
-
-                event.monke.handlers
-                    .get(ExceptionHandler::class)
-                    .handle(exception, "From command '${event.command.name}'")
             }
         }
+        else {
+            try {
+                command.runSync(event)
+            }
+            catch (exception: Exception) {
+                handleException(event, exception)
+            }
+        }
+    }
+
+    private fun handleException(event: CommandEvent, exception: Exception) {
+        event.replyAsync {
+            type(CommandReply.Type.EXCEPTION)
+            title("Something went wrong whilst executing that command. Please report this to the devs!")
+            footer()
+            send()
+        }
+
+        event.monke.handlers
+            .get(ExceptionHandler::class)
+            .handle(exception, "From command '${event.command.name}'")
     }
 
     fun registerCommand(command: Command): Boolean {
         return registerCommand(command, commandMap)
     }
 
-    fun registerCommand(command: Command, map: ConcurrentHashMap<String, Command>): Boolean {
+    private fun registerCommand(command: Command, map: ConcurrentHashMap<String, Command>): Boolean {
         for (language in Language.getLanguages()) {
             val name = command.getName(language).toLowerCase()
             if (map.containsKey(name)) {

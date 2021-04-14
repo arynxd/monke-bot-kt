@@ -26,7 +26,7 @@ class PluginCommand : Command(
         )
     }
 
-    override suspend fun run(event: CommandEvent) {
-        event.command.children[3].run(event)
+    override fun runSync(event: CommandEvent) {
+        event.command.children[3].runSync(event)
     }
 }

@@ -71,7 +71,6 @@ class Monke : ListenerAdapter() {
                 .also { jda ->
                     handlers.handlers.values.forEach { jda.addEventListeners(it) }
                 }.build()
-
         }
         catch (exception: LoginException) {
             LOGGER.error(TranslationHandler.getInternalString("internal_error.invalid_login"))
