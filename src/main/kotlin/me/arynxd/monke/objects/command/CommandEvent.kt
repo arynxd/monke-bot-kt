@@ -15,7 +15,6 @@ class CommandEvent(
     val args: MutableList<Any>,
     val monke: Monke
 ) {
-
     val jda: JDA = event.jda
     val channel = event.channel
     val user: User = event.user

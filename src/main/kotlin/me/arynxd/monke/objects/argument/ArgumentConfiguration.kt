@@ -33,7 +33,7 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
         return true
     }
 
-    suspend fun isArgumentsValid(event: CommandEvent): ArgumentResult {
+    suspend fun isArgumentsValid(event: CommandEvent): Triple<List<Any>, List<Argument<*>>, List<Argument<*>>> {
         val args = event.args.map { it.toString() }
         event.args.clear()
         val invalidArguments: MutableList<Argument<*>> = mutableListOf()
@@ -41,15 +41,19 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
         val varargIndex = expected.indexOfLast { it.type == ArgumentType.VARARG }
 
         if (args.size < expected.count { it.required }) { //Missing required args
-            return ArgumentResult(
-                missingArguments = expected.subList(args.size, expected.size)
-                    .filter { it.required }) //Collect missing args
+            return Triple(
+                emptyList(),
+                emptyList(),
+                expected.subList(args.size, expected.size).filter { it.required } //Collect missing args
+            )
         }
 
         if (args.size < varargIndex) { // Missing args before a vararg (extra checks)
-            return ArgumentResult(
-                missingArguments = expected.subList(args.size, expected.size)
-                    .filter { it.required }) //Collect missing args
+            return Triple(
+                emptyList(),
+                emptyList(),
+                expected.subList(args.size, expected.size).filter { it.required } //Collect missing args
+            )
         }
 
 
@@ -89,11 +93,11 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
         }
 
         if (invalidArguments.isNotEmpty()) {
-            return ArgumentResult(invalidArguments = invalidArguments)
+            return Triple(emptyList(), invalidArguments, emptyList())
         }
 
         event.args.addAll(validArguments)
-        return ArgumentResult(validArguments = validArguments)
+        return Triple(validArguments, emptyList(), emptyList())
     }
 
     fun getArgumentsString(language: Language, command: Command): String {

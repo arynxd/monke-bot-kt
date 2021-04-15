@@ -137,10 +137,10 @@ abstract class Command @JvmOverloads constructor(
 
         val argResult = arguments.isArgumentsValid(commandEvent)
 
-        if (argResult.isMissing()) {
-            val requiredCount = argResult.missingArguments.size
+        if (argResult.third.isNotEmpty()) {
+            val requiredCount = argResult.third.size
             val missing =
-                argResult.missingArguments.joinToString(separator = "") {
+                argResult.third.joinToString(separator = "") {
                     "*${it.getName(language, commandEvent.command)}* -- ${it.getDescription(language, commandEvent.command)}\n"
                 }
 
@@ -163,10 +163,10 @@ abstract class Command @JvmOverloads constructor(
             return false
         }
 
-        if (argResult.isInvalid()) {
-            val invalidCount = argResult.invalidArguments.size
+        if (argResult.second.isNotEmpty()) {
+            val invalidCount = argResult.second.size
             val invalid =
-                argResult.invalidArguments.joinToString(separator = "") {
+                argResult.second.joinToString(separator = "") {
                     "*${it.getName(language, commandEvent.command)}* -- ${it.getDescription(language, commandEvent.command)}\n"
                 }
 
