@@ -1,6 +1,7 @@
-package me.arynxd.monke.objects.events.types
+package me.arynxd.monke.objects.events.types.command
 
 import me.arynxd.monke.Monke
+import me.arynxd.monke.objects.events.types.BaseEvent
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
@@ -8,13 +9,22 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 
 class CommandPreprocessEvent(
     override val monke: Monke,
-    val message: Message,
-    val jda: JDA,
-    val channel: TextChannel,
-    val user: User,
-    val member: Member,
-    val guild: Guild
-) : Event {
+    message: Message,
+    jda: JDA,
+    channel: TextChannel,
+    user: User,
+    member: Member,
+    guild: Guild
+) : BaseEvent, GenericCommandEvent(
+    monke = monke,
+
+    message = message,
+    jda = jda,
+    channel = channel,
+    user = user,
+    member = member,
+    guild = guild
+) {
     constructor(event: GuildMessageReceivedEvent, monke: Monke) : this(
         monke,
         event.message,

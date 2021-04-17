@@ -2,7 +2,7 @@ package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.handlers.CooldownHandler
 import me.arynxd.monke.handlers.TranslationHandler
-import me.arynxd.monke.objects.events.types.CommandEvent
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.plurifyInt
 

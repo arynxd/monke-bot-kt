@@ -7,7 +7,7 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.events.types.CommandEvent
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.handlers.LOGGER
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements

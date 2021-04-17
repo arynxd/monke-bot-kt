@@ -9,11 +9,11 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandFlag
 import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.command.SubCommand
-import me.arynxd.monke.objects.events.EventListener
-import me.arynxd.monke.objects.events.types.CommandEvent
-import me.arynxd.monke.objects.events.types.CommandExceptionEvent
-import me.arynxd.monke.objects.events.types.CommandPreprocessEvent
-import me.arynxd.monke.objects.events.types.Event
+import me.arynxd.monke.objects.events.interfaces.IEventListener
+import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.events.types.command.CommandExceptionEvent
+import me.arynxd.monke.objects.events.types.command.CommandPreprocessEvent
+import me.arynxd.monke.objects.events.types.BaseEvent
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.handlers.whenEnabled
@@ -33,11 +33,11 @@ class CommandHandler @JvmOverloads constructor(
         TranslationHandler::class,
         GuildDataHandler::class
     )
-) : Handler(), EventListener {
+) : Handler(), IEventListener {
     private val reflections = Reflections(COMMAND_PACKAGE, SubTypesScanner())
     val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
 
-    override fun onEvent(event: Event) {
+    override fun onEvent(event: BaseEvent) {
         if (event is CommandPreprocessEvent) {
             handlePreprocessEvent(event)
         }
@@ -87,7 +87,7 @@ class CommandHandler @JvmOverloads constructor(
             return
         }
 
-        val commandEvent = CommandEvent(monke, event, command, args.toMutableList())
+        val commandEvent = CommandEvent(monke, args.toMutableList(), command, event)
 
         if (command.hasChildren()) {
             if (args.isEmpty()) { //Is there no additional arguments
@@ -104,7 +104,7 @@ class CommandHandler @JvmOverloads constructor(
             }
 
             args.removeAt(0)
-            launchCommand(childCommand, CommandEvent(monke, event, childCommand, args.toMutableList()))
+            launchCommand(childCommand, CommandEvent(monke, args.toMutableList(), childCommand, event))
             return
         }
 
@@ -172,7 +172,7 @@ class CommandHandler @JvmOverloads constructor(
             .get(ExceptionHandler::class)
             .handle(exception, "From command '${event.command.metaData.name}'")
 
-        monke.eventProcessor.fireEvent(CommandExceptionEvent(monke, exception))
+        monke.eventProcessor.fireEvent(CommandExceptionEvent(monke, exception, event))
     }
 
     fun registerCommand(command: Command): Boolean {

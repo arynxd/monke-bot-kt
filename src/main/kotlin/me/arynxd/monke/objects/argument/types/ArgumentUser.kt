@@ -3,7 +3,7 @@ package me.arynxd.monke.objects.argument.types
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentType
-import me.arynxd.monke.objects.events.types.CommandEvent
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 

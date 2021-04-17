@@ -1,6 +1,6 @@
 package me.arynxd.monke
 
-import me.arynxd.monke.events.Events
+import me.arynxd.monke.events.JDAEvents
 import me.arynxd.monke.handlers.*
 import me.arynxd.monke.objects.events.EventProcessor
 import me.arynxd.monke.objects.handlers.Handlers
@@ -39,7 +39,7 @@ class Monke : ListenerAdapter() {
     val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(10)
     val handlers = Handlers(this)
     val plugins = Plugins(this)
-    val eventProcessor = EventProcessor(this)
+    val eventProcessor = EventProcessor()
 
     val jda = build()
 
@@ -72,7 +72,7 @@ class Monke : ListenerAdapter() {
                 .setHttpClient(handlers.okHttpClient)
                 .addEventListeners(
                     this,
-                    Events(this)
+                    JDAEvents(this)
                 )
                 .setActivity(Activity.playing("loading up!"))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)

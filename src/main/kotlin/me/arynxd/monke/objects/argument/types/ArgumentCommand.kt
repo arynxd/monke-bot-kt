@@ -4,7 +4,7 @@ import me.arynxd.monke.handlers.CommandHandler
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.events.types.CommandEvent
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 
 class ArgumentCommand(
     override val name: String,

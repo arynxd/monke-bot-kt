@@ -1,20 +1,21 @@
 package me.arynxd.monke.objects.events
 
-import me.arynxd.monke.Monke
-import me.arynxd.monke.objects.events.types.Event
+import me.arynxd.monke.objects.events.interfaces.IEventListener
+import me.arynxd.monke.objects.events.interfaces.IEventProcessor
+import me.arynxd.monke.objects.events.types.BaseEvent
 
-class EventProcessor(val monke: Monke) {
-    private val listeners = mutableListOf<EventListener>()
+class EventProcessor: IEventProcessor {
+    private val listeners = mutableListOf<IEventListener>()
 
-    fun registerListeners(vararg listener: EventListener) {
-        listeners.addAll(listener)
+    override fun registerListeners(vararg listeners: IEventListener) {
+        this.listeners.addAll(listeners)
     }
 
-    fun deregisterListeners(vararg listener: EventListener) {
-        listeners.removeAll(listener)
+    override fun deregisterListeners(vararg listeners: IEventListener) {
+        this.listeners.removeAll(listeners)
     }
 
-    fun fireEvent(event: Event) {
+    override fun fireEvent(event: BaseEvent) {
         for (listener in listeners) {
             listener.onEvent(event)
         }

@@ -1,33 +1,28 @@
-package me.arynxd.monke.objects.events.types
+package me.arynxd.monke.objects.events.types.command
 
 import me.arynxd.monke.Monke
-import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.handlers.GuildDataHandler
 import me.arynxd.monke.objects.cache.GuildData
 import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.events.types.BaseEvent
 import me.arynxd.monke.objects.translation.Language
 
 class CommandEvent(
     override val monke: Monke,
-    val event: CommandPreprocessEvent,
+    val args: MutableList<Any>,
     val command: Command,
-    val args: MutableList<Any>
-) : Event {
-    val jda = event.jda
-    val channel = event.channel
-    val user = event.user
-    val guild = event.guild
-    val message = event.message
-    val member = event.member
-    val selfMember = event.guild.selfMember
-    val guildIdLong = event.guild.idLong
 
-    suspend fun reply(function: suspend CommandReply.() -> Unit) = function(CommandReply(this))
+    event: CommandPreprocessEvent
+) : BaseEvent, GenericCommandEvent(
+    monke = monke,
 
-    fun replyAsync(function: CommandReply.() -> Unit) = function(CommandReply(this))
-
-    fun isDeveloper(): Boolean = monke.handlers.get(ConfigHandler::class).config.developers.contains(user.id)
+    jda = event.jda,
+    channel = event.channel,
+    user = event.user,
+    member = event.member,
+    guild = event.guild,
+    message = event.message
+) {
 
     @Suppress("UNCHECKED_CAST")
     fun <T> getArgument(indie: Int, default: T? = null): T {

@@ -1,7 +1,7 @@
 package me.arynxd.monke.commands.developer.plugin
 
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.events.types.CommandEvent
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 
 class PluginRefreshCommand(parent: Command) : SubCommand(
     parent,

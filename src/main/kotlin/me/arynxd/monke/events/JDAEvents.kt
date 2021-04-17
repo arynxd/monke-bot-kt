@@ -4,7 +4,7 @@ import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.handlers.GuildDataHandler
-import me.arynxd.monke.objects.events.types.CommandPreprocessEvent
+import me.arynxd.monke.objects.events.types.command.CommandPreprocessEvent
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import me.arynxd.monke.util.plurifyLong
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.time.Instant
 
-class Events(val monke: Monke) : ListenerAdapter() {
+class JDAEvents(val monke: Monke) : ListenerAdapter() {
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         if (event.author.isBot) {
             return
@@ -73,4 +73,3 @@ class Events(val monke: Monke) : ListenerAdapter() {
         }
     }
 }
-
