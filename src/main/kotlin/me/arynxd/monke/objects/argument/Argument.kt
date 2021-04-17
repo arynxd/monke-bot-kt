@@ -2,7 +2,7 @@ package me.arynxd.monke.objects.argument
 
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.command.SubCommand
 import me.arynxd.monke.objects.translation.Language
 
@@ -21,16 +21,20 @@ abstract class Argument<T> {
     abstract suspend fun convert(input: String, event: CommandEvent): T? // Null on invalid
 
     fun getDescription(language: Language, command: Command): String {
-        val commandName = if (command is SubCommand)
-            "${command.parent.getName(language)}.child.${command.getName(language)}"
-        else command.name
+        val commandName =
+            if (command is SubCommand)
+                "${command.parent.getName(language)}.child.${command.getName(language)}"
+            else
+                command.getName(language)
         return TranslationHandler.getString(language, "command.$commandName.argument.$name.description")
     }
 
     fun getName(language: Language, command: Command): String {
-        val commandName = if (command is SubCommand)
-            "${command.parent.getName(language)}.child.${command.getName(language)}"
-        else command.name
+        val commandName =
+            if (command is SubCommand)
+                "${command.parent.getName(language)}.child.${command.getName(language)}"
+            else
+                command.getName(language)
         return TranslationHandler.getString(language, "command.$commandName.argument.$name.name")
     }
 }

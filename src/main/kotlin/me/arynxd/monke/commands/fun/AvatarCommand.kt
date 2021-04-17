@@ -6,23 +6,26 @@ import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentUser
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandMetaData
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.command.CommandReply
 
 @Suppress("UNUSED")
 class AvatarCommand : Command(
-    name = "avatar",
-    description = "Shows the avatar of a user.",
-    category = CommandCategory.FUN,
-    aliases = listOf("avi", "pfp", "av"),
+    CommandMetaData(
+        name = "avatar",
+        description = "Shows the avatar of a user.",
+        category = CommandCategory.FUN,
+        aliases = listOf("avi", "pfp", "av"),
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentUser(
-                name = "user",
-                description = "The user to get the avatar for.",
-                required = false,
-                type = ArgumentType.REGULAR,
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentUser(
+                    name = "user",
+                    description = "The user to get the avatar for.",
+                    required = false,
+                    type = ArgumentType.REGULAR,
+                )
             )
         )
     )

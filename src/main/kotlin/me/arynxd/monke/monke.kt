@@ -2,6 +2,7 @@ package me.arynxd.monke
 
 import me.arynxd.monke.events.Events
 import me.arynxd.monke.handlers.*
+import me.arynxd.monke.objects.events.EventProcessor
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.plugins.Plugins
@@ -38,8 +39,15 @@ class Monke : ListenerAdapter() {
     val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(10)
     val handlers = Handlers(this)
     val plugins = Plugins(this)
+    val eventProcessor = EventProcessor(this)
 
     val jda = build()
+
+    init {
+        eventProcessor.registerListeners(
+            handlers.get(CommandHandler::class)
+        )
+    }
 
     private fun build(): JDA {
         try {

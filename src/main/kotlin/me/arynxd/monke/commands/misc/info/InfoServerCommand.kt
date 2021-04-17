@@ -6,25 +6,28 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentServer
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.parseDateTime
 import net.dv8tion.jda.api.entities.Guild
 
 @Suppress("UNUSED")
 class InfoServerCommand(parent: Command) : SubCommand(
-    name = "server",
-    description = "Shows information about a server.",
-    category = CommandCategory.MISC,
-    flags = listOf(CommandFlag.ASYNC),
-    parent = parent,
+    parent,
+    CommandMetaData(
+        name = "server",
+        description = "Shows information about a server.",
+        category = CommandCategory.MISC,
+        flags = listOf(CommandFlag.SUSPENDING),
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentServer(
-                name = "server",
-                description = "The server to show information for or nothing for the current server.",
-                required = false,
-                type = ArgumentType.REGULAR,
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentServer(
+                    name = "server",
+                    description = "The server to show information for or nothing for the current server.",
+                    required = false,
+                    type = ArgumentType.REGULAR,
+                )
             )
         )
     )

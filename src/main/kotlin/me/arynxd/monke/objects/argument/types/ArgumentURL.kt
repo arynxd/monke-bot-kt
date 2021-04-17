@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentType
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.events.types.CommandEvent
 import java.net.MalformedURLException
 import java.net.URL
 

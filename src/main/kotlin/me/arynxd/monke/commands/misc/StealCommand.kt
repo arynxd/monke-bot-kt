@@ -8,7 +8,8 @@ import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.argument.types.ArgumentURL
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandMetaData
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.ratelimit.RateLimitedAction
 import me.arynxd.monke.util.getIcon
@@ -19,30 +20,34 @@ val EMOJI_REGEX: Regex = Regex("([A-Z]|[a-z]|_){2,32}")
 
 @Suppress("UNUSED")
 class StealCommand : Command(
-    name = "steal",
-    description = "Steals an emote and adds it here.",
-    category = CommandCategory.MISC,
+    CommandMetaData(
+        name = "steal",
+        description = "Steals an emote and adds it here.",
+        category = CommandCategory.MISC,
 
-    botPermissions = listOf(Permission.MANAGE_EMOTES),
-    memberPermissions = listOf(Permission.MANAGE_EMOTES),
+        botPermissions = listOf(Permission.MANAGE_EMOTES),
+        memberPermissions = listOf(Permission.MANAGE_EMOTES),
 
-    cooldown = 180_000L, // 2 Minutes
+        cooldown = 180_000L, // 2 Minutes
 
-    arguments = ArgumentConfiguration(listOf(
-        ArgumentString(
-            name = "name",
-            description = "The new emoji name, ( must be A-Z or _ and 2 - 32 characters long ).",
-            required = true,
-            type = ArgumentType.REGULAR,
-            condition = { it.matches(EMOJI_REGEX) }
-        ),
-        ArgumentURL(
-            name = "emoji",
-            description = "The emoji. Must be a valid image URL.",
-            required = true,
-            type = ArgumentType.REGULAR,
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentString(
+                    name = "name",
+                    description = "The new emoji name, ( must be A-Z or _ and 2 - 32 characters long ).",
+                    required = true,
+                    type = ArgumentType.REGULAR,
+                    condition = { it.matches(EMOJI_REGEX) }
+                ),
+                ArgumentURL(
+                    name = "emoji",
+                    description = "The emoji. Must be a valid image URL.",
+                    required = true,
+                    type = ArgumentType.REGULAR,
+                )
+            )
         )
-    ))
+    )
 ) {
 
     override fun runSync(event: CommandEvent) {

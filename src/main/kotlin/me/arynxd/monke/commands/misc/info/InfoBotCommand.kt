@@ -3,12 +3,15 @@ package me.arynxd.monke.commands.misc.info
 import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.CommandEvent
 
 class InfoBotCommand(parent: Command) : SubCommand(
-    name = "bot",
-    description = "Shows info about the bot.",
-    category = CommandCategory.MISC,
-    parent = parent,
+    parent,
+    CommandMetaData(
+        name = "bot",
+        description = "Shows info about the bot.",
+        category = CommandCategory.MISC
+    )
 ) {
     override fun runSync(event: CommandEvent) {
         val monke = event.monke

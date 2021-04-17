@@ -2,7 +2,7 @@ package me.arynxd.monke.objects.argument
 
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 
 class ArgumentConfiguration(val expected: List<Argument<*>>) {

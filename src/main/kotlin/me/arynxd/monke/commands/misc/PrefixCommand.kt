@@ -6,26 +6,30 @@ import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandMetaData
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.command.CommandReply
 
 @Suppress("UNUSED")
 class PrefixCommand : Command(
-    name = "prefix",
-    description = "Gets and sets the prefix for this server.",
-    category = CommandCategory.MISC,
+    CommandMetaData(
+        name = "prefix",
+        description = "Gets and sets the prefix for this server.",
+        category = CommandCategory.MISC,
 
-    arguments = ArgumentConfiguration(listOf(
-        ArgumentString(
-            name = "prefix",
-            description = "The new prefix. 5 characters or less.",
-            required = false,
-            type = ArgumentType.REGULAR,
-            condition = { it.length <= 5 }
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentString(
+                    name = "prefix",
+                    description = "The new prefix. 5 characters or less.",
+                    required = false,
+                    type = ArgumentType.REGULAR,
+                    condition = { it.length <= 5 }
+                )
+            )
         )
-    )),
-
-    ) {
+    )
+) {
     override fun runSync(event: CommandEvent) {
         val cache = event.getDataCache()
         val language = event.getLanguage()

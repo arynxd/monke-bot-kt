@@ -6,31 +6,33 @@ import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandMetaData
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.util.getWikipediaPage
 import me.arynxd.monke.util.parseDateTime
 
 @Suppress("UNUSED")
 class WikipediaCommand : Command(
-    name = "wiki",
-    description = "Queries Wikipedia with the given text.",
-    category = CommandCategory.MISC,
-    aliases = listOf("wikipedia"),
-    cooldown = 3000L,
+    CommandMetaData(
+        name = "wiki",
+        description = "Queries Wikipedia with the given text.",
+        category = CommandCategory.MISC,
+        aliases = listOf("wikipedia"),
+        cooldown = 3000L,
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentString(
-                name = "subject",
-                description = "The subject to query Wikipedia with.",
-                required = true,
-                type = ArgumentType.VARARG
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentString(
+                    name = "subject",
+                    description = "The subject to query Wikipedia with.",
+                    required = true,
+                    type = ArgumentType.VARARG
+                )
             )
         )
-    ),
-
-    ) {
+    )
+) {
     override suspend fun runSuspend(event: CommandEvent) {
         val subject = event.getVararg<String>(0).joinToString(separator = "_").let {
             if (it == "cbt") "Cock_and_ball_torture"

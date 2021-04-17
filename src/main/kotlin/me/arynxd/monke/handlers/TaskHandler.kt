@@ -37,7 +37,7 @@ class TaskHandler(
         return name
     }
 
-    fun removeJob(name: String) {
+    fun removeTask(name: String) {
         tasks.remove(name)?.cancel(true)
     }
 

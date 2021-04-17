@@ -5,23 +5,26 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentMember
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.util.parseDateTime
 import net.dv8tion.jda.api.entities.Member
 
 class InfoUserCommand(parent: Command) : SubCommand(
-    name = "user",
-    description = "Shows information about a user.",
-    category = CommandCategory.MISC,
-    flags = listOf(CommandFlag.ASYNC),
-    parent = parent,
+    parent,
+    CommandMetaData(
+        name = "user",
+        description = "Shows information about a user.",
+        category = CommandCategory.MISC,
+        flags = listOf(CommandFlag.SUSPENDING),
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentMember(
-                name = "member",
-                description = "The member to show information for.",
-                required = false,
-                type = ArgumentType.REGULAR,
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentMember(
+                    name = "member",
+                    description = "The member to show information for.",
+                    required = false,
+                    type = ArgumentType.REGULAR,
+                )
             )
         )
     )

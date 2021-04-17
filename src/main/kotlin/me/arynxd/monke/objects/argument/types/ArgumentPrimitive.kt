@@ -2,7 +2,7 @@ package me.arynxd.monke.objects.argument.types
 
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentType
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.events.types.CommandEvent
 
 class ArgumentLong(
     override val name: String,

@@ -3,34 +3,19 @@ package me.arynxd.monke.objects.command
 import me.arynxd.monke.handlers.CooldownHandler
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.plurifyInt
 import net.dv8tion.jda.api.Permission
-import java.lang.IllegalStateException
 
-abstract class Command @JvmOverloads constructor(
-    val name: String,
-    val description: String,
-    val category: CommandCategory,
-
-    val children: MutableList<SubCommand> = mutableListOf(),
-    val aliases: List<String> = emptyList(),
-    val flags: List<CommandFlag> = emptyList(),
-    val arguments: ArgumentConfiguration = ArgumentConfiguration(emptyList()),
-    var isDisabled: Boolean = false,
-    val cooldown: Long = 1000L,
-
-    val finalCheck: (CommandEvent) -> Boolean = { true },
-    val finalCheckFail: (CommandEvent) -> Unit = { },
-
-    val memberPermissions: List<Permission> = emptyList(),
-    val botPermissions: List<Permission> = emptyList(),
+abstract class Command(
+    val metaData: CommandMetaData,
+    val children: MutableList<SubCommand> = mutableListOf()
 ) {
-
     suspend fun isExecutable(commandEvent: CommandEvent): Boolean {
         val language = commandEvent.getLanguage()
 
-        if (hasFlag(CommandFlag.DISABLED) || isDisabled) {
+        if (hasFlag(CommandFlag.DISABLED) || metaData.isDisabled) {
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
@@ -60,7 +45,7 @@ abstract class Command @JvmOverloads constructor(
             return false
         }
 
-        if (!arguments.isConfigurationValid()) {
+        if (!metaData.arguments.isConfigurationValid()) {
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
@@ -75,8 +60,8 @@ abstract class Command @JvmOverloads constructor(
             return false
         }
 
-        if (!commandEvent.member.hasPermission(commandEvent.channel, memberPermissions)) {
-            val perms = memberPermissions.joinToString(separator = "\n") { it.getName() }
+        if (!commandEvent.member.hasPermission(commandEvent.channel, metaData.memberPermissions)) {
+            val perms = metaData.memberPermissions.joinToString(separator = "\n") { it.getName() }
 
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
@@ -93,8 +78,8 @@ abstract class Command @JvmOverloads constructor(
             return false
         }
 
-        if (!commandEvent.selfMember.hasPermission(commandEvent.channel, botPermissions)) {
-            val perms = botPermissions.joinToString(separator = "\n") { it.getName() }
+        if (!commandEvent.selfMember.hasPermission(commandEvent.channel, metaData.botPermissions)) {
+            val perms = metaData.botPermissions.joinToString(separator = "\n") { it.getName() }
 
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
@@ -135,7 +120,7 @@ abstract class Command @JvmOverloads constructor(
             return false
         }
 
-        val argResult = arguments.isArgumentsValid(commandEvent)
+        val argResult = metaData.arguments.isArgumentsValid(commandEvent)
 
         if (argResult.third.isNotEmpty()) {
             val requiredCount = argResult.third.size
@@ -189,19 +174,19 @@ abstract class Command @JvmOverloads constructor(
             return false
         }
 
-        if (!finalCheck.invoke(commandEvent)) {
-            finalCheckFail.invoke(commandEvent)
+        if (!metaData.finalCheck.invoke(commandEvent)) {
+            metaData.finalCheckFail.invoke(commandEvent)
             return false
         }
         return true
     }
 
     fun hasFlag(flag: CommandFlag): Boolean {
-        return flags.contains(flag)
+        return metaData.flags.contains(flag)
     }
 
     fun hasArguments(): Boolean {
-        return arguments.expected.isNotEmpty()
+        return metaData.arguments.expected.isNotEmpty()
     }
 
     fun hasChildren(): Boolean {
@@ -209,15 +194,15 @@ abstract class Command @JvmOverloads constructor(
     }
 
     open fun getDescription(language: Language): String {
-        return TranslationHandler.getString(language, "command.$name.description")
+        return TranslationHandler.getString(language, "command.${metaData.name}.description")
     }
 
     open fun getName(language: Language): String {
-        return TranslationHandler.getString(language, "command.$name.name")
+        return TranslationHandler.getString(language, "command.${metaData.name}.name")
     }
 
     fun getAliases(language: Language): List<String> {
-        return TranslationHandler.getString(language, "command.$name.aliases").split("/")
+        return TranslationHandler.getString(language, "command.${metaData.name}.aliases").split("/")
     }
 
     open suspend fun runSuspend(event: CommandEvent) {

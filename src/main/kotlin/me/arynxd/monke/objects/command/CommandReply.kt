@@ -2,6 +2,7 @@ package me.arynxd.monke.objects.command
 
 import dev.minn.jda.ktx.Embed
 import dev.minn.jda.ktx.await
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import me.arynxd.monke.util.ERROR_EMBED_COLOUR
 import me.arynxd.monke.util.SUCCESS_EMBED_COLOUR

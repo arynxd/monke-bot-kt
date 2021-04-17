@@ -7,6 +7,7 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.handlers.LOGGER
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
@@ -14,21 +15,23 @@ import java.net.URLEncoder
 
 @Suppress("UNUSED")
 class GoogleCommand : Command(
-    name = "google",
-    description = "Queries Google with the given text.",
-    category = CommandCategory.FUN,
-    aliases = listOf("g"),
-    flags = listOf(CommandFlag.ASYNC),
-    cooldown = 3000L,
+    CommandMetaData(
+        name = "google",
+        description = "Queries Google with the given text.",
+        category = CommandCategory.FUN,
+        aliases = listOf("g"),
+        flags = listOf(CommandFlag.SUSPENDING),
+        cooldown = 3000L,
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentString(
-                name = "query",
-                description = "The search query.",
-                required = true,
-                type = ArgumentType.VARARG,
-                condition = { it.isNotBlank() }
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentString(
+                    name = "query",
+                    description = "The search query.",
+                    required = true,
+                    type = ArgumentType.VARARG,
+                    condition = { it.isNotBlank() }
+                )
             )
         )
     )

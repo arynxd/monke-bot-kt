@@ -5,10 +5,9 @@ import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.CommandHandler
 import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.handlers.GuildDataHandler
+import me.arynxd.monke.objects.events.types.CommandPreprocessEvent
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import me.arynxd.monke.util.plurifyLong
-import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
@@ -22,7 +21,7 @@ class Events(val monke: Monke) : ListenerAdapter() {
             return
         }
 
-        monke.handlers.get(CommandHandler::class).handle(GuildMessageEvent(event))
+        monke.eventProcessor.fireEvent(CommandPreprocessEvent(event, monke))
     }
 
     override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
@@ -30,7 +29,7 @@ class Events(val monke: Monke) : ListenerAdapter() {
             return
         }
 
-        monke.handlers.get(CommandHandler::class).handle(GuildMessageEvent(event))
+        monke.eventProcessor.fireEvent(CommandPreprocessEvent(event, monke))
     }
 
     override fun onGuildJoin(event: GuildJoinEvent) {
@@ -76,29 +75,3 @@ class Events(val monke: Monke) : ListenerAdapter() {
     }
 }
 
-class GuildMessageEvent(
-    val message: Message,
-    val jda: JDA,
-    val channel: TextChannel,
-    val user: User,
-    val member: Member,
-    val guild: Guild
-) {
-    constructor(event: GuildMessageReceivedEvent) : this(
-        event.message,
-        event.jda,
-        event.channel,
-        event.author,
-        event.member ?: throw IllegalStateException("Member was null"),
-        event.guild
-    )
-
-    constructor(event: GuildMessageUpdateEvent) : this(
-        event.message,
-        event.jda,
-        event.channel,
-        event.author,
-        event.member ?: throw IllegalStateException("Member was null"),
-        event.guild
-    )
-}

@@ -3,14 +3,17 @@ package me.arynxd.monke.commands.misc
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandMetaData
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.command.CommandReply
 
 @Suppress("UNUSED")
 class UptimeCommand : Command(
-    name = "uptime",
-    description = "Shows the bot's uptime.",
-    category = CommandCategory.MISC,
+    CommandMetaData(
+        name = "uptime",
+        description = "Shows the bot's uptime.",
+        category = CommandCategory.MISC
+    )
 ) {
 
     override fun runSync(event: CommandEvent) {

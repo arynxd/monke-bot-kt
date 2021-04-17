@@ -5,21 +5,24 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentLanguage
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 
 @Suppress("UNUSED")
 class LanguageCommand : Command(
-    name = "language",
-    description = "Gets and sets the language for this server.",
-    category = CommandCategory.CONFIGURATION,
+    CommandMetaData(
+        name = "language",
+        description = "Gets and sets the language for this server.",
+        category = CommandCategory.CONFIGURATION,
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentLanguage(
-                name = "language",
-                description = "The new language.",
-                required = false,
-                type = ArgumentType.REGULAR,
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentLanguage(
+                    name = "language",
+                    description = "The new language.",
+                    required = false,
+                    type = ArgumentType.REGULAR,
+                )
             )
         )
     )

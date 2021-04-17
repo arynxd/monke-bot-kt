@@ -6,33 +6,36 @@ import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentLong
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandMetaData
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.command.CommandReply
 import kotlin.random.Random
 
 @Suppress("UNUSED")
 class RandomNumberCommand : Command(
-    name = "rng",
-    description = "Gives you a random number in the specified range.",
-    category = CommandCategory.FUN,
-    aliases = listOf("number"),
+    CommandMetaData(
+        name = "rng",
+        description = "Gives you a random number in the specified range.",
+        category = CommandCategory.FUN,
+        aliases = listOf("number"),
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentLong(
-                name = "number-one",
-                description = "The first number in the range. Bigger than 0.",
-                required = true,
-                type = ArgumentType.REGULAR,
-                condition = { it > 0 }
-            ),
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentLong(
+                    name = "number-one",
+                    description = "The first number in the range. Bigger than 0.",
+                    required = true,
+                    type = ArgumentType.REGULAR,
+                    condition = { it > 0 }
+                ),
 
-            ArgumentLong(
-                name = "number-two",
-                description = "The second number in the range. Bigger than 0.",
-                required = true,
-                type = ArgumentType.REGULAR,
-                condition = { it > 0 }
+                ArgumentLong(
+                    name = "number-two",
+                    description = "The second number in the range. Bigger than 0.",
+                    required = true,
+                    type = ArgumentType.REGULAR,
+                    condition = { it > 0 }
+                )
             )
         )
     )

@@ -8,21 +8,24 @@ import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentMember
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandMetaData
+import me.arynxd.monke.objects.events.types.CommandEvent
 
 @Suppress("UNUSED")
 class InfoCommand : Command(
-    name = "info",
-    description = "Shows information about various things.",
-    category = CommandCategory.MISC,
+    CommandMetaData(
+        name = "info",
+        description = "Shows information about various things.",
+        category = CommandCategory.MISC,
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentMember(
-                name = "member",
-                description = "The member to show information for.",
-                required = false,
-                type = ArgumentType.REGULAR,
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentMember(
+                    name = "member",
+                    description = "The member to show information for.",
+                    required = false,
+                    type = ArgumentType.REGULAR,
+                )
             )
         )
     )

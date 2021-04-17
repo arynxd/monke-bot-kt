@@ -5,6 +5,7 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.argument.types.ArgumentLong
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.util.prettyPrintJson
 import me.arynxd.monke.util.splitStringCodeblock
 import net.dv8tion.jda.api.requests.Request
@@ -14,24 +15,25 @@ import net.dv8tion.jda.internal.requests.Route
 
 @Suppress("UNUSED")
 class JsonCommand : Command(
-    name = "json",
-    description = "Gets the JSON representation of a message.",
-    category = CommandCategory.DEVELOPER,
-    aliases = listOf("getjson"),
-    flags = listOf(CommandFlag.DEVELOPER_ONLY),
+    CommandMetaData(
+        name = "json",
+        description = "Gets the JSON representation of a message.",
+        category = CommandCategory.DEVELOPER,
+        aliases = listOf("getjson"),
+        flags = listOf(CommandFlag.DEVELOPER_ONLY),
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentLong(
-                name = "message-id",
-                description = "The ID to get from. Must be a message from the current channel.",
-                required = true,
-                type = ArgumentType.REGULAR
-            ),
-        )
-    ),
-
-    ) {
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentLong(
+                    name = "message-id",
+                    description = "The ID to get from. Must be a message from the current channel.",
+                    required = true,
+                    type = ArgumentType.REGULAR
+                ),
+            )
+        ),
+    )
+) {
     override fun runSync(event: CommandEvent) {
         val channel = event.channel
         val jda = event.jda
