@@ -22,7 +22,7 @@ class PingCommand : Command(
 
             val description =
                 "**REST Ping**: ${event.jda.restPing.await()}ms\n\n" +
-                "**Gateway Ping**: ${event.jda.gatewayPing}ms"
+                        "**Gateway Ping**: ${event.jda.gatewayPing}ms"
 
             description(description)
             footer()

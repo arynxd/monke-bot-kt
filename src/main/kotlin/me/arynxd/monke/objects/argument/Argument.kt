@@ -2,8 +2,8 @@ package me.arynxd.monke.objects.argument
 
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.command.SubCommand
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 
 abstract class Argument<T> {

@@ -9,8 +9,8 @@ import me.arynxd.monke.objects.argument.types.ArgumentURL
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
-import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.ratelimit.RateLimitedAction
 import me.arynxd.monke.util.getIcon
 import net.dv8tion.jda.api.Permission

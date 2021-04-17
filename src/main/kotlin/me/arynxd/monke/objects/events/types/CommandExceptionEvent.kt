@@ -5,6 +5,4 @@ import me.arynxd.monke.Monke
 class CommandExceptionEvent(
     override val monke: Monke,
     val exception: Throwable
-) : Event {
-
-}
+) : Event

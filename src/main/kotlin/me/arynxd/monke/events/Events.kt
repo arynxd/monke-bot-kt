@@ -2,7 +2,6 @@ package me.arynxd.monke.events
 
 import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.Monke
-import me.arynxd.monke.handlers.CommandHandler
 import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.handlers.GuildDataHandler
 import me.arynxd.monke.objects.events.types.CommandPreprocessEvent

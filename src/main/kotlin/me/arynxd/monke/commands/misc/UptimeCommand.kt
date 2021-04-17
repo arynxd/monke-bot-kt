@@ -4,8 +4,8 @@ import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
-import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.events.types.CommandEvent
 
 @Suppress("UNUSED")
 class UptimeCommand : Command(

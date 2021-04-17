@@ -6,8 +6,8 @@ import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
-import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.events.types.CommandEvent
 import net.dv8tion.jda.api.entities.MessageEmbed
 
 @Suppress("UNUSED")
@@ -30,7 +30,7 @@ class UwUCommand : Command(
             )
         )
     )
-    ) {
+) {
     override fun runSync(event: CommandEvent) {
         event.replyAsync {
             val sentence = event.getVararg<String>(0)

@@ -19,7 +19,8 @@ class TaskHandler(
         return job
     }
 
-    fun addRepeatingTask(delay: Long, unit: TimeUnit, block: () -> Unit) = addRepeatingTask(getName(), delay, unit, block)
+    fun addRepeatingTask(delay: Long, unit: TimeUnit, block: () -> Unit) =
+        addRepeatingTask(getName(), delay, unit, block)
 
     fun addRepeatingTask(block: () -> Unit) = addRepeatingTask(getName(), 0, TimeUnit.MILLISECONDS, block)
 

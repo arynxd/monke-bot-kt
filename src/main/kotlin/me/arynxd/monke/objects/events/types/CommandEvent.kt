@@ -7,8 +7,6 @@ import me.arynxd.monke.objects.cache.GuildData
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.translation.Language
-import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.User
 
 class CommandEvent(
     override val monke: Monke,

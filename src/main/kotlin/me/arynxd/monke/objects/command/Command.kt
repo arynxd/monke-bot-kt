@@ -2,11 +2,9 @@ package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.handlers.CooldownHandler
 import me.arynxd.monke.handlers.TranslationHandler
-import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.plurifyInt
-import net.dv8tion.jda.api.Permission
 
 abstract class Command(
     val metaData: CommandMetaData,
@@ -126,7 +124,12 @@ abstract class Command(
             val requiredCount = argResult.third.size
             val missing =
                 argResult.third.joinToString(separator = "") {
-                    "*${it.getName(language, commandEvent.command)}* -- ${it.getDescription(language, commandEvent.command)}\n"
+                    "*${it.getName(language, commandEvent.command)}* -- ${
+                        it.getDescription(
+                            language,
+                            commandEvent.command
+                        )
+                    }\n"
                 }
 
             commandEvent.reply {
@@ -152,7 +155,12 @@ abstract class Command(
             val invalidCount = argResult.second.size
             val invalid =
                 argResult.second.joinToString(separator = "") {
-                    "*${it.getName(language, commandEvent.command)}* -- ${it.getDescription(language, commandEvent.command)}\n"
+                    "*${it.getName(language, commandEvent.command)}* -- ${
+                        it.getDescription(
+                            language,
+                            commandEvent.command
+                        )
+                    }\n"
                 }
 
             commandEvent.reply {

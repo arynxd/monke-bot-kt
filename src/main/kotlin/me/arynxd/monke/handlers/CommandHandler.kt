@@ -5,7 +5,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.Monke
-import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.command.Command
+import me.arynxd.monke.objects.command.CommandFlag
+import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.command.SubCommand
 import me.arynxd.monke.objects.events.EventListener
 import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.events.types.CommandExceptionEvent

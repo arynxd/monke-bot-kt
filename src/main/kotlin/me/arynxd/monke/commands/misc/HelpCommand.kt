@@ -103,11 +103,19 @@ class HelpCommand : Command(
         val args =
             if (command is SubCommand) {
                 "*${usage}:* \n $prefix$name ${command.metaData.arguments.getArgumentsList(language, command)} \n\n " +
-                        if (command.hasArguments()) command.metaData.arguments.getArgumentsString(language, command) else ""
+                        if (command.hasArguments()) command.metaData.arguments.getArgumentsString(
+                            language,
+                            command
+                        )
+                        else ""
             }
             else {
                 "*${usage}:* \n $prefix$name ${command.metaData.arguments.getArgumentsList(language, command)} \n\n " +
-                        if (command.hasArguments()) command.metaData.arguments.getArgumentsString(language, command) else ""
+                        if (command.hasArguments()) command.metaData.arguments.getArgumentsString(
+                            language,
+                            command
+                        )
+                        else ""
             }
 
         return "\n $commandDescription\n\n $args"
@@ -116,7 +124,8 @@ class HelpCommand : Command(
     private fun getHelpPages(prefix: String, event: CommandEvent): List<MessageEmbed> {
         val result = mutableListOf<MessageEmbed>()
         val commands =
-            event.monke.handlers.get(CommandHandler::class).commandMap.values.distinct().groupBy { it.metaData.category }
+            event.monke.handlers.get(CommandHandler::class).commandMap.values.distinct()
+                .groupBy { it.metaData.category }
         val pageCount = CommandCategory.values().size
         val language = event.getLanguage()
 

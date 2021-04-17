@@ -1,10 +1,8 @@
 package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.handlers.TranslationHandler
-import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.events.types.CommandEvent
 import me.arynxd.monke.objects.translation.Language
-import net.dv8tion.jda.api.Permission
 
 abstract class SubCommand(
     val parent: Command,
@@ -23,6 +21,9 @@ abstract class SubCommand(
     }
 
     override fun getDescription(language: Language): String {
-        return TranslationHandler.getString(language, "command.${parent.metaData.name}.child.${metaData.name}.description")
+        return TranslationHandler.getString(
+            language,
+            "command.${parent.metaData.name}.child.${metaData.name}.description"
+        )
     }
 }

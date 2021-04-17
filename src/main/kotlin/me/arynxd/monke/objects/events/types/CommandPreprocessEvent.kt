@@ -14,7 +14,7 @@ class CommandPreprocessEvent(
     val user: User,
     val member: Member,
     val guild: Guild
-): Event {
+) : Event {
     constructor(event: GuildMessageReceivedEvent, monke: Monke) : this(
         monke,
         event.message,

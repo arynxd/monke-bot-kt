@@ -8,9 +8,9 @@ import me.arynxd.monke.objects.handlers.LOGGER
 
 open class EventAdapter : EventListener {
     // Command events
-    open fun onCommandEvent(event: CommandEvent) { }
-    open fun onCommandPreprocessEvent(event: CommandPreprocessEvent) { }
-    open fun onCommandExceptionEvent(event: CommandExceptionEvent) { }
+    open fun onCommandEvent(event: CommandEvent) {}
+    open fun onCommandPreprocessEvent(event: CommandPreprocessEvent) {}
+    open fun onCommandExceptionEvent(event: CommandExceptionEvent) {}
 
     override fun onEvent(event: Event) {
         try {
