@@ -6,6 +6,7 @@ import me.arynxd.monke.objects.argument.ArgumentType
 import me.arynxd.monke.objects.events.types.command.CommandEvent
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 
 class ArgumentServer(
@@ -14,8 +15,7 @@ class ArgumentServer(
     override val required: Boolean,
     override val type: ArgumentType,
     override val condition: (Guild) -> Boolean = { true },
-
-    ) : Argument<Guild>() {
+) : Argument<Guild>() {
 
     override suspend fun convert(input: String, event: CommandEvent): Guild? {
         if (input.equals("this", true)) {
@@ -68,18 +68,59 @@ class ArgumentMember(
             }
         }
 
-        val memberNames = event.guild.retrieveMembersByPrefix(input, 1).await()
-
-        if (memberNames.isNotEmpty()) { //Name
-            return memberNames[0]
-        }
+//        Commented out due to a bug causing tasks to never return
+//        val memberNames = event.guild.retrieveMembersByPrefix(input, 10).await()
+//
+//        if (memberNames.isNotEmpty()) { //Name
+//            return memberNames[0]
+//        }
 
         return null
     }
+}
 
-    private fun isBotMention(event: CommandEvent): Boolean {
-        val content = event.message.contentRaw
-        val id = event.jda.selfUser.idLong
-        return content.startsWith("<@$id>") || content.startsWith("<@!$id>")
+class ArgumentUser(
+    override val name: String,
+    override val description: String,
+    override val required: Boolean,
+    override val type: ArgumentType,
+    override val condition: (User) -> Boolean = { true },
+) : Argument<User>() {
+
+    override suspend fun convert(input: String, event: CommandEvent): User? {
+        val memberMentions = event.message.mentionedUsers.toMutableList()
+
+        if (isBotMention(event)) {
+            memberMentions.removeAt(0)
+        }
+
+        if (memberMentions.isNotEmpty()) { //Direct mention
+            return memberMentions[0]
+        }
+
+        val memberId = input.toLongOrNull()
+
+        if (memberId != null) { //ID
+            return try {
+                event.monke.jda.retrieveUserById(memberId).await()
+            }
+            catch (exception: ErrorResponseException) {
+                return null
+            }
+        }
+
+//        Commented out due to a bug causing tasks to never return
+//        val memberNames = event.guild.retrieveMembersByPrefix(input, 10).await()
+//
+//        if (memberNames.isNotEmpty()) { //Name
+//            return memberNames[0].user
+//        }
+
+        return null
     }
+}
+private fun isBotMention(event: CommandEvent): Boolean {
+    val content = event.message.contentRaw
+    val id = event.jda.selfUser.idLong
+    return content.startsWith("<@$id>") || content.startsWith("<@!$id>")
 }

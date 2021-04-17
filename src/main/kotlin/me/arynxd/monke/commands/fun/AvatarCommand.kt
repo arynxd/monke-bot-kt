@@ -33,7 +33,7 @@ class AvatarCommand : Command(
 
     override fun runSync(event: CommandEvent) {
         val language = event.getLanguage()
-        val user = if (event.isArgumentPresent(0)) event.getArgument(0) else event.user
+        val user = event.getArgument(0, event.user)
 
         event.replyAsync {
             type(CommandReply.Type.INFORMATION)

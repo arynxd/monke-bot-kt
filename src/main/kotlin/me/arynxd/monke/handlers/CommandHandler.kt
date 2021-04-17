@@ -1,9 +1,6 @@
 package me.arynxd.monke.handlers
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.*
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandFlag
@@ -119,7 +116,7 @@ class CommandHandler @JvmOverloads constructor(
 
     private fun launchCommand(command: Command, event: CommandEvent) {
         val isExecutable = runBlocking {
-            return@runBlocking command.isExecutable(event)
+            command.isExecutable(event)
         }
 
         if (!isExecutable) {
