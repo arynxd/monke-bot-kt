@@ -2,7 +2,7 @@ package me.arynxd.monke.commands.`fun`
 
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentUser
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
@@ -24,7 +24,7 @@ class AvatarCommand : Command(
                     name = "user",
                     description = "The user to get the avatar for.",
                     required = false,
-                    type = ArgumentType.REGULAR,
+                    type = Type.REGULAR,
                 )
             )
         )
@@ -41,7 +41,7 @@ class AvatarCommand : Command(
                 TranslationHandler.getString(
                     language = language,
                     key = "command.avatar.response.avatar_for_user",
-                    user.asTag
+                    values = arrayOf(user.asTag)
                 )
             )
             image(user.effectiveAvatarUrl, 2048)

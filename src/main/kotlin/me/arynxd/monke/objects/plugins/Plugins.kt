@@ -6,17 +6,19 @@ import kotlinx.serialization.json.Json
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.ExceptionHandler
 import me.arynxd.monke.objects.handlers.LOGGER
-import me.arynxd.monke.util.convertToString
+import me.arynxd.monke.util.readFully
 import me.arynxd.plugin_api.IPlugin
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 import java.util.jar.JarFile
 
 class Plugins(val monke: Monke) {
     private val plugins = ConcurrentHashMap<String, LoadedPlugin>()
     private val pluginsFolder = File("plugins")
+    private val pool = Executors.newFixedThreadPool(pluginsFolder.listFiles()?.size?: 10) { Thread(it, "Monke-Plugin-Thread") }
 
     fun loadPlugins() {
         if (!pluginsFolder.exists()) {
@@ -74,7 +76,9 @@ class Plugins(val monke: Monke) {
 
                 val mainInstance = constructor.newInstance() as IPlugin
 
-                tryEnablePlugin(mainInstance, config, pluginName)
+                pool.submit() {
+                    tryEnablePlugin(mainInstance, config, pluginName)
+                }
             }
         }
     }
@@ -129,7 +133,7 @@ class Plugins(val monke: Monke) {
         val parser = Json { isLenient = true }
 
         val config = try {
-            parser.decodeFromString<PluginConfig>(convertToString(file.getInputStream(mainClassEntry)))
+            parser.decodeFromString<PluginConfig>(file.getInputStream(mainClassEntry).readFully())
         }
         catch (exception: Exception) {
             return Pair(null, null)

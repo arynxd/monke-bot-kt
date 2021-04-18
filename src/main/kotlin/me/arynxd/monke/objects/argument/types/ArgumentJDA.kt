@@ -2,7 +2,7 @@ package me.arynxd.monke.objects.argument.types
 
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.objects.argument.Argument
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.events.types.command.CommandEvent
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
@@ -13,7 +13,7 @@ class ArgumentServer(
     override val name: String,
     override val description: String,
     override val required: Boolean,
-    override val type: ArgumentType,
+    override val type: Type,
     override val condition: (Guild) -> Boolean = { true },
 ) : Argument<Guild>() {
 
@@ -42,7 +42,7 @@ class ArgumentMember(
     override val name: String,
     override val description: String,
     override val required: Boolean,
-    override val type: ArgumentType,
+    override val type: Type,
     override val condition: (Member) -> Boolean = { true },
 ) : Argument<Member>() {
 
@@ -68,12 +68,11 @@ class ArgumentMember(
             }
         }
 
-//        Commented out due to a bug causing tasks to never return
-//        val memberNames = event.guild.retrieveMembersByPrefix(input, 10).await()
-//
-//        if (memberNames.isNotEmpty()) { //Name
-//            return memberNames[0]
-//        }
+        val memberNames = event.guild.retrieveMembersByPrefix(input, 10).await()
+
+        if (memberNames.isNotEmpty()) { //Name
+            return memberNames[0]
+        }
 
         return null
     }
@@ -83,7 +82,7 @@ class ArgumentUser(
     override val name: String,
     override val description: String,
     override val required: Boolean,
-    override val type: ArgumentType,
+    override val type: Type,
     override val condition: (User) -> Boolean = { true },
 ) : Argument<User>() {
 
@@ -109,12 +108,11 @@ class ArgumentUser(
             }
         }
 
-//        Commented out due to a bug causing tasks to never return
-//        val memberNames = event.guild.retrieveMembersByPrefix(input, 10).await()
-//
-//        if (memberNames.isNotEmpty()) { //Name
-//            return memberNames[0].user
-//        }
+        val memberNames = event.guild.retrieveMembersByPrefix(input, 10).await()
+
+        if (memberNames.isNotEmpty()) { //Name
+            return memberNames[0].user
+        }
 
         return null
     }

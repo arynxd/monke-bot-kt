@@ -9,7 +9,7 @@ import me.arynxd.monke.objects.Paginator
 import me.arynxd.monke.objects.handlers.Handler
 import kotlin.reflect.KClass
 
-class PaginationHandler @JvmOverloads constructor(
+class PaginationHandler(
     override val monke: Monke,
     override val dependencies: List<KClass<out Handler>> = listOf(TranslationHandler::class)
 ) : Handler() {

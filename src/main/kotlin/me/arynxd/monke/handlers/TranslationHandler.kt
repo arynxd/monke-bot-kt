@@ -6,15 +6,15 @@ import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.objects.translation.TranslatedLanguage
-import me.arynxd.monke.util.convertToString
 import me.arynxd.monke.util.loadResource
+import me.arynxd.monke.util.readFully
 import net.dv8tion.jda.api.exceptions.ParsingException
 import net.dv8tion.jda.api.utils.data.DataObject
 import kotlin.reflect.KClass
 
 val KEY_REGEX: Regex = Regex("\\.")
 
-class TranslationHandler @JvmOverloads constructor(
+class TranslationHandler(
     override val monke: Monke,
     override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
 ) : Handler() {
@@ -88,15 +88,15 @@ class TranslationHandler @JvmOverloads constructor(
         }
 
         private fun initLanguages(): Map<Language, TranslatedLanguage> {
-            val supportedLanguages = convertToString(
-                loadResource("assets/translation/supported_languages.txt")
-            ).split("/")
+            val supportedLanguages = loadResource("assets/translation/supported_languages.txt")
+                .readFully()
+                .split("/")
 
             val result = mutableMapOf<Language, TranslatedLanguage>()
 
             for (language in supportedLanguages) {
                 val json = try {
-                    DataObject.fromJson(convertToString(loadResource("assets/translation/$language.json")))
+                    DataObject.fromJson(loadResource("assets/translation/$language.json").readFully())
                 }
                 catch (exception: ParsingException) {
                     throw TranslationException("Language $language is corrupt.")

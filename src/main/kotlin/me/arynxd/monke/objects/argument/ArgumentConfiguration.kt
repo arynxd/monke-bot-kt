@@ -8,11 +8,11 @@ import me.arynxd.monke.objects.translation.Language
 class ArgumentConfiguration(val expected: List<Argument<*>>) {
 
     fun isConfigurationValid(): Boolean {
-        if (expected.count { it.type == ArgumentType.VARARG } > 1) { // Is there more than 1 vararg
+        if (expected.count { it.type == Type.VARARG } > 1) { // Is there more than 1 vararg
             return false
         }
 
-        val varargIndex = expected.indexOfFirst { it.type == ArgumentType.VARARG }
+        val varargIndex = expected.indexOfFirst { it.type == Type.VARARG }
         val requiredIndex = expected.indexOfLast { it.required }
 
         if (varargIndex != -1 && varargIndex < expected.size - 1) { // Is there a vararg not at the end of the config
@@ -38,7 +38,7 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
         event.args.clear()
         val invalidArguments: MutableList<Argument<*>> = mutableListOf()
         val validArguments: MutableList<Any> = mutableListOf()
-        val varargIndex = expected.indexOfLast { it.type == ArgumentType.VARARG }
+        val varargIndex = expected.indexOfLast { it.type == Type.VARARG }
 
         if (args.size < expected.count { it.required }) { //Missing required args
             return Triple(

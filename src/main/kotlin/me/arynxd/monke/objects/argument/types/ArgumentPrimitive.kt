@@ -1,40 +1,36 @@
 package me.arynxd.monke.objects.argument.types
 
 import me.arynxd.monke.objects.argument.Argument
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.events.types.command.CommandEvent
 
 class ArgumentLong(
     override val name: String,
     override val description: String,
     override val required: Boolean,
-    override val type: ArgumentType,
+    override val type: Type,
     override val condition: (Long) -> Boolean = { true },
 ) : Argument<Long>() {
 
-    override suspend fun convert(input: String, event: CommandEvent): Long? {
-        return input.toLongOrNull()
-    }
+    override suspend fun convert(input: String, event: CommandEvent) = input.toLongOrNull()
 }
 
 class ArgumentInt(
     override val name: String,
     override val description: String,
     override val required: Boolean,
-    override val type: ArgumentType,
+    override val type: Type,
     override val condition: (Int) -> Boolean = { true },
 ) : Argument<Int>() {
 
-    override suspend fun convert(input: String, event: CommandEvent): Int? {
-        return input.toIntOrNull()
-    }
+    override suspend fun convert(input: String, event: CommandEvent) = input.toIntOrNull()
 }
 
 class ArgumentBoolean(
     override val name: String,
     override val description: String,
     override val required: Boolean,
-    override val type: ArgumentType,
+    override val type: Type,
     override val condition: (Boolean) -> Boolean = { true },
 ) : Argument<Boolean>() {
 
@@ -61,8 +57,8 @@ class ArgumentString(
     override val name: String,
     override val description: String,
     override val required: Boolean,
-    override val type: ArgumentType,
+    override val type: Type,
     override val condition: (String) -> Boolean = { true },
 ) : Argument<String>() {
-    override suspend fun convert(input: String, event: CommandEvent): String = input
+    override suspend fun convert(input: String, event: CommandEvent) = input
 }

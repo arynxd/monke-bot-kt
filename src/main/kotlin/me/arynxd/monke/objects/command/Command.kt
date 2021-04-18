@@ -215,9 +215,11 @@ abstract class Command(
 
     open suspend fun runSuspend(event: CommandEvent) {
         //Placeholder method
+        throw UnsupportedOperationException("Incorrect run method called")
     }
 
     open fun runSync(event: CommandEvent) {
         //Placeholder method
+        throw UnsupportedOperationException("Incorrect run method called")
     }
 }

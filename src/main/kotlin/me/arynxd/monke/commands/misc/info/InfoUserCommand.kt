@@ -2,7 +2,7 @@ package me.arynxd.monke.commands.misc.info
 
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentMember
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.events.types.command.CommandEvent
@@ -15,7 +15,6 @@ class InfoUserCommand(parent: Command) : SubCommand(
         name = "user",
         description = "Shows information about a user.",
         category = CommandCategory.MISC,
-        flags = listOf(CommandFlag.SUSPENDING),
 
         arguments = ArgumentConfiguration(
             listOf(
@@ -23,14 +22,14 @@ class InfoUserCommand(parent: Command) : SubCommand(
                     name = "member",
                     description = "The member to show information for.",
                     required = false,
-                    type = ArgumentType.REGULAR,
+                    type = Type.REGULAR,
                 )
             )
         )
     )
 ) {
 
-    override suspend fun runSuspend(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val member = event.getArgument(0, event.member)
 
         val language = event.getLanguage()
@@ -43,7 +42,7 @@ class InfoUserCommand(parent: Command) : SubCommand(
         val roles = TranslationHandler.getString(language, "command.info.keyword.roles")
         val noRoles = TranslationHandler.getString(language, "command.info.keyword.no_roles")
 
-        event.reply {
+        event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title("$information: **${member.user.asTag}**")
             field(boosting, parseDateTime(member.timeBoosted) ?: notBoosting, true)

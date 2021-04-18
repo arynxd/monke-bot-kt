@@ -6,7 +6,7 @@ import me.arynxd.monke.handlers.PaginationHandler
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.Paginator
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentCommand
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.events.types.command.CommandEvent
@@ -28,7 +28,7 @@ class HelpCommand : Command(
                     name = "command",
                     description = "The command to show help for.",
                     required = false,
-                    type = ArgumentType.REGULAR,
+                    type = Type.REGULAR,
                 )
             )
         )

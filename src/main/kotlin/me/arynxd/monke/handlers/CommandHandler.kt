@@ -24,7 +24,7 @@ import kotlin.reflect.KClass
 const val COMMAND_PACKAGE = "me.arynxd.monke.commands"
 val SUBSTITUTION_REGEX = Regex("(%[0-9]*)")
 
-class CommandHandler @JvmOverloads constructor(
+class CommandHandler(
     override val monke: Monke,
     override val dependencies: List<KClass<out Handler>> = listOf(
         TranslationHandler::class,
@@ -172,6 +172,9 @@ class CommandHandler @JvmOverloads constructor(
         monke.eventProcessor.fireEvent(CommandExceptionEvent(monke, exception, event))
     }
 
+    /**
+     * @return <code>true</code> if the command was registered, <code>false</code> if it was not.
+     */
     fun registerCommand(command: Command): Boolean {
         return registerCommand(command, commandMap)
     }
@@ -205,7 +208,7 @@ class CommandHandler @JvmOverloads constructor(
 
             val instance = constructors[0].newInstance()
 
-            if (instance is SubCommand) {
+            if (instance is SubCommand) { //Subcommands are loaded seperately
                 continue
             }
 

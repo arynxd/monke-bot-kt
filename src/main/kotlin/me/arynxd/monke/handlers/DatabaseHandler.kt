@@ -6,14 +6,14 @@ import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.handlers.whenEnabled
-import me.arynxd.monke.util.convertToString
 import me.arynxd.monke.util.loadResource
+import me.arynxd.monke.util.readFully
 import org.ktorm.database.Database
 import org.ktorm.support.postgresql.PostgreSqlDialect
 import kotlin.reflect.KClass
 import kotlin.system.exitProcess
 
-class DatabaseHandler @JvmOverloads constructor(
+class DatabaseHandler(
     override val monke: Monke,
     override val dependencies: List<KClass<out Handler>> = listOf(
         ConfigHandler::class,
@@ -71,7 +71,7 @@ class DatabaseHandler @JvmOverloads constructor(
     }
 
     private fun initTable(table: String) {
-        val sql = convertToString(loadResource("sql/$table.sql"))
+        val sql = loadResource("sql/$table.sql").readFully()
         pool.connection.createStatement().execute(sql)
     }
 }

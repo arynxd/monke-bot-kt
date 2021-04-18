@@ -4,6 +4,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
+import java.net.MalformedURLException
+import java.net.URISyntaxException
 import java.net.URL
 import java.time.Duration
 import java.time.format.DateTimeFormatter
@@ -13,17 +15,22 @@ private val jsonFormat = Json {
     prettyPrint = true
 }
 
-fun String.isValidUrl(): Boolean = try {
-    URL(this).toURI()
-    true
-}
-catch (ex: Exception) {
-    false
+fun String.isValidUrl(): Boolean {
+    return try {
+        URL(this).toURI()
+        true
+    }
+    catch (ex: MalformedURLException) {
+        false
+    }
+    catch (ex: URISyntaxException) {
+        false
+    }
 }
 
-fun plurifyInt(input: Int): String = if (input != 1) "s" else ""
+fun plurifyInt(input: Int) = if (input != 1) "s" else ""
 
-fun plurifyLong(input: Long): String = if (input != 1L) "s" else ""
+fun plurifyLong(input: Long) = if (input != 1L) "s" else ""
 
 fun parseDateTime(time: TemporalAccessor?): String? = time?.let {
     DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(time)

@@ -1,7 +1,7 @@
 package me.arynxd.monke.objects.argument.types
 
 import me.arynxd.monke.objects.argument.Argument
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.plugins.LoadedPlugin
 
@@ -9,7 +9,7 @@ class ArgumentPlugin(
     override val name: String,
     override val description: String,
     override val required: Boolean,
-    override val type: ArgumentType,
+    override val type: Type,
     override val condition: (LoadedPlugin) -> Boolean = { true },
 ) : Argument<LoadedPlugin>() {
 

@@ -10,7 +10,7 @@ abstract class Argument<T> {
     abstract val name: String
     abstract val description: String
     abstract val required: Boolean
-    abstract val type: ArgumentType
+    abstract val type: Type
     abstract val condition: (T) -> Boolean
 
     suspend fun verify(input: String, event: CommandEvent): T? { // Null on invalid
@@ -37,4 +37,9 @@ abstract class Argument<T> {
                 command.getName(language)
         return TranslationHandler.getString(language, "command.$commandName.argument.$name.name")
     }
+}
+
+enum class Type {
+    VARARG,
+    REGULAR
 }

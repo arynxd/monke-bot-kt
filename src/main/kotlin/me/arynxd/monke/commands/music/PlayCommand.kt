@@ -6,7 +6,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import me.arynxd.monke.handlers.MusicHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.events.types.command.CommandEvent
@@ -25,7 +25,7 @@ class PlayCommand : Command(
                     name = "song",
                     description = "The track to play.",
                     required = true,
-                    type = ArgumentType.VARARG
+                    type = Type.VARARG
                 )
             )
         ),

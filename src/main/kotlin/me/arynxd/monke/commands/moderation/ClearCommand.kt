@@ -3,7 +3,7 @@ package me.arynxd.monke.commands.moderation
 import me.arynxd.monke.handlers.RateLimitHandler
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentInt
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
@@ -28,7 +28,7 @@ class ClearCommand : Command(
                     name = "amount",
                     description = "The amount to clear. 1 - 50",
                     required = true,
-                    type = ArgumentType.REGULAR,
+                    type = Type.REGULAR,
                     condition = { it in 1..50 },
                 )
             )

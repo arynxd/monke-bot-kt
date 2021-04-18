@@ -2,7 +2,7 @@ package me.arynxd.monke.commands.developer
 
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentLong
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.events.types.command.CommandEvent
@@ -28,7 +28,7 @@ class JsonCommand : Command(
                     name = "message-id",
                     description = "The ID to get from. Must be a message from the current channel.",
                     required = true,
-                    type = ArgumentType.REGULAR
+                    type = Type.REGULAR
                 ),
             )
         ),

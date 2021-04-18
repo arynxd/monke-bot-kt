@@ -2,7 +2,7 @@ package me.arynxd.monke.commands.misc
 
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
@@ -27,7 +27,7 @@ class WikipediaCommand : Command(
                     name = "subject",
                     description = "The subject to query Wikipedia with.",
                     required = true,
-                    type = ArgumentType.VARARG
+                    type = Type.VARARG
                 )
             )
         )

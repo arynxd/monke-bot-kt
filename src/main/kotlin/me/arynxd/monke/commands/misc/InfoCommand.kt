@@ -4,7 +4,7 @@ import me.arynxd.monke.commands.misc.info.InfoBotCommand
 import me.arynxd.monke.commands.misc.info.InfoServerCommand
 import me.arynxd.monke.commands.misc.info.InfoUserCommand
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentMember
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
@@ -24,7 +24,7 @@ class InfoCommand : Command(
                     name = "member",
                     description = "The member to show information for.",
                     required = false,
-                    type = ArgumentType.REGULAR,
+                    type = Type.REGULAR,
                 )
             )
         )
@@ -40,7 +40,7 @@ class InfoCommand : Command(
         )
     }
 
-    override suspend fun runSuspend(event: CommandEvent) {
-        event.command.children[0].runSuspend(event)
+    override fun runSync(event: CommandEvent) {
+        event.command.children[0].runSync(event)
     }
 }

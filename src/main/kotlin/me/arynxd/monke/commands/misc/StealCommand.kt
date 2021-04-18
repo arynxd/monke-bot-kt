@@ -3,7 +3,7 @@ package me.arynxd.monke.commands.misc
 import me.arynxd.monke.handlers.RateLimitHandler
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.argument.types.ArgumentURL
 import me.arynxd.monke.objects.command.Command
@@ -36,14 +36,14 @@ class StealCommand : Command(
                     name = "name",
                     description = "The new emoji name, ( must be A-Z or _ and 2 - 32 characters long ).",
                     required = true,
-                    type = ArgumentType.REGULAR,
+                    type = Type.REGULAR,
                     condition = { it.matches(EMOJI_REGEX) }
                 ),
                 ArgumentURL(
                     name = "emoji",
                     description = "The emoji. Must be a valid image URL.",
                     required = true,
-                    type = ArgumentType.REGULAR,
+                    type = Type.REGULAR,
                 )
             )
         )

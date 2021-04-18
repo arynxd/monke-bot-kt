@@ -9,7 +9,7 @@ import me.arynxd.monke.objects.handlers.Handler
 import org.ktorm.support.postgresql.insertOrUpdate
 import kotlin.reflect.KClass
 
-class GuildDataHandler @JvmOverloads constructor(
+class GuildDataHandler(
     override val monke: Monke,
     override val dependencies: List<KClass<out Handler>> = listOf(DatabaseHandler::class)
 ) : Handler() {

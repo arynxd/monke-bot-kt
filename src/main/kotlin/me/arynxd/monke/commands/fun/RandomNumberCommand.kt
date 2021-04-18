@@ -2,7 +2,7 @@ package me.arynxd.monke.commands.`fun`
 
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentLong
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
@@ -25,7 +25,7 @@ class RandomNumberCommand : Command(
                     name = "number-one",
                     description = "The first number in the range. Bigger than 0.",
                     required = true,
-                    type = ArgumentType.REGULAR,
+                    type = Type.REGULAR,
                     condition = { it > 0 }
                 ),
 
@@ -33,7 +33,7 @@ class RandomNumberCommand : Command(
                     name = "number-two",
                     description = "The second number in the range. Bigger than 0.",
                     required = true,
-                    type = ArgumentType.REGULAR,
+                    type = Type.REGULAR,
                     condition = { it > 0 }
                 )
             )

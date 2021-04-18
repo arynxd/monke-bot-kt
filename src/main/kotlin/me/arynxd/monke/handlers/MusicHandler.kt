@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent
 
-class MusicHandler constructor(
+class MusicHandler(
     override val monke: Monke
 ) : Handler() {
     val playerManager = DefaultAudioPlayerManager()

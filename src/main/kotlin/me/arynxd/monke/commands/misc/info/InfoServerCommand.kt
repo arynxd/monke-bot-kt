@@ -3,7 +3,7 @@ package me.arynxd.monke.commands.misc.info
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentServer
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.events.types.command.CommandEvent
@@ -26,7 +26,7 @@ class InfoServerCommand(parent: Command) : SubCommand(
                     name = "server",
                     description = "The server to show information for or nothing for the current server.",
                     required = false,
-                    type = ArgumentType.REGULAR,
+                    type = Type.REGULAR,
                 )
             )
         )
