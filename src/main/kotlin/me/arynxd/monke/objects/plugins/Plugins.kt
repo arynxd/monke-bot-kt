@@ -18,7 +18,7 @@ import java.util.jar.JarFile
 class Plugins(val monke: Monke) {
     private val plugins = ConcurrentHashMap<String, LoadedPlugin>()
     private val pluginsFolder = File("plugins")
-    private val pool = Executors.newFixedThreadPool(pluginsFolder.listFiles()?.size?: 10) { Thread(it, "Monke-Plugin-Thread") }
+    private val pool = Executors.newFixedThreadPool(10) { Thread(it, "Monke-Plugin-Thread") }
 
     fun loadPlugins() {
         if (!pluginsFolder.exists()) {
