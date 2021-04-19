@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadFactory
 
 class EventProcessor: IEventProcessor {
     private val listeners = mutableListOf<IEventListener>()
-    private val pool = Executors.newFixedThreadPool(10) { Thread(it, "Monke-Event-Thread") }
+    private val pool = Executors.newSingleThreadExecutor() { Thread(it, "Monke-Event-Thread") }
 
     override fun registerListeners(vararg listeners: IEventListener) {
         this.listeners.addAll(listeners)
