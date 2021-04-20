@@ -158,11 +158,11 @@ class EvalCommand : Command(
 
         val result = when (out) {
             null -> {
-                "Null"
+                "null"
             }
             is RestAction<*> ->
                 try {
-                    out.await()?.toString() ?: "Null"
+                    out.await()?.toString() ?: "null"
                 }
                 catch (exception: ErrorResponseException) {
                     successful = false

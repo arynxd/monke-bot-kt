@@ -20,7 +20,7 @@ class CatCommand : Command(
     )
 ) {
     override suspend fun runSuspend(event: CommandEvent) {
-        val subreddits = listOf("kittens", "Kitten", "cutecats", "catsnamedafterfood")
+        val subreddits = listOf("Kitten", "cutecats", "catsnamedafterfood")
         val random = Random
         val posts = getPosts(subreddits[random.nextInt(subreddits.size)], event.monke)
             .filter { it.isMedia() }

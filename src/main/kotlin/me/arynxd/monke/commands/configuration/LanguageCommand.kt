@@ -41,7 +41,7 @@ class LanguageCommand : Command(
                     translate(
                         language = language,
                         key = "command.language.response.get_response",
-                        language.commonName
+                        values = arrayOf(language.commonName)
                     )
                 )
                 footer()

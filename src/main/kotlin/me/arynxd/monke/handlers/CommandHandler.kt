@@ -92,7 +92,7 @@ class CommandHandler(
                 return
             }
 
-            val childQuery = args[0]
+            val childQuery = args.removeAt(0)
             val childCommand = command.children.find { it.metaData.name.equals(childQuery, true) }
 
             if (childCommand == null) {
@@ -100,7 +100,6 @@ class CommandHandler(
                 return
             }
 
-            args.removeAt(0)
             launchCommand(childCommand, CommandEvent(monke, args.toMutableList(), childCommand, event))
             return
         }

@@ -6,8 +6,8 @@ import me.arynxd.monke.objects.events.types.command.CommandEvent
 class PluginListCommand(parent: Command) : SubCommand(
     parent,
     CommandMetaData(
-        name = "enable",
-        description = "Enables a plugin.",
+        name = "list",
+        description = "Lists all loaded plugins.",
         category = CommandCategory.DEVELOPER,
         flags = listOf(CommandFlag.DEVELOPER_ONLY)
     )

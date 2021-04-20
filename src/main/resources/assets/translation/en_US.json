@@ -393,7 +393,48 @@
     "plugin": {
       "name": "plugin",
       "description": "Controls the currently running plugins.",
-      "aliases": ""
+      "aliases": "",
+
+      "child": {
+        "disable": {
+          "name": "disable",
+          "description": "Disables a plugin..",
+          "argument": {
+            "plugin": {
+              "name": "plugin",
+              "description": "The plugin to disable."
+            }
+          }
+        },
+        "enable": {
+          "name": "enable",
+          "description": "Enables a plugin.",
+          "argument": {
+            "plugin": {
+              "name": "plugin",
+              "description": "The plugin to enable."
+            }
+          }
+        },
+        "list": {
+          "name": "list",
+          "description": "Lists all loaded plugins."
+        },
+        "refresh": {
+          "name": "refresh",
+          "description": "Reloads all plugins from disk."
+        },
+        "reload": {
+          "name": "reload",
+          "description": "Reloads a plugin.",
+          "argument": {
+            "plugin": {
+              "name": "plugin",
+              "description": "The plugin to reload."
+            }
+          }
+        }
+      }
     }
   }
 }
