@@ -3,7 +3,7 @@ package me.arynxd.monke.commands.misc
 import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.CommandHandler
 import me.arynxd.monke.handlers.PaginationHandler
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.Paginator
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
@@ -75,7 +75,7 @@ class HelpCommand : Command(
         }
 
         event.replyAsync {
-            val keywordFor = TranslationHandler.getString(
+            val keywordFor = translate(
                 language = event.getLanguage(),
                 key = "command.help.keyword.help_for"
             )
@@ -91,8 +91,8 @@ class HelpCommand : Command(
         val prefix = event.getPrefix()
         val language = event.getLanguage()
 
-        val description = TranslationHandler.getString(language, "command.help.keyword.description")
-        val usage = TranslationHandler.getString(language, "command.help.keyword.usage")
+        val description = translate(language, "command.help.keyword.description")
+        val usage = translate(language, "command.help.keyword.usage")
 
         val commandDescription =
             if (command is SubCommand)

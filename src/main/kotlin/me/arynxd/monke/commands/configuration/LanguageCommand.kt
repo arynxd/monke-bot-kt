@@ -1,6 +1,6 @@
 package me.arynxd.monke.commands.configuration
 
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentLanguage
@@ -38,7 +38,7 @@ class LanguageCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.INFORMATION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command.language.response.get_response",
                         language.commonName
@@ -55,7 +55,7 @@ class LanguageCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.INFORMATION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command.language.response.exists_response",
                         values = arrayOf(language.commonName)
@@ -70,7 +70,7 @@ class LanguageCommand : Command(
         event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title(
-                TranslationHandler.getString(
+                translate(
                     language = newLanguage,
                     key = "command.language.response.set_response",
                     values = arrayOf(newLanguage.commonName)

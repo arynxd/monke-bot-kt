@@ -1,7 +1,7 @@
 package me.arynxd.monke.commands.misc
 
 import me.arynxd.monke.handlers.RateLimitHandler
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
@@ -61,7 +61,7 @@ class StealCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command_error.rate_limited"
                     )
@@ -75,7 +75,7 @@ class StealCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command.steal.response.invalid_image",
                         values = arrayOf(url)
@@ -91,7 +91,7 @@ class StealCommand : Command(
                 event.replyAsync {
                     type(CommandReply.Type.SUCCESS)
                     title(
-                        TranslationHandler.getString(
+                        translate(
                             language = language,
                             key = "command.steal.response.emoji_success",
                             values = arrayOf(it.asMention)
@@ -105,7 +105,7 @@ class StealCommand : Command(
                 event.replyAsync {
                     type(CommandReply.Type.EXCEPTION)
                     title(
-                        TranslationHandler.getString(
+                        translate(
                             language = language,
                             key = "command.steal.response.emoji_add_error",
                             values = arrayOf(url)

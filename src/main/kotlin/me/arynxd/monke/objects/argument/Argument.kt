@@ -1,6 +1,7 @@
 package me.arynxd.monke.objects.argument
 
 import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.SubCommand
 import me.arynxd.monke.objects.events.types.command.CommandEvent
@@ -26,7 +27,7 @@ abstract class Argument<T> {
                 "${command.parent.getName(language)}.child.${command.getName(language)}"
             else
                 command.getName(language)
-        return TranslationHandler.getString(language, "command.$commandName.argument.$name.description")
+        return translate(language, "command.$commandName.argument.$name.description")
     }
 
     fun getName(language: Language, command: Command): String {
@@ -35,7 +36,7 @@ abstract class Argument<T> {
                 "${command.parent.getName(language)}.child.${command.getName(language)}"
             else
                 command.getName(language)
-        return TranslationHandler.getString(language, "command.$commandName.argument.$name.name")
+        return translate(language, "command.$commandName.argument.$name.name")
     }
 }
 

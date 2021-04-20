@@ -72,7 +72,7 @@ class CommandHandler(
             val language = monke.handlers.get(GuildDataHandler::class).getData(event.guild.idLong).language
             CommandReply.sendError(
                 message = event.message,
-                text = TranslationHandler.getString(
+                text = translate(
                     language = language,
                     key = "command_error.command_not_found",
                     values = arrayOf(
@@ -208,13 +208,13 @@ class CommandHandler(
 
             val instance = constructors[0].newInstance()
 
-            if (instance is SubCommand) { //Subcommands are loaded seperately
+            if (instance is SubCommand) { //Subcommands are loaded separately
                 continue
             }
 
             if (instance !is Command) {
                 LOGGER.warn(
-                    TranslationHandler.getInternalString(
+                    translateInternal(
                         "internal_error.non_command_class",
                         cls.simpleName
                     )
@@ -224,7 +224,7 @@ class CommandHandler(
 
             if (!registerCommand(instance, commands)) {
                 LOGGER.warn(
-                    TranslationHandler.getInternalString(
+                    translateInternal(
                         "internal_error.duplicate_command",
                         cls.simpleName
                     )

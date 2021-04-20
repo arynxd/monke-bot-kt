@@ -1,6 +1,7 @@
 package me.arynxd.monke.commands.`fun`
 
 import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentUser
@@ -38,7 +39,7 @@ class AvatarCommand : Command(
         event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title(
-                TranslationHandler.getString(
+                translate(
                     language = language,
                     key = "command.avatar.response.avatar_for_user",
                     values = arrayOf(user.asTag)

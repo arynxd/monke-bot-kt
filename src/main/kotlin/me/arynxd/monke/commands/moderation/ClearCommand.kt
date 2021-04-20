@@ -1,7 +1,7 @@
 package me.arynxd.monke.commands.moderation
 
 import me.arynxd.monke.handlers.RateLimitHandler
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentInt
@@ -46,7 +46,7 @@ class ClearCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command_error.rate_limited"
                     )
@@ -69,7 +69,7 @@ class ClearCommand : Command(
                 event.replyAsync {
                     type(CommandReply.Type.SUCCESS)
                     title(
-                        TranslationHandler.getString(
+                        translate(
                             language = language,
                             key = "command.clear.response.cleared",
                             values = arrayOf(

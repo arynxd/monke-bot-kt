@@ -1,7 +1,7 @@
 package me.arynxd.monke.commands.music
 
 import me.arynxd.monke.handlers.MusicHandler
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
@@ -34,7 +34,7 @@ class LeaveCommand : Command(
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title(
-                TranslationHandler.getString(
+                translate(
                     language = event.getLanguage(),
                     key = "music.channel_left",
                     values = arrayOf(

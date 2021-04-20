@@ -1,7 +1,7 @@
 package me.arynxd.monke.commands.misc.info
 
 import me.arynxd.monke.MONKE_VERSION
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.events.types.command.CommandEvent
 
@@ -17,17 +17,17 @@ class InfoBotCommand(parent: Command) : SubCommand(
         val monke = event.monke
         val language = event.getLanguage()
 
-        val jvmVersion = TranslationHandler.getString(language, "command.info.child.bot.keyword.jvm_version")
-        val jdaVersion = TranslationHandler.getString(language, "command.info.child.bot.keyword.jda_version")
-        val monkeVersion = TranslationHandler.getString(language, "command.info.child.bot.keyword.monke_version")
+        val jvmVersion = translate(language, "command.info.child.bot.keyword.jvm_version")
+        val jdaVersion = translate(language, "command.info.child.bot.keyword.jda_version")
+        val monkeVersion = translate(language, "command.info.child.bot.keyword.monke_version")
 
-        val threadCount = TranslationHandler.getString(language, "command.info.child.bot.keyword.thread_count")
-        val memoryUsage = TranslationHandler.getString(language, "command.info.child.bot.keyword.memory_usage")
-        val cpuUsage = TranslationHandler.getString(language, "command.info.child.bot.keyword.cpu_usage")
+        val threadCount = translate(language, "command.info.child.bot.keyword.thread_count")
+        val memoryUsage = translate(language, "command.info.child.bot.keyword.memory_usage")
+        val cpuUsage = translate(language, "command.info.child.bot.keyword.cpu_usage")
 
-        val totalUsers = TranslationHandler.getString(language, "command.info.child.bot.keyword.total_users")
-        val totalServers = TranslationHandler.getString(language, "command.info.child.bot.keyword.total_servers")
-        val uptime = TranslationHandler.getString(language, "command.info.child.bot.keyword.uptime")
+        val totalUsers = translate(language, "command.info.child.bot.keyword.total_users")
+        val totalServers = translate(language, "command.info.child.bot.keyword.total_servers")
+        val uptime = translate(language, "command.info.child.bot.keyword.uptime")
 
         event.replyAsync {
             type(CommandReply.Type.INFORMATION)

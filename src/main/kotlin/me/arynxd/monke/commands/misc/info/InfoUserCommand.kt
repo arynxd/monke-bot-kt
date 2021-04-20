@@ -1,6 +1,6 @@
 package me.arynxd.monke.commands.misc.info
 
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentMember
@@ -34,13 +34,13 @@ class InfoUserCommand(parent: Command) : SubCommand(
 
         val language = event.getLanguage()
 
-        val information = TranslationHandler.getString(language, "command.info.keyword.information_for_user")
-        val boosting = TranslationHandler.getString(language, "command.info.keyword.boosting_since")
-        val notBoosting = TranslationHandler.getString(language, "command.info.keyword.not_boosting")
-        val joinedAt = TranslationHandler.getString(language, "command.info.keyword.joined_at")
-        val createdAt = TranslationHandler.getString(language, "command.info.keyword.created_at")
-        val roles = TranslationHandler.getString(language, "command.info.keyword.roles")
-        val noRoles = TranslationHandler.getString(language, "command.info.keyword.no_roles")
+        val information = translate(language, "command.info.keyword.information_for_user")
+        val boosting = translate(language, "command.info.keyword.boosting_since")
+        val notBoosting = translate(language, "command.info.keyword.not_boosting")
+        val joinedAt = translate(language, "command.info.keyword.joined_at")
+        val createdAt = translate(language, "command.info.keyword.created_at")
+        val roles = translate(language, "command.info.keyword.roles")
+        val noRoles = translate(language, "command.info.keyword.no_roles")
 
         event.replyAsync {
             type(CommandReply.Type.INFORMATION)

@@ -1,6 +1,6 @@
 package me.arynxd.monke.commands.misc
 
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
@@ -18,7 +18,7 @@ class UptimeCommand : Command(
 
     override fun runSync(event: CommandEvent) {
         val language = event.getLanguage()
-        val uptime = TranslationHandler.getString(language, "command.uptime.keyword.uptime")
+        val uptime = translate(language, "command.uptime.keyword.uptime")
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title("$uptime: ${event.monke.getUptimeString()}")

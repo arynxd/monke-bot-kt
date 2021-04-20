@@ -1,6 +1,6 @@
 package me.arynxd.monke.commands.misc
 
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
@@ -38,7 +38,7 @@ class PrefixCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.INFORMATION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command.prefix.response.prefix_here",
                         values = arrayOf(cache.prefix)
@@ -55,7 +55,7 @@ class PrefixCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command.prefix.response.prefix_already",
                         values = arrayOf(prefix)
@@ -69,7 +69,7 @@ class PrefixCommand : Command(
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title(
-                TranslationHandler.getString(
+                translate(
                     language = language,
                     key = "command.prefix.response.prefix_new",
                     values = arrayOf(prefix)

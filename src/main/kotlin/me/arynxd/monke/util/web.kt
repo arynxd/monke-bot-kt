@@ -5,6 +5,8 @@ import kotlinx.coroutines.withContext
 import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.handlers.translateInternal
 import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.handlers.LOGGER
@@ -31,7 +33,7 @@ suspend fun getPosts(subreddit: String, monke: Monke): List<RedditPost> {
     val posts = mutableListOf<RedditPost>()
 
     if (!response.isSuccessful || body == null) {
-        val error = TranslationHandler.getInternalString("internal_error.web_service_error", "Reddit")
+        val error = translateInternal("internal_error.web_service_error", "Reddit")
         LOGGER.error(error)
         return emptyList()
     }
@@ -68,7 +70,7 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
         event.replyAsync {
             type(CommandReply.Type.EXCEPTION)
             title(
-                TranslationHandler.getString(
+                translate(
                     language = language,
                     key = "command_error.nsfw_reddit_post"
                 )
@@ -79,7 +81,7 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
         return
     }
 
-    val description = TranslationHandler.getString(
+    val description = translate(
         language = language,
         key = "command_response.reddit_description",
         values = arrayOf(
@@ -88,7 +90,7 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
         )
     )
 
-    val footer = TranslationHandler.getString(
+    val footer = translate(
         language = language,
         key = "command_response.reddit_footer",
         values = arrayOf(
@@ -117,7 +119,7 @@ suspend fun getWikipediaPage(event: CommandEvent, subject: String): WikipediaPag
 
     if (!response.isSuccessful || body == null) {
         LOGGER.error(
-            TranslationHandler.getInternalString(
+            translateInternal(
                 key = "internal_error.web_service_error",
                 values = arrayOf("Wikipedia")
             )

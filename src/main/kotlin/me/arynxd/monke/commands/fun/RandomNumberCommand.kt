@@ -1,6 +1,7 @@
 package me.arynxd.monke.commands.`fun`
 
 import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentLong
@@ -49,7 +50,7 @@ class RandomNumberCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = event.getLanguage(),
                         key = "command.rng.response.lower_>_upper"
                     )

@@ -1,6 +1,7 @@
 package me.arynxd.monke.commands.`fun`
 
 import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.util.checkAndSendPost
@@ -29,7 +30,7 @@ class CatCommand : Command(
             event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command_error.corrupt_web_data",
                         values = arrayOf("Reddit")

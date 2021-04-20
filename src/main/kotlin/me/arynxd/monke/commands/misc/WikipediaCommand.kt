@@ -1,6 +1,6 @@
 package me.arynxd.monke.commands.misc
 
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
@@ -46,7 +46,7 @@ class WikipediaCommand : Command(
             event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command.wiki.response.not_found"
                     )
@@ -56,18 +56,18 @@ class WikipediaCommand : Command(
             return
         }
 
-        val lastEdited = TranslationHandler.getString(
+        val lastEdited = translate(
             language = language,
             key = "command.wiki.keyword.last_edited",
             values = arrayOf(
-                parseDateTime(page.getTimestamp()) ?: "null"
+                parseDateTime(page.getTimestamp()).toString()
             )
         )
 
         event.reply {
             type(CommandReply.Type.SUCCESS)
             title(page.getTitle())
-            description(page.getExtract() ?: "null")
+            description(page.getExtract().toString())
             footer(lastEdited)
             send()
         }

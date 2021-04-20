@@ -3,6 +3,7 @@ package me.arynxd.monke.commands.`fun`
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
@@ -51,7 +52,7 @@ class GoogleCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command.google.response.no_results"
                     )

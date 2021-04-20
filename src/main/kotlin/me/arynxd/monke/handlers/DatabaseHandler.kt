@@ -44,7 +44,7 @@ class DatabaseHandler(
         }
         catch (exception: IllegalArgumentException) {
             LOGGER.error(
-                TranslationHandler.getInternalString(
+                translateInternal(
                     key = "internal_error.database_offline",
                     values = arrayOf(exception)
                 )

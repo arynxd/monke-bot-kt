@@ -2,6 +2,7 @@ package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.handlers.CooldownHandler
 import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.plurifyInt
@@ -17,7 +18,7 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command_error.disabled"
                     )
@@ -32,7 +33,7 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command_error.developer_only"
                     )
@@ -47,7 +48,7 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command_error.argument_config"
                     )
@@ -64,7 +65,7 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command_error.member_permission",
                         values = arrayOf(perms)
@@ -82,7 +83,7 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command_error.bot_permission",
                         values = arrayOf(perms)
@@ -106,7 +107,7 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command_error.cooldown",
                         values = arrayOf(cooldown)
@@ -135,7 +136,7 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 description(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command_error.required_args",
                         values = arrayOf(
@@ -166,7 +167,7 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 description(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command_error.invalid_args",
                         values = arrayOf(
@@ -202,15 +203,15 @@ abstract class Command(
     }
 
     open fun getDescription(language: Language): String {
-        return TranslationHandler.getString(language, "command.${metaData.name}.description")
+        return translate(language, "command.${metaData.name}.description")
     }
 
     open fun getName(language: Language): String {
-        return TranslationHandler.getString(language, "command.${metaData.name}.name")
+        return translate(language, "command.${metaData.name}.name")
     }
 
     fun getAliases(language: Language): List<String> {
-        return TranslationHandler.getString(language, "command.${metaData.name}.aliases").split("/")
+        return translate(language, "command.${metaData.name}.aliases").split("/")
     }
 
     open suspend fun runSuspend(event: CommandEvent) {

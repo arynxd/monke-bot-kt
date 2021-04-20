@@ -81,12 +81,12 @@ class Monke : ListenerAdapter() {
                 }.build()
         }
         catch (exception: LoginException) {
-            LOGGER.error(TranslationHandler.getInternalString("internal_error.invalid_login"))
+            LOGGER.error(translateInternal("internal_error.invalid_login"))
             exitProcess(1)
 
         }
         catch (exception: IllegalArgumentException) {
-            LOGGER.error(TranslationHandler.getInternalString("internal_error.invalid_build"))
+            LOGGER.error(translateInternal("internal_error.invalid_build"))
             exitProcess(1)
         }
     }
