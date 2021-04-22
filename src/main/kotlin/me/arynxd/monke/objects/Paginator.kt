@@ -3,6 +3,8 @@ package me.arynxd.monke.objects
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.handlers.translateInternal
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
@@ -21,7 +23,7 @@ class Paginator(
     var lastUsed = System.currentTimeMillis()
 
     suspend fun paginate() {
-        require(pages.isNotEmpty()) { TranslationHandler.getInternalString("internal_error.pagination_pages_empty") }
+        require(pages.isNotEmpty()) { translateInternal("internal_error.pagination_pages_empty") }
 
         sentMessage = message.reply(pages.first()).mentionRepliedUser(false).await()
         sentMessage.addReaction(Emoji.ARROW_LEFT.getAsReaction()).queue()

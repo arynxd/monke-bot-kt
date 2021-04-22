@@ -6,37 +6,40 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import me.arynxd.monke.handlers.MusicHandler
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.util.isValidUrl
 
 @Suppress("UNUSED")
 class PlayCommand : Command(
-    name = "play",
-    description = "Plays music from youtube or soundcloud",
-    category = CommandCategory.MUSIC,
-    flags = listOf(CommandFlag.ASYNC),
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentString(
-                name = "song",
-                description = "The track to play.",
-                required = true,
-                type = ArgumentType.VARARG
+    CommandMetaData(
+        name = "play",
+        description = "Plays music from youtube or soundcloud",
+        category = CommandCategory.MUSIC,
+        flags = listOf(CommandFlag.SUSPENDING),
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentString(
+                    name = "song",
+                    description = "The track to play.",
+                    required = true,
+                    type = Type.VARARG
+                )
             )
-        )
-    ),
+        ),
 
-    finalCheck = { it.member.voiceState?.channel != null },
-    finalCheckFail = {
-        it.replyAsync {
-            type(CommandReply.Type.EXCEPTION)
-            title("You are not in a voice channel.")
-            footer()
-            send()
+        finalCheck = { it.member.voiceState?.channel != null },
+        finalCheckFail = {
+            it.replyAsync {
+                type(CommandReply.Type.EXCEPTION)
+                title("You are not in a voice channel.")
+                footer()
+                send()
+            }
         }
-    }
+    )
 ) {
     override suspend fun runSuspend(event: CommandEvent) {
         val channel = event.channel

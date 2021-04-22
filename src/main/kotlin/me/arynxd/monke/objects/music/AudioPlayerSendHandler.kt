@@ -6,9 +6,7 @@ import net.dv8tion.jda.api.audio.AudioSendHandler
 import java.nio.Buffer
 import java.nio.ByteBuffer
 
-class AudioPlayerSendHandler(
-    private val audioPlayer: AudioPlayer
-) : AudioSendHandler {
+class AudioPlayerSendHandler(private val audioPlayer: AudioPlayer) : AudioSendHandler {
     private val buffer: ByteBuffer = ByteBuffer.allocate(1024)
     private val frame: MutableAudioFrame = MutableAudioFrame().apply {
         setBuffer(buffer)

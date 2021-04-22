@@ -20,7 +20,7 @@ import java.io.IOException
 import kotlin.reflect.KClass
 
 //ty topi 👀 https://github.com/KittyBot-Org/KittyBot/blob/master/src/main/java/de/kittybot/kittybot/modules/PrometheusModule.java
-class MetricsHandler @JvmOverloads constructor(
+class MetricsHandler(
     override val monke: Monke,
     override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
 ) : Handler() {

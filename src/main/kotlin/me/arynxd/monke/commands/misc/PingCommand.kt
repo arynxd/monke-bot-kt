@@ -2,16 +2,18 @@ package me.arynxd.monke.commands.misc
 
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 
 @Suppress("UNUSED")
 class PingCommand : Command(
-    name = "ping",
-    description = "Shows the bot's ping to discord.",
-    category = CommandCategory.MISC,
-    flags = listOf(CommandFlag.ASYNC),
-    aliases = listOf("pong"),
-
-    ) {
+    CommandMetaData(
+        name = "ping",
+        description = "Shows the bot's ping to discord.",
+        category = CommandCategory.MISC,
+        flags = listOf(CommandFlag.SUSPENDING),
+        aliases = listOf("pong")
+    )
+) {
 
     override suspend fun runSuspend(event: CommandEvent) {
         event.reply {
@@ -20,7 +22,7 @@ class PingCommand : Command(
 
             val description =
                 "**REST Ping**: ${event.jda.restPing.await()}ms\n\n" +
-                "**Gateway Ping**: ${event.jda.gatewayPing}ms"
+                        "**Gateway Ping**: ${event.jda.gatewayPing}ms"
 
             description(description)
             footer()

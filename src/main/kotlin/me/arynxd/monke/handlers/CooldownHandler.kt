@@ -30,10 +30,10 @@ class CooldownHandler(
     }
 
     class CooledUser {
-        private var commands: MutableMap<Command, Long> = mutableMapOf()
+        private val commands: MutableMap<Command, Long> = mutableMapOf()
 
         fun addCommand(command: Command) {
-            commands[command] = System.currentTimeMillis() + command.cooldown
+            commands[command] = System.currentTimeMillis() + command.metaData.cooldown
         }
 
         fun getRemaining(command: Command): Long {

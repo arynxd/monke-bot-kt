@@ -1,24 +1,27 @@
 package me.arynxd.monke.commands.developer.plugin
 
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentPlugin
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.plugins.LoadedPlugin
 
 class PluginDisableCommand(parent: Command) : SubCommand(
-    name = "disable",
-    description = "Disables a plugin.",
-    category = CommandCategory.DEVELOPER,
-    flags = listOf(CommandFlag.DEVELOPER_ONLY),
-    parent = parent,
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentPlugin(
-                name = "plugin",
-                description = "The plugin to disable.",
-                required = true,
-                type = ArgumentType.REGULAR
+    parent,
+    CommandMetaData(
+        name = "disable",
+        description = "Disables a plugin.",
+        category = CommandCategory.DEVELOPER,
+        flags = listOf(CommandFlag.DEVELOPER_ONLY),
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentPlugin(
+                    name = "plugin",
+                    description = "The plugin to disable.",
+                    required = true,
+                    type = Type.REGULAR
+                )
             )
         )
     )

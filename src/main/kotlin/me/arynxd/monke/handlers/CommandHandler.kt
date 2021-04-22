@@ -1,12 +1,16 @@
 package me.arynxd.monke.handlers
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.*
 import me.arynxd.monke.Monke
-import me.arynxd.monke.events.GuildMessageEvent
-import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.command.Command
+import me.arynxd.monke.objects.command.CommandFlag
+import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.command.SubCommand
+import me.arynxd.monke.objects.events.interfaces.IEventListener
+import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.events.types.command.CommandExceptionEvent
+import me.arynxd.monke.objects.events.types.command.CommandPreprocessEvent
+import me.arynxd.monke.objects.events.types.BaseEvent
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.handlers.whenEnabled
@@ -20,17 +24,23 @@ import kotlin.reflect.KClass
 const val COMMAND_PACKAGE = "me.arynxd.monke.commands"
 val SUBSTITUTION_REGEX = Regex("(%[0-9]*)")
 
-class CommandHandler @JvmOverloads constructor(
+class CommandHandler(
     override val monke: Monke,
     override val dependencies: List<KClass<out Handler>> = listOf(
         TranslationHandler::class,
         GuildDataHandler::class
     )
-) : Handler() {
+) : Handler(), IEventListener {
     private val reflections = Reflections(COMMAND_PACKAGE, SubTypesScanner())
     val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
 
-    fun handle(event: GuildMessageEvent) {
+    override fun onEvent(event: BaseEvent) {
+        if (event is CommandPreprocessEvent) {
+            handlePreprocessEvent(event)
+        }
+    }
+
+    private fun handlePreprocessEvent(event: CommandPreprocessEvent) {
         val prefix = monke.handlers.get(GuildDataHandler::class).getData(event.guild.idLong).prefix
 
         val contentRaw = event.message.contentRaw
@@ -62,7 +72,7 @@ class CommandHandler @JvmOverloads constructor(
             val language = monke.handlers.get(GuildDataHandler::class).getData(event.guild.idLong).language
             CommandReply.sendError(
                 message = event.message,
-                text = TranslationHandler.getString(
+                text = translate(
                     language = language,
                     key = "command_error.command_not_found",
                     values = arrayOf(
@@ -74,7 +84,7 @@ class CommandHandler @JvmOverloads constructor(
             return
         }
 
-        val commandEvent = CommandEvent(event, command, args.toMutableList(), monke)
+        val commandEvent = CommandEvent(monke, args.toMutableList(), command, event)
 
         if (command.hasChildren()) {
             if (args.isEmpty()) { //Is there no additional arguments
@@ -82,23 +92,22 @@ class CommandHandler @JvmOverloads constructor(
                 return
             }
 
-            val childQuery = args[0]
-            val childCommand = command.children.find { it.name.equals(childQuery, true) }
+            val childQuery = args.removeAt(0)
+            val childCommand = command.children.find { it.metaData.name.equals(childQuery, true) }
 
             if (childCommand == null) {
                 launchCommand(command, commandEvent)
                 return
             }
 
-            args.removeAt(0)
-            launchCommand(childCommand, CommandEvent(event, childCommand, args.toMutableList(), monke))
+            launchCommand(childCommand, CommandEvent(monke, args.toMutableList(), childCommand, event))
             return
         }
 
         launchCommand(command, commandEvent)
     }
 
-    private fun isBotMention(event: GuildMessageEvent): Boolean {
+    private fun isBotMention(event: CommandPreprocessEvent): Boolean {
         val content = event.message.contentRaw
         val id = event.jda.selfUser.idLong
         return content.startsWith("<@$id>") || content.startsWith("<@!$id>")
@@ -106,7 +115,7 @@ class CommandHandler @JvmOverloads constructor(
 
     private fun launchCommand(command: Command, event: CommandEvent) {
         val isExecutable = runBlocking {
-            return@runBlocking command.isExecutable(event)
+            command.isExecutable(event)
         }
 
         if (!isExecutable) {
@@ -116,12 +125,14 @@ class CommandHandler @JvmOverloads constructor(
         monke.handlers.get(CooldownHandler::class).addCommand(event.user, command)
         monke.handlers.get(MetricsHandler::class).commandCounter.labels(
             if (command is SubCommand)
-                command.parent.name
+                command.parent.metaData.name
             else
-                command.name
+                command.metaData.name
         ).inc()
 
-        if (command.hasFlag(CommandFlag.ASYNC)) {
+        monke.eventProcessor.fireEvent(event)
+
+        if (command.hasFlag(CommandFlag.SUSPENDING)) {
             GlobalScope.launch {
                 try {
                     withTimeout(5000) { //5 Seconds
@@ -144,6 +155,8 @@ class CommandHandler @JvmOverloads constructor(
     }
 
     private fun handleException(event: CommandEvent, exception: Exception) {
+        val monke = event.monke
+
         event.replyAsync {
             type(CommandReply.Type.EXCEPTION)
             title("Something went wrong whilst executing that command. Please report this to the devs!")
@@ -151,11 +164,16 @@ class CommandHandler @JvmOverloads constructor(
             send()
         }
 
-        event.monke.handlers
+        monke.handlers
             .get(ExceptionHandler::class)
-            .handle(exception, "From command '${event.command.name}'")
+            .handle(exception, "From command '${event.command.metaData.name}'")
+
+        monke.eventProcessor.fireEvent(CommandExceptionEvent(monke, exception, event))
     }
 
+    /**
+     * @return <code>true</code> if the command was registered, <code>false</code> if it was not.
+     */
     fun registerCommand(command: Command): Boolean {
         return registerCommand(command, commandMap)
     }
@@ -167,7 +185,7 @@ class CommandHandler @JvmOverloads constructor(
                 return false
             }
             map[name] = command
-            for (alias in command.aliases) {
+            for (alias in command.metaData.aliases) {
                 if (map.containsKey(alias)) {
                     return false
                 }
@@ -189,13 +207,13 @@ class CommandHandler @JvmOverloads constructor(
 
             val instance = constructors[0].newInstance()
 
-            if (instance is SubCommand) {
+            if (instance is SubCommand) { //Subcommands are loaded separately
                 continue
             }
 
             if (instance !is Command) {
                 LOGGER.warn(
-                    TranslationHandler.getInternalString(
+                    translateInternal(
                         "internal_error.non_command_class",
                         cls.simpleName
                     )
@@ -205,7 +223,7 @@ class CommandHandler @JvmOverloads constructor(
 
             if (!registerCommand(instance, commands)) {
                 LOGGER.warn(
-                    TranslationHandler.getInternalString(
+                    translateInternal(
                         "internal_error.duplicate_command",
                         cls.simpleName
                     )

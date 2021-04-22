@@ -1,30 +1,33 @@
 package me.arynxd.monke.commands.misc.info
 
 import dev.minn.jda.ktx.await
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentServer
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.parseDateTime
 import net.dv8tion.jda.api.entities.Guild
 
 @Suppress("UNUSED")
 class InfoServerCommand(parent: Command) : SubCommand(
-    name = "server",
-    description = "Shows information about a server.",
-    category = CommandCategory.MISC,
-    flags = listOf(CommandFlag.ASYNC),
-    parent = parent,
+    parent,
+    CommandMetaData(
+        name = "server",
+        description = "Shows information about a server.",
+        category = CommandCategory.MISC,
+        flags = listOf(CommandFlag.SUSPENDING),
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentServer(
-                name = "server",
-                description = "The server to show information for or nothing for the current server.",
-                required = false,
-                type = ArgumentType.REGULAR,
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentServer(
+                    name = "server",
+                    description = "The server to show information for or nothing for the current server.",
+                    required = false,
+                    type = Type.REGULAR,
+                )
             )
         )
     )
@@ -33,14 +36,14 @@ class InfoServerCommand(parent: Command) : SubCommand(
         val guild = event.getArgument(0, event.guild)
         val language = event.getLanguage()
 
-        val informationFor = TranslationHandler.getString(language, "command.info.keyword.information_for_server")
-        val isPartnered = TranslationHandler.getString(language, "command.info.keyword.is_partnered")
-        val isVerified = TranslationHandler.getString(language, "command.info.keyword.is_verified")
-        val isPublic = TranslationHandler.getString(language, "command.info.keyword.is_public")
-        val boostCount = TranslationHandler.getString(language, "command.info.keyword.boost_count")
-        val memberCount = TranslationHandler.getString(language, "command.info.keyword.member_count")
-        val createdAt = TranslationHandler.getString(language, "command.info.keyword.created_at")
-        val emotes = TranslationHandler.getString(language, "command.info.keyword.emotes")
+        val informationFor = translate(language, "command.info.keyword.information_for_server")
+        val isPartnered = translate(language, "command.info.keyword.is_partnered")
+        val isVerified = translate(language, "command.info.keyword.is_verified")
+        val isPublic = translate(language, "command.info.keyword.is_public")
+        val boostCount = translate(language, "command.info.keyword.boost_count")
+        val memberCount = translate(language, "command.info.keyword.member_count")
+        val createdAt = translate(language, "command.info.keyword.created_at")
+        val emotes = translate(language, "command.info.keyword.emotes")
 
         event.reply {
             type(CommandReply.Type.INFORMATION)
@@ -63,18 +66,18 @@ class InfoServerCommand(parent: Command) : SubCommand(
 
     private fun getFeature(guild: Guild, feature: String, language: Language): String {
         return if (guild.features.contains(feature))
-            TranslationHandler.getString(language, "keyword.yes")
+            translate(language, "keyword.yes")
         else
-            TranslationHandler.getString(language, "keyword.no")
+            translate(language, "keyword.no")
     }
 
     private suspend fun getEmoteString(guild: Guild, language: Language): String {
         val emotes = guild.retrieveEmotes().await()
         if (emotes.isEmpty()) {
-            return TranslationHandler.getString(language, "command.info.keyword.no_emotes")
+            return translate(language, "command.info.keyword.no_emotes")
         }
 
-        val none = TranslationHandler.getString(language, "keyword.none")
+        val none = translate(language, "keyword.none")
 
         val animated =
             if (emotes.none { it.isAnimated })
@@ -90,7 +93,7 @@ class InfoServerCommand(parent: Command) : SubCommand(
                 emotes.filter { !it.isAnimated }
                     .joinToString(separator = " ") { it.asMention }
 
-        return TranslationHandler.getString(
+        return translate(
             language = language,
             key = "command.info.child.server.response.emote",
             values = arrayOf(

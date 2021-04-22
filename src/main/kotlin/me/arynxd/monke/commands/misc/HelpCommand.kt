@@ -3,35 +3,37 @@ package me.arynxd.monke.commands.misc
 import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.CommandHandler
 import me.arynxd.monke.handlers.PaginationHandler
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.Paginator
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentCommand
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import net.dv8tion.jda.api.entities.MessageEmbed
 
 
 @Suppress("UNUSED")
 class HelpCommand : Command(
-    name = "help",
-    description = "Shows help menu, or help for a specific command.",
-    category = CommandCategory.MISC,
-    aliases = listOf("?", "commands"),
+    CommandMetaData(
+        name = "help",
+        description = "Shows help menu, or help for a specific command.",
+        category = CommandCategory.MISC,
+        aliases = listOf("?", "commands"),
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentCommand(
-                name = "command",
-                description = "The command to show help for.",
-                required = false,
-                type = ArgumentType.REGULAR,
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentCommand(
+                    name = "command",
+                    description = "The command to show help for.",
+                    required = false,
+                    type = Type.REGULAR,
+                )
             )
         )
-    ),
-
-    ) {
+    )
+) {
     override fun runSync(event: CommandEvent) {
         val prefix = event.getPrefix()
         if (event.isArgumentPresent(0)) {
@@ -50,14 +52,16 @@ class HelpCommand : Command(
 
     private fun getHelp(event: CommandEvent, command: Command) {
         val prefix = event.getPrefix()
+        val language = event.getLanguage()
+
         val fields = mutableListOf(
             MessageEmbed.Field(
-                "**$prefix${command.name}**",
-                getDescription(command, event, command.name),
+                "**$prefix${command.getName(language)}**",
+                getDescription(command, event, command.getName(language)),
                 true
             )
         )
-        val language = event.getLanguage()
+
         if (command.hasChildren()) {
             for (child in command.children) {
                 fields.add(
@@ -71,7 +75,7 @@ class HelpCommand : Command(
         }
 
         event.replyAsync {
-            val keywordFor = TranslationHandler.getString(
+            val keywordFor = translate(
                 language = event.getLanguage(),
                 key = "command.help.keyword.help_for"
             )
@@ -87,8 +91,8 @@ class HelpCommand : Command(
         val prefix = event.getPrefix()
         val language = event.getLanguage()
 
-        val description = TranslationHandler.getString(language, "command.help.keyword.description")
-        val usage = TranslationHandler.getString(language, "command.help.keyword.usage")
+        val description = translate(language, "command.help.keyword.description")
+        val usage = translate(language, "command.help.keyword.usage")
 
         val commandDescription =
             if (command is SubCommand)
@@ -98,12 +102,20 @@ class HelpCommand : Command(
 
         val args =
             if (command is SubCommand) {
-                "*${usage}:* \n $prefix$name ${command.arguments.getArgumentsList(language, command)} \n\n " +
-                        if (command.hasArguments()) command.arguments.getArgumentsString(language, command) else ""
+                "*${usage}:* \n $prefix$name ${command.metaData.arguments.getArgumentsList(language, command)} \n\n " +
+                        if (command.hasArguments()) command.metaData.arguments.getArgumentsString(
+                            language,
+                            command
+                        )
+                        else ""
             }
             else {
-                "*${usage}:* \n $prefix$name ${command.arguments.getArgumentsList(language, command)} \n\n " +
-                        if (command.hasArguments()) command.arguments.getArgumentsString(language, command) else ""
+                "*${usage}:* \n $prefix$name ${command.metaData.arguments.getArgumentsList(language, command)} \n\n " +
+                        if (command.hasArguments()) command.metaData.arguments.getArgumentsString(
+                            language,
+                            command
+                        )
+                        else ""
             }
 
         return "\n $commandDescription\n\n $args"
@@ -112,7 +124,8 @@ class HelpCommand : Command(
     private fun getHelpPages(prefix: String, event: CommandEvent): List<MessageEmbed> {
         val result = mutableListOf<MessageEmbed>()
         val commands =
-            event.monke.handlers.get(CommandHandler::class).commandMap.values.distinct().groupBy { it.category }
+            event.monke.handlers.get(CommandHandler::class).commandMap.values.distinct()
+                .groupBy { it.metaData.category }
         val pageCount = CommandCategory.values().size
         val language = event.getLanguage()
 

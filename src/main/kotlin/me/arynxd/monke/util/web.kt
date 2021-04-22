@@ -4,9 +4,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.Monke
-import me.arynxd.monke.handlers.TranslationHandler
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.handlers.translateInternal
 import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.web.RedditPost
 import me.arynxd.monke.objects.web.WIKIPEDIA_API
@@ -26,40 +27,42 @@ suspend fun getPosts(subreddit: String, monke: Monke): List<RedditPost> {
         .addHeader("User-Agent", "Monkebot/${MONKE_VERSION} (Discord bot)")
         .build()
 
-    val response = monke.handlers.okHttpClient.newCall(request).await()
-    val body = response.body()
-    val posts = mutableListOf<RedditPost>()
+    monke.handlers.okHttpClient.newCall(request).await().use {
+        val body = it.body()
+        val posts = mutableListOf<RedditPost>()
 
-    if (!response.isSuccessful || body == null) {
-        val error = TranslationHandler.getInternalString("internal_error.web_service_error", "Reddit")
-        LOGGER.error(error)
-        return emptyList()
-    }
-
-    val redditJson = DataObject.fromJson(withContext(Dispatchers.IO) { body.string() })
-
-    if (!redditJson.hasKey("data")) {
-        return emptyList()
-    }
-
-    if (!redditJson.getObject("data").hasKey("children")) {
-        return emptyList()
-    }
-
-    val jsonArray = redditJson
-        .getObject("data")
-        .getArray("children")
-
-    for (i in 0 until jsonArray.length()) {
-        val meme = jsonArray.getObject(i)
-        if (!meme.hasKey("data")) {
-            continue
+        if (!it.isSuccessful || body == null) {
+            val error = translateInternal("internal_error.web_service_error", "Reddit")
+            LOGGER.error(error)
+            return emptyList()
         }
 
-        posts.add(RedditPost(meme.getObject("data")))
+        val redditJson = DataObject.fromJson(withContext(Dispatchers.IO) { body.string() })
+
+        if (!redditJson.hasKey("data")) {
+            return emptyList()
+        }
+
+        if (!redditJson.getObject("data").hasKey("children")) {
+            return emptyList()
+        }
+
+        val jsonArray = redditJson
+            .getObject("data")
+            .getArray("children")
+
+        for (i in 0 until jsonArray.length()) {
+            val meme = jsonArray.getObject(i)
+            if (!meme.hasKey("data")) {
+                continue
+            }
+
+            posts.add(RedditPost(meme.getObject("data")))
+        }
+
+        return posts
     }
 
-    return posts
 }
 
 fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
@@ -68,7 +71,7 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
         event.replyAsync {
             type(CommandReply.Type.EXCEPTION)
             title(
-                TranslationHandler.getString(
+                translate(
                     language = language,
                     key = "command_error.nsfw_reddit_post"
                 )
@@ -79,7 +82,7 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
         return
     }
 
-    val description = TranslationHandler.getString(
+    val description = translate(
         language = language,
         key = "command_response.reddit_description",
         values = arrayOf(
@@ -88,7 +91,7 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
         )
     )
 
-    val footer = TranslationHandler.getString(
+    val footer = translate(
         language = language,
         key = "command_response.reddit_footer",
         values = arrayOf(
@@ -112,22 +115,22 @@ suspend fun getWikipediaPage(event: CommandEvent, subject: String): WikipediaPag
         .url(WIKIPEDIA_API + subject)
         .build()
 
-    val response = event.monke.handlers.okHttpClient.newCall(request).await()
-    val body = response.body()
+    event.monke.handlers.okHttpClient.newCall(request).await().use { response ->
+        val body = response.body()
 
-    if (!response.isSuccessful || body == null) {
-        LOGGER.error(
-            TranslationHandler.getInternalString(
-                key = "internal_error.web_service_error",
-                values = arrayOf("Wikipedia")
+        if (!response.isSuccessful || body == null) {
+            LOGGER.error(
+                translateInternal(
+                    key = "internal_error.web_service_error",
+                    values = arrayOf("Wikipedia")
+                )
             )
-        )
-        return null
+            return null
+        }
+        val page = WikipediaPage(DataObject.fromJson(withContext(Dispatchers.IO) { body.string() }))
+
+        return page.takeIf { it.getType() == WikipediaPage.PageType.STANDARD } //Returns null if the page isn't standard
     }
-
-    val page = WikipediaPage(DataObject.fromJson(withContext(Dispatchers.IO) { body.string() }))
-
-    return page.takeIf { it.getType() == WikipediaPage.PageType.STANDARD } //Returns null if the page isn't standard
 }
 
 suspend fun postBin(text: String, client: OkHttpClient): String? {
@@ -137,19 +140,19 @@ suspend fun postBin(text: String, client: OkHttpClient): String? {
         .header("User-Agent", "Mozilla/5.0 Monke")
         .build()
 
-    val response = client.newCall(request).await()
-
-    if (!response.isSuccessful) {
-        return null
-    }
-    else {
-        val charStream = response.body()?.charStream() ?: return null
-        val json = DataObject.fromJson(charStream)
-
-        if (!json.hasKey("key")) {
+    client.newCall(request).await().use {
+        if (!it.isSuccessful) {
             return null
         }
+        else {
+            val charStream = it.body()?.charStream() ?: return null
+            val json = DataObject.fromJson(charStream)
 
-        return HASTEBIN_SERVER + json.getString("key")
+            if (!json.hasKey("key")) {
+                return null
+            }
+
+            return HASTEBIN_SERVER + json.getString("key")
+        }
     }
 }
