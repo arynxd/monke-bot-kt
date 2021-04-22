@@ -50,7 +50,7 @@ class JDAEvents(val monke: Monke) : ListenerAdapter() {
             ).queue()
         }
 
-        monke.handlers.get(GuildDataHandler::class).initGuild(event.guild.idLong)
+        monke.handlers.get(GuildDataHandler::class).initGuild(event.guild)
     }
 
     override fun onGuildLeave(event: GuildLeaveEvent) {
