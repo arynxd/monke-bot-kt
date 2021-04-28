@@ -141,7 +141,7 @@ class Monke : ListenerAdapter() {
             Activity.listening("your commands"),
             Activity.playing("forknife!!!!"),
             Activity.competing("among monkes"),
-            Activity.listening("to monkes"),
+            Activity.listening("monkes"),
             Activity.playing("with monkes"),
             Activity.streaming("monke life", "https://zoo.sandiegozoo.org/cams/ape-cam"),
             Activity.watching("monkes grow")
