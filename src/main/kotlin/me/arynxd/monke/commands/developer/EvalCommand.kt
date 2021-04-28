@@ -1,6 +1,7 @@
 package me.arynxd.monke.commands.developer
 
 import dev.minn.jda.ktx.await
+import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.handlers.translateInternal
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
@@ -15,6 +16,10 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.RestAction
 import okhttp3.OkHttpClient
+import java.io.FileInputStream
+import java.io.InputStream
+import java.io.ObjectInputStream
+import java.io.OutputStream
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
@@ -38,27 +43,39 @@ class EvalCommand : Command(
         )
     )
 ) {
+    private val saveFunc = """
+        fun Any.save(): String {
+            output.data.add(this)
+            return this.toString()
+        }
+        """.trimIndent()
+
+    //Wrapper class for a data list because script engine can't handle a regular array????
+    data class EvalOutput(
+        val data: MutableList<Any>
+    )
+
     private val engine: ScriptEngine by lazy {
         ScriptEngineManager().getEngineByExtension("kts")!!.apply {
             this.eval(
-                """
-        import net.dv8tion.jda.api.*
-        import net.dv8tion.jda.api.entities.*
-        import net.dv8tion.jda.api.exceptions.*
-        import net.dv8tion.jda.api.utils.*
-        import net.dv8tion.jda.api.requests.restaction.*
-        import net.dv8tion.jda.api.requests.*
-        import kotlin.collections.*
-        import kotlinx.coroutines.*
-        import java.util.*
-        import java.util.concurrent.*
-        import java.util.stream.*
-        import java.io.*
-        import java.time.* 
-        import me.arynxd.monke.handlers.*
-        import dev.minn.jda.ktx.Embed
-        import dev.minn.jda.ktx.await
-        """.trimIndent()
+                    """
+                import net.dv8tion.jda.api.*
+                import net.dv8tion.jda.api.entities.*
+                import net.dv8tion.jda.api.exceptions.*
+                import net.dv8tion.jda.api.utils.*
+                import net.dv8tion.jda.api.requests.restaction.*
+                import net.dv8tion.jda.api.requests.*
+                import kotlin.collections.*
+                import kotlinx.coroutines.*
+                import java.util.*
+                import java.util.concurrent.*
+                import java.util.stream.*
+                import java.io.*
+                import java.time.* 
+                import me.arynxd.monke.handlers.*
+                import dev.minn.jda.ktx.Embed
+                import dev.minn.jda.ktx.await
+                """.trimIndent()
             )
 
             LOGGER.info(translateInternal("internal_error.eval_reflection_warning"))
@@ -68,6 +85,10 @@ class EvalCommand : Command(
     private val codeBlockRegex = Regex("```[A-Za-z]*")
 
     override suspend fun runSuspend(event: CommandEvent) {
+
+        val outputArray = EvalOutput(mutableListOf())
+
+        engine.put("output", outputArray)
         engine.put("jda", event.jda)
         engine.put("api", event.jda)
         engine.put("channel", event.channel)
@@ -86,9 +107,18 @@ class EvalCommand : Command(
         val language = event.getLanguage()
         val client = event.monke.handlers.okHttpClient
         val startTime = System.currentTimeMillis()
-        val result = doEval(script, language, client)
+        val result = doEval(saveFunc + script, language, client)
 
-        val output = result.first
+        val outputArr = outputArray.data.joinToString(separator = ", ").take(100).let {
+            if (it.isBlank()) {
+                return@let "No more output saved"
+            }
+            else {
+                return@let it
+            }
+        }
+
+        val output = "${result.first} -- $outputArr"
         val isSuccessful = result.second
 
         val reply = CommandReply(event)
@@ -108,12 +138,12 @@ class EvalCommand : Command(
         reply.field(
             title = translate(language, "command.eval.keyword.code"),
             description =
-            if (script.length > MessageEmbed.VALUE_MAX_LENGTH) {
-                postBin(script, client) ?: "Something went wrong whilst uploading the code"
-            }
-            else {
-                "```kt\n$script```"
-            },
+                if (script.length > MessageEmbed.VALUE_MAX_LENGTH) {
+                    postBin(script, client) ?: "Something went wrong whilst uploading the code"
+                }
+                else {
+                    "```kt\n$script```"
+                },
             inline = false
         )
         reply.footer()
@@ -142,7 +172,9 @@ class EvalCommand : Command(
         var successful = true
         val out =
             try {
-                engine.eval(code)
+                withTimeout(5_000) {
+                    return@withTimeout engine.eval(code)
+                }
             }
             catch (exception: Exception) {
                 val st = exception.stackTraceToString()
@@ -153,7 +185,6 @@ class EvalCommand : Command(
                 else {
                     st
                 }
-
             }
 
         val result = when (out) {
@@ -177,7 +208,7 @@ class EvalCommand : Command(
 
             else -> {
                 val o = out.toString()
-                if (o.isEmpty()) {
+                if (o.isBlank()) {
                     translate(
                         language = language,
                         key = "command.eval.keyword.no_error"

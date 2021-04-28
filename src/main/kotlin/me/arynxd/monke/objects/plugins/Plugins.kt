@@ -41,9 +41,9 @@ class Plugins(val monke: Monke) {
 
         for (file in files) {
             val jarPath = file.path
-            val pluginName = file.name.substring(0, file.name.length - ".jar".length)
+            val fileName = file.name.substring(0, file.name.length - ".jar".length)
 
-            LOGGER.info("Plugin - loading plugin $pluginName.jar")
+            LOGGER.info("Plugin - loading plugin $fileName.jar")
             val jarFile = JarFile(jarPath)
 
             jarFile.use { jar ->
@@ -53,31 +53,31 @@ class Plugins(val monke: Monke) {
                 val mainClass = pluginInfo.second
 
                 if (config == null) {
-                    LOGGER.warn("Plugin - could not load config for plugin '$pluginName.jar' check the config and try again.")
+                    LOGGER.warn("Plugin - could not load config for plugin '$fileName.jar' check the resources folder and try again.")
                     return@use
                 }
 
                 if (mainClass == null) {
-                    LOGGER.warn("Plugin - could not load main class for plugin '$pluginName.jar' check the config and try again.")
+                    LOGGER.warn("Plugin - could not load main class for plugin '$fileName.jar' check the config and try again.")
                     return@use
                 }
 
                 if (!IPlugin::class.java.isAssignableFrom(mainClass)) {
-                    LOGGER.warn("Plugin - main class for plugin '$pluginName.jar' does not implement IPlugin or a subtype of it.")
+                    LOGGER.warn("Plugin - main class for plugin '$fileName.jar' does not implement IPlugin or a subtype of it.")
                     return@use
                 }
 
                 val constructor = mainClass.constructors.find { it.parameters.isEmpty() }
 
                 if (constructor == null) {
-                    LOGGER.warn("Plugin - no empty constructors found for plugin '$pluginName.jar'")
+                    LOGGER.warn("Plugin - no empty constructors found for plugin '$fileName.jar'")
                     return@use
                 }
 
                 val mainInstance = constructor.newInstance() as IPlugin
 
-                pool.submit() {
-                    tryEnablePlugin(mainInstance, config, pluginName)
+                pool.submit {
+                    tryEnablePlugin(mainInstance, config, fileName)
                 }
             }
         }

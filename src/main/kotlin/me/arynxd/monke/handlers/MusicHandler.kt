@@ -32,7 +32,7 @@ class MusicHandler(
         voiceChannel: VoiceChannel
     ): GuildMusicManager {
 
-        val guildId: Long = guild.idLong
+        val guildId = guild.idLong
         return lock.withLock {
             val musicManager =
                 musicManagers[guildId] ?: GuildMusicManager(
@@ -78,7 +78,6 @@ class MusicHandler(
 
         if (!leaveIfAlone(id, audioManager.connectedChannel)) {
             val musicManager = musicManagers[id] ?: return
-            musicManagers.remove(id)
 
             musicManagers[id] = GuildMusicManager(
                 channel = musicManager.channel,

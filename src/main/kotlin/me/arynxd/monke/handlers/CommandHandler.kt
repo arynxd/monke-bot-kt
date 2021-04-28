@@ -92,13 +92,15 @@ class CommandHandler(
                 return
             }
 
-            val childQuery = args.removeAt(0)
+            val childQuery = args[0]
             val childCommand = command.children.find { it.metaData.name.equals(childQuery, true) }
 
             if (childCommand == null) {
                 launchCommand(command, commandEvent)
                 return
             }
+
+            args.removeAt(0)//Remove later incase the main command runs and needs this arg
 
             launchCommand(childCommand, CommandEvent(monke, args.toMutableList(), childCommand, event))
             return
