@@ -1,9 +1,11 @@
 package me.arynxd.monke.commands.developer
 
 import dev.minn.jda.ktx.await
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
-import me.arynxd.monke.handlers.translateInternal
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.handlers.translateInternal
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
@@ -16,12 +18,13 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.RestAction
 import okhttp3.OkHttpClient
-import java.io.FileInputStream
-import java.io.InputStream
-import java.io.ObjectInputStream
-import java.io.OutputStream
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
+import java.io.PrintWriter
+import java.io.StringWriter
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
+
 
 @Suppress("UNUSED")
 class EvalCommand : Command(
@@ -49,11 +52,6 @@ class EvalCommand : Command(
             return this.toString()
         }
         """.trimIndent()
-
-    //Wrapper class for a data list because script engine can't handle a regular array????
-    data class EvalOutput(
-        val data: MutableList<Any>
-    )
 
     private val engine: ScriptEngine by lazy {
         ScriptEngineManager().getEngineByExtension("kts")!!.apply {
@@ -85,7 +83,6 @@ class EvalCommand : Command(
     private val codeBlockRegex = Regex("```[A-Za-z]*")
 
     override suspend fun runSuspend(event: CommandEvent) {
-
         val outputArray = EvalOutput(mutableListOf())
 
         engine.put("output", outputArray)
@@ -107,18 +104,37 @@ class EvalCommand : Command(
         val language = event.getLanguage()
         val client = event.monke.handlers.okHttpClient
         val startTime = System.currentTimeMillis()
+
+        val newConsole = ByteArrayOutputStream()
+        val oldConsole = System.out
+
+        System.setOut(PrintStream(newConsole))
+
         val result = doEval(saveFunc + script, language, client)
 
-        val outputArr = outputArray.data.joinToString(separator = ", ").take(100).let {
+        val sysOut = String(newConsole.toByteArray()).take(100).let {
             if (it.isBlank()) {
-                return@let "No more output saved"
+                return@let "Nothing printed"
             }
             else {
                 return@let it
             }
         }
 
-        val output = "${result.first} -- $outputArr"
+        System.setOut(oldConsole)
+
+        val outputArr = outputArray.data.joinToString(separator = ", ").take(100).let {
+            if (it.isBlank()) {
+                return@let "No output saved"
+            }
+            else {
+                return@let it
+            }
+        }
+
+        withContext(Dispatchers.IO) { newConsole.close() }
+
+        val output = "${result.first} -- $outputArr -- $sysOut"
         val isSuccessful = result.second
 
         val reply = CommandReply(event)
@@ -227,4 +243,9 @@ class EvalCommand : Command(
 
         return Pair(result, successful)
     }
+
+    //Wrapper class for a data list because script engine can't handle a regular array????
+    data class EvalOutput(
+        val data: MutableList<Any>
+    )
 }
