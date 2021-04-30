@@ -1,7 +1,9 @@
 package me.arynxd.monke.util
 
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.serializer
+import me.arynxd.monke.Monke
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import java.net.MalformedURLException
@@ -28,9 +30,20 @@ fun String.isValidUrl(): Boolean {
     }
 }
 
-fun plurifyInt(input: Int) = if (input != 1) "s" else ""
+fun Int.plurify() = if (this != 1) "s" else ""
+fun Long.plurify() = if (this != 1L) "s" else ""
 
-fun plurifyLong(input: Long) = if (input != 1L) "s" else ""
+suspend fun String.takeOrHaste(length: Int, monke: Monke): String {
+    if (this.isBlank()) {
+        return ""
+    }
+
+    if (this.length <= length) {
+        return this
+    }
+
+    return postBin(this, monke.handlers.okHttpClient)?: "An unexpected error occurred"
+}
 
 fun parseDateTime(time: TemporalAccessor?): String? = time?.let {
     DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(time)
@@ -42,14 +55,17 @@ fun parseUptime(duration: Duration): String {
     val minutes = duration.toMinutesPart()
     val seconds = duration.toSecondsPart()
 
-    return "$days day${plurifyLong(days)}, " +
-            "$hours hour${plurifyInt(hours)}, " +
-            "$minutes minute${plurifyInt(minutes)}, " +
-            "$seconds second${plurifyInt(seconds)}"
+    return "$days day${days.plurify()}, " +
+            "$hours hour${hours.plurify()}, " +
+            "$minutes minute${minutes.plurify()}, " +
+            "$seconds second${seconds.plurify()}"
 }
 
-fun prettyPrintJson(json: String): String =
-    jsonFormat.encodeToString(jsonFormat.serializersModule.serializer(), jsonFormat.parseToJsonElement(json))
+fun String.prettyPrintJson(): String {
+    val serializer = jsonFormat.serializersModule.serializer<JsonElement>()
+    val jsonElement = jsonFormat.parseToJsonElement(this)
+    return jsonFormat.encodeToString(serializer, jsonElement)
+}
 
 fun splitStringCodeblock(input: String): List<String> = input.chunked(Message.MAX_CONTENT_LENGTH - 20)
 

@@ -11,7 +11,7 @@ import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.ratelimit.RateLimitedAction
-import me.arynxd.monke.util.plurifyInt
+import me.arynxd.monke.util.plurify
 import net.dv8tion.jda.api.Permission
 
 @Suppress("UNUSED")
@@ -40,7 +40,7 @@ class ClearCommand : Command(
 
     override fun runSync(event: CommandEvent) {
         val limiter = event.monke.handlers.get(RateLimitHandler::class).getRateLimiter(event.guildIdLong)
-        val language = event.getLanguage()
+        val language = event.language()
 
         if (!limiter.canTake(RateLimitedAction.BULK_DELETE)) {
             event.replyAsync {
@@ -58,7 +58,7 @@ class ClearCommand : Command(
         }
 
         event.channel.iterableHistory
-            .takeAsync(event.getArgument<Int>(0) + 2) //Account for 1 based indexing from the user + ignoring the users message
+            .takeAsync(event.argument<Int>(0) + 2) //Account for 1 based indexing from the user + ignoring the users message
             .thenApply { list ->
                 list.filter { //Dont remove the original message as we need to reply to it
                     it.idLong != event.message.idLong
@@ -74,7 +74,7 @@ class ClearCommand : Command(
                             key = "command.clear.response.cleared",
                             values = arrayOf(
                                 it.size - 1,
-                                plurifyInt(it.size - 1)
+                                (it.size - 1).plurify()
                             )
                         )
                     )

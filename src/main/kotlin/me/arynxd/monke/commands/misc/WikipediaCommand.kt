@@ -34,12 +34,12 @@ class WikipediaCommand : Command(
     )
 ) {
     override suspend fun runSuspend(event: CommandEvent) {
-        val subject = event.getVararg<String>(0).joinToString(separator = "_").let {
+        val subject = event.vararg<String>(0).joinToString(separator = "_").let {
             if (it == "cbt") "Cock_and_ball_torture"
             else it
         }
 
-        val language = event.getLanguage()
+        val language = event.language()
 
         val page = getWikipediaPage(event, subject)
         if (page == null) {

@@ -27,7 +27,7 @@ class PluginDisableCommand(parent: Command) : SubCommand(
     )
 ) {
     override fun runSync(event: CommandEvent) {
-        val plugin = event.getArgument<LoadedPlugin>(0)
+        val plugin = event.argument<LoadedPlugin>(0)
         if (!plugin.isEnabled) {
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)

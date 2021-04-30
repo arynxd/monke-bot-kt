@@ -66,7 +66,7 @@ suspend fun getPosts(subreddit: String, monke: Monke): List<RedditPost> {
 }
 
 fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
-    val language = event.getLanguage()
+    val language = event.language()
     if (!event.channel.isNSFW && (post.isNSFW() != false || post.isSpoiled() != false)) {
         event.replyAsync {
             type(CommandReply.Type.EXCEPTION)
@@ -140,13 +140,15 @@ suspend fun postBin(text: String, client: OkHttpClient): String? {
         .header("User-Agent", "Mozilla/5.0 Monke")
         .build()
 
-    client.newCall(request).await().use {
-        if (!it.isSuccessful) {
+    client.newCall(request).await().use { resp ->
+        if (!resp.isSuccessful) {
             return null
         }
-        else {
-            val charStream = it.body()?.charStream() ?: return null
-            val json = DataObject.fromJson(charStream)
+
+        val charStream = resp.body()?: return null
+
+        charStream.use { body ->
+            val json = DataObject.fromJson(body.charStream())
 
             if (!json.hasKey("key")) {
                 return null

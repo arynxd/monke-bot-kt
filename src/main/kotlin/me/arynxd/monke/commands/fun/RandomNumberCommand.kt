@@ -1,6 +1,5 @@
 package me.arynxd.monke.commands.`fun`
 
-import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
@@ -43,15 +42,15 @@ class RandomNumberCommand : Command(
 ) {
 
     override fun runSync(event: CommandEvent) {
-        val lowerBound = event.getArgument<Long>(0)
-        val upperBound = event.getArgument<Long>(1)
+        val lowerBound = event.argument<Long>(0)
+        val upperBound = event.argument<Long>(1)
 
         if (lowerBound >= upperBound) {
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     translate(
-                        language = event.getLanguage(),
+                        language = event.language(),
                         key = "command.rng.response.lower_>_upper"
                     )
                 )

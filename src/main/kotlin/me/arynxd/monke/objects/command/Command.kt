@@ -1,18 +1,17 @@
 package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.handlers.CooldownHandler
-import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
-import me.arynxd.monke.util.plurifyInt
+import me.arynxd.monke.util.plurify
 
 abstract class Command(
     val metaData: CommandMetaData,
     val children: MutableList<SubCommand> = mutableListOf()
 ) {
     suspend fun isExecutable(commandEvent: CommandEvent): Boolean {
-        val language = commandEvent.getLanguage()
+        val language = commandEvent.language()
 
         if (hasFlag(CommandFlag.DISABLED) || metaData.isDisabled) {
             commandEvent.reply {
@@ -141,7 +140,7 @@ abstract class Command(
                         key = "command_error.required_args",
                         values = arrayOf(
                             requiredCount,
-                            plurifyInt(requiredCount),
+                            requiredCount.plurify(),
                             missing
                         )
                     )
@@ -171,7 +170,7 @@ abstract class Command(
                         language = language,
                         key = "command_error.invalid_args",
                         values = arrayOf(
-                            plurifyInt(invalidCount),
+                            invalidCount.plurify(),
                             invalid
                         )
                     )

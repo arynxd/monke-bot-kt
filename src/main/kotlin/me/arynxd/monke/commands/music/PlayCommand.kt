@@ -69,7 +69,7 @@ class PlayCommand : Command(
         }
 
 
-        val query = event.getVararg<String>(0).joinToString(" ").let {
+        val query = event.vararg<String>(0).joinToString(" ").let {
             if (it.isValidUrl()) it
             else "ytsearch:$it"
         }

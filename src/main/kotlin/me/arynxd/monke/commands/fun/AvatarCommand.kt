@@ -1,6 +1,5 @@
 package me.arynxd.monke.commands.`fun`
 
-import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
@@ -33,8 +32,8 @@ class AvatarCommand : Command(
 ) {
 
     override fun runSync(event: CommandEvent) {
-        val language = event.getLanguage()
-        val user = event.getArgument(0, event.user)
+        val language = event.language()
+        val user = event.argument(0, event.user)
 
         event.replyAsync {
             type(CommandReply.Type.INFORMATION)

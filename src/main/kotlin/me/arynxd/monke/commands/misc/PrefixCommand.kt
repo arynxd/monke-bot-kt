@@ -31,8 +31,8 @@ class PrefixCommand : Command(
     )
 ) {
     override fun runSync(event: CommandEvent) {
-        val cache = event.getDataCache()
-        val language = event.getLanguage()
+        val cache = event.dataCache()
+        val language = event.language()
 
         if (!event.isArgumentPresent(0)) {
             event.replyAsync {
@@ -49,7 +49,7 @@ class PrefixCommand : Command(
             return
         }
 
-        val prefix = event.getArgument<String>(0)
+        val prefix = event.argument<String>(0)
 
         if (prefix == cache.prefix) {
             event.replyAsync {

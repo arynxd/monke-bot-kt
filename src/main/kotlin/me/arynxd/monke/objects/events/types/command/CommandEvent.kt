@@ -25,7 +25,7 @@ class CommandEvent(
 ) {
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> getArgument(indie: Int, default: T? = null): T {
+    fun <T> argument(indie: Int, default: T? = null): T {
         if (indie < 0) {
             throw NoSuchElementException("Argument $indie does not exist")
         }
@@ -41,7 +41,7 @@ class CommandEvent(
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> getVararg(start: Int): MutableList<T> {
+    fun <T> vararg(start: Int): MutableList<T> {
         if (start > args.size || start < 0) {
             throw NoSuchElementException("Variable argument $start does not exist")
         }
@@ -53,9 +53,9 @@ class CommandEvent(
 
     fun isArgumentPresent(indie: Int): Boolean = indie < args.size
 
-    fun getPrefix(): String = getDataCache().prefix
+    fun prefix(): String = dataCache().prefix
 
-    fun getLanguage(): Language = getDataCache().language
+    fun language(): Language = dataCache().language
 
-    fun getDataCache(): GuildData = monke.handlers.get(GuildDataHandler::class).getData(guildIdLong)
+    fun dataCache(): GuildData = monke.handlers.get(GuildDataHandler::class).getData(guildIdLong)
 }

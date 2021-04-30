@@ -3,7 +3,6 @@ package me.arynxd.monke.commands.developer
 import dev.minn.jda.ktx.await
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
-import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.events.types.command.CommandEvent
@@ -21,7 +20,7 @@ class TestCommand : Command(
 ) {
 
     override suspend fun runSuspend(event: CommandEvent) {
-        val language = event.getLanguage()
+        val language = event.language()
 
         event.reply {
             type(CommandReply.Type.SUCCESS)

@@ -137,7 +137,7 @@ class CommandHandler(
         if (command.hasFlag(CommandFlag.SUSPENDING)) {
             GlobalScope.launch {
                 try {
-                    withTimeout(5000) { //5 Seconds
+                    withTimeout(7_500) { //7.5 Seconds
                         command.runSuspend(event)
                     }
                 }

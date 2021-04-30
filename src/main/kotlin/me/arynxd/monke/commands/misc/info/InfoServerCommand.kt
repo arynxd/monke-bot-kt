@@ -33,8 +33,8 @@ class InfoServerCommand(parent: Command) : SubCommand(
     )
 ) {
     override suspend fun runSuspend(event: CommandEvent) {
-        val guild = event.getArgument(0, event.guild)
-        val language = event.getLanguage()
+        val guild = event.argument(0, event.guild)
+        val language = event.language()
 
         val informationFor = translate(language, "command.info.keyword.information_for_server")
         val isPartnered = translate(language, "command.info.keyword.is_partnered")

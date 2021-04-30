@@ -14,14 +14,13 @@ import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.postBin
+import me.arynxd.monke.util.takeOrHaste
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.RestAction
 import okhttp3.OkHttpClient
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
-import java.io.PrintWriter
-import java.io.StringWriter
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
@@ -47,9 +46,8 @@ class EvalCommand : Command(
     )
 ) {
     private val saveFunc = """
-        fun Any.save(): String {
+        fun Any.save() {
             output.data.add(this)
-            return this.toString()
         }
         """.trimIndent()
 
@@ -71,6 +69,8 @@ class EvalCommand : Command(
                 import java.io.*
                 import java.time.* 
                 import me.arynxd.monke.handlers.*
+                import me.arynxd.monke.objects.command.*
+                import me.arynxd.monke.objects.command.CommandReply.Type
                 import dev.minn.jda.ktx.Embed
                 import dev.minn.jda.ktx.await
                 """.trimIndent()
@@ -83,9 +83,14 @@ class EvalCommand : Command(
     private val codeBlockRegex = Regex("```[A-Za-z]*")
 
     override suspend fun runSuspend(event: CommandEvent) {
-        val outputArray = EvalOutput(mutableListOf())
+        val outputObj = EvalOutput(mutableListOf())
+        val monke = event.monke
 
-        engine.put("output", outputArray)
+        val oldConsole = System.out
+        val newOutStream = ByteArrayOutputStream()
+        val newSysOut = PrintStream(newOutStream)
+
+        engine.put("output", outputObj)
         engine.put("jda", event.jda)
         engine.put("api", event.jda)
         engine.put("channel", event.channel)
@@ -95,24 +100,21 @@ class EvalCommand : Command(
         engine.put("message", event.message)
         engine.put("user", event.user)
         engine.put("bot", event.jda.selfUser)
-        engine.put("monke", event.monke)
+        engine.put("monke", monke)
 
-        val script = event.getVararg<String>(0)
+        val script = event.vararg<String>(0)
             .joinToString(separator = " ")
             .replace(codeBlockRegex, "")
 
-        val language = event.getLanguage()
-        val client = event.monke.handlers.okHttpClient
+        val language = event.language()
+        val okHttpClient = monke.handlers.okHttpClient
         val startTime = System.currentTimeMillis()
 
-        val newConsole = ByteArrayOutputStream()
-        val oldConsole = System.out
+        System.setOut(newSysOut)
 
-        System.setOut(PrintStream(newConsole))
+        val result = doEval(saveFunc + script, language, okHttpClient)
 
-        val result = doEval(saveFunc + script, language, client)
-
-        val sysOut = String(newConsole.toByteArray()).take(100).let {
+        val sysOut = String(newOutStream.toByteArray()).takeOrHaste(100, monke).let {
             if (it.isBlank()) {
                 return@let "Nothing printed"
             }
@@ -123,18 +125,21 @@ class EvalCommand : Command(
 
         System.setOut(oldConsole)
 
-        val outputArr = outputArray.data.joinToString(separator = ", ").take(100).let {
+        val outputArr = outputObj.data.joinToString(separator = ", ").takeOrHaste(100, monke).let {
             if (it.isBlank()) {
-                return@let "No output saved"
+                return@let "Nothing saved"
             }
             else {
                 return@let it
             }
         }
 
-        withContext(Dispatchers.IO) { newConsole.close() }
+        withContext(Dispatchers.IO) {
+            newOutStream.close()
+            newSysOut.close()
+        }
 
-        val output = "${result.first} -- $outputArr -- $sysOut"
+        val output = result.first
         val isSuccessful = result.second
 
         val reply = CommandReply(event)
@@ -146,30 +151,29 @@ class EvalCommand : Command(
         )
 
         reply.field(
-            title = translate(language, "command.eval.keyword.duration"),
-            description = "${System.currentTimeMillis() - startTime}ms",
-            inline = false
+            title = translate(language, "command.eval.keyword.code"),
+            description = "```kt\n${script.takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, monke)}```",
+            inline = true
         )
 
         reply.field(
-            title = translate(language, "command.eval.keyword.code"),
-            description =
-                if (script.length > MessageEmbed.VALUE_MAX_LENGTH) {
-                    postBin(script, client) ?: "Something went wrong whilst uploading the code"
-                }
-                else {
-                    "```kt\n$script```"
-                },
-            inline = false
+            title = "Language",
+            description = "Kotlin",
+            inline = true
         )
-        reply.footer()
+
+        reply.field(
+            title = translate(language, "command.eval.keyword.duration"),
+            description = "${System.currentTimeMillis() - startTime}ms",
+            inline = true
+        )
 
         if (isSuccessful) {
             reply.type(CommandReply.Type.SUCCESS)
             reply.field(
                 title = translate(language, "command.eval.keyword.result"),
                 description = output,
-                inline = false
+                inline = true
             )
 
         }
@@ -181,6 +185,19 @@ class EvalCommand : Command(
                 inline = false
             )
         }
+
+        reply.field(
+            title = "Saved Output",
+            description = outputArr,
+            inline = true
+        )
+
+        reply.field(
+            title = "Saved Console Output",
+            description = sysOut,
+            inline = true
+        )
+        reply.footer()
         reply.send()
     }
 

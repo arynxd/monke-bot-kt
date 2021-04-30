@@ -30,9 +30,9 @@ class InfoUserCommand(parent: Command) : SubCommand(
 ) {
 
     override fun runSync(event: CommandEvent) {
-        val member = event.getArgument(0, event.member)
+        val member = event.argument(0, event.member)
 
-        val language = event.getLanguage()
+        val language = event.language()
 
         val information = translate(language, "command.info.keyword.information_for_user")
         val boosting = translate(language, "command.info.keyword.boosting_since")

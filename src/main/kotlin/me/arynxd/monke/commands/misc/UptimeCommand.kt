@@ -17,7 +17,7 @@ class UptimeCommand : Command(
 ) {
 
     override fun runSync(event: CommandEvent) {
-        val language = event.getLanguage()
+        val language = event.language()
         val uptime = translate(language, "command.uptime.keyword.uptime")
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)

@@ -51,9 +51,9 @@ class StealCommand : Command(
 ) {
 
     override fun runSync(event: CommandEvent) {
-        val name = event.getArgument<String>(0)
-        val url = event.getArgument<URL>(1)
-        val language = event.getLanguage()
+        val name = event.argument<String>(0)
+        val url = event.argument<URL>(1)
+        val language = event.language()
         val icon = getIcon(url)
         val limiter = event.monke.handlers.get(RateLimitHandler::class).getRateLimiter(event.guildIdLong)
 

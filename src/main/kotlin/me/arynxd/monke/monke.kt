@@ -7,7 +7,7 @@ import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.plugins.Plugins
 import me.arynxd.monke.util.parseUptime
-import me.arynxd.monke.util.plurifyLong
+import me.arynxd.monke.util.plurify
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.JDAInfo
@@ -136,8 +136,8 @@ class Monke : ListenerAdapter() {
         val random = Random
 
         val status = listOf(
-            Activity.watching("${getGuildCount()} server" + plurifyLong(getGuildCount())),
-            Activity.watching("${getUserCount()} user" + plurifyLong(getUserCount())),
+            Activity.watching("${getGuildCount()} server" + getGuildCount().plurify()),
+            Activity.watching("${getUserCount()} user" + getUserCount().plurify()),
             Activity.listening("your commands"),
             Activity.playing("forknife!!!!"),
             Activity.competing("among monkes"),

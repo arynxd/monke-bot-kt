@@ -33,7 +33,7 @@ class UwUCommand : Command(
 ) {
     override fun runSync(event: CommandEvent) {
         event.replyAsync {
-            val sentence = event.getVararg<String>(0)
+            val sentence = event.vararg<String>(0)
                 .joinToString(separator = " ")
                 .toCharArray().map {
                     when (it) {

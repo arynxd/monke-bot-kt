@@ -104,7 +104,7 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
     fun getArgumentsString(language: Language, command: Command): String {
         val req = translate(language, "keyword.required")
         val opt = translate(language, "keyword.optional")
-        return expected.joinToString(separator = "\n\n", prefix = "*Arguments:*\n") {
+        return expected.joinToString(separator = "\n\n", prefix = "__Arguments:__\n") {
             "<${
                 it.getName(
                     language,

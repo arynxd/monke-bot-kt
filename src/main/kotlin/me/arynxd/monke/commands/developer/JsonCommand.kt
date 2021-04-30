@@ -1,6 +1,5 @@
 package me.arynxd.monke.commands.developer
 
-import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
@@ -38,13 +37,13 @@ class JsonCommand : Command(
     override fun runSync(event: CommandEvent) {
         val channel = event.channel
         val jda = event.jda
-        val id = event.getArgument<Long>(0).toString()
+        val id = event.argument<Long>(0).toString()
 
         RestActionImpl<Any>(
             jda,
             Route.Messages.GET_MESSAGE.compile(channel.id, id)
         ) { response: Response, _: Request<Any?>? ->
-            val json = splitStringCodeblock(prettyPrintJson(response.getObject().toString())).map {
+            val json = splitStringCodeblock(response.getObject().toString().prettyPrintJson()).map {
                 "```json\n${
                     it.replace("`", "")
                         .replace("\\\"", "\"")
@@ -61,7 +60,7 @@ class JsonCommand : Command(
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     translate(
-                        language = event.getLanguage(),
+                        language = event.language(),
                         key = "command.json.message_not_found"
                     )
                 )

@@ -35,9 +35,9 @@ class HelpCommand : Command(
     )
 ) {
     override fun runSync(event: CommandEvent) {
-        val prefix = event.getPrefix()
+        val prefix = event.prefix()
         if (event.isArgumentPresent(0)) {
-            getHelp(event, event.getArgument(0))
+            getHelp(event, event.argument(0))
             return
         }
 
@@ -51,8 +51,8 @@ class HelpCommand : Command(
     }
 
     private fun getHelp(event: CommandEvent, command: Command) {
-        val prefix = event.getPrefix()
-        val language = event.getLanguage()
+        val prefix = event.prefix()
+        val language = event.language()
 
         val fields = mutableListOf(
             MessageEmbed.Field(
@@ -76,7 +76,7 @@ class HelpCommand : Command(
 
         event.replyAsync {
             val keywordFor = translate(
-                language = event.getLanguage(),
+                language = event.language(),
                 key = "command.help.keyword.help_for"
             )
             type(CommandReply.Type.INFORMATION)
@@ -88,54 +88,42 @@ class HelpCommand : Command(
     }
 
     private fun getDescription(command: Command, event: CommandEvent, name: String): String {
-        val prefix = event.getPrefix()
-        val language = event.getLanguage()
+        val prefix = event.prefix()
+        val language = event.language()
 
         val description = translate(language, "command.help.keyword.description")
         val usage = translate(language, "command.help.keyword.usage")
 
-        val commandDescription =
-            if (command is SubCommand)
-                "*${description}:* ${command.getDescription(language)}" // Get the child's info
-            else
-                "*${description}:* ${command.getDescription(language)}" // Get the parent's info
-
-        val args =
-            if (command is SubCommand) {
-                "*${usage}:* \n $prefix$name ${command.metaData.arguments.getArgumentsList(language, command)} \n\n " +
-                        if (command.hasArguments()) command.metaData.arguments.getArgumentsString(
-                            language,
-                            command
-                        )
-                        else ""
-            }
-            else {
-                "*${usage}:* \n $prefix$name ${command.metaData.arguments.getArgumentsList(language, command)} \n\n " +
-                        if (command.hasArguments()) command.metaData.arguments.getArgumentsString(
-                            language,
-                            command
-                        )
-                        else ""
-            }
+        val commandDescription = "__${description}:__ \n${command.getDescription(language)}"
+        val args = "__${usage}:__ \n $prefix$name ${command.metaData.arguments.getArgumentsList(language, command)}\n\n " +
+                if (command.hasArguments())
+                    command.metaData.arguments.getArgumentsString(
+                        language,
+                        command
+                    )
+                else
+                    ""
 
         return "\n $commandDescription\n\n $args"
     }
 
     private fun getHelpPages(prefix: String, event: CommandEvent): List<MessageEmbed> {
         val result = mutableListOf<MessageEmbed>()
-        val commands =
-            event.monke.handlers.get(CommandHandler::class).commandMap.values.distinct()
+        val commands = event.monke.handlers.get(CommandHandler::class)
+                .commandMap
+                .values
+                .distinct()
                 .groupBy { it.metaData.category }
+
         val pageCount = CommandCategory.values().size
-        val language = event.getLanguage()
+        val language = event.language()
 
         for (category in CommandCategory.values()) {
-            val categoryCommands =
-                commands[category] ?: throw IllegalStateException("Category $category was not present")
+            val cat = commands[category] ?: throw IllegalStateException("Category $category was not present")
             result.add(
                 Embed(
                     title = category.getName(language),
-                    description = categoryCommands.joinToString(separator = "\n") {
+                    description = cat.joinToString(separator = "\n") {
                         "`$prefix${it.getName(language)}` - *${
                             it.getDescription(
                                 language

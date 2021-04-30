@@ -1,6 +1,5 @@
 package me.arynxd.monke.commands.`fun`
 
-import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.events.types.command.CommandEvent
@@ -24,7 +23,7 @@ class CatCommand : Command(
         val random = Random
         val posts = getPosts(subreddits[random.nextInt(subreddits.size)], event.monke)
             .filter { it.isMedia() }
-        val language = event.getLanguage()
+        val language = event.language()
 
         if (posts.isEmpty()) {
             event.reply {

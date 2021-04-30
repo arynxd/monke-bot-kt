@@ -35,7 +35,7 @@ class LeaveCommand : Command(
             type(CommandReply.Type.SUCCESS)
             title(
                 translate(
-                    language = event.getLanguage(),
+                    language = event.language(),
                     key = "music.channel_left",
                     values = arrayOf(
                         audioManager.connectedChannel?.name ?: throw IllegalStateException("Voice channel not present")

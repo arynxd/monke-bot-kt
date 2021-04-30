@@ -15,7 +15,7 @@ class InfoBotCommand(parent: Command) : SubCommand(
 ) {
     override fun runSync(event: CommandEvent) {
         val monke = event.monke
-        val language = event.getLanguage()
+        val language = event.language()
 
         val jvmVersion = translate(language, "command.info.child.bot.keyword.jvm_version")
         val jdaVersion = translate(language, "command.info.child.bot.keyword.jda_version")

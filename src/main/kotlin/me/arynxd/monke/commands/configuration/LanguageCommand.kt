@@ -31,7 +31,7 @@ class LanguageCommand : Command(
     )
 ) {
     override fun runSync(event: CommandEvent) {
-        val cache = event.getDataCache()
+        val cache = event.dataCache()
         val language = cache.language
 
         if (!event.isArgumentPresent(0)) {
@@ -50,7 +50,7 @@ class LanguageCommand : Command(
             return
         }
 
-        val newLanguage = event.getArgument<Language>(0)
+        val newLanguage = event.argument<Language>(0)
         if (language == newLanguage) {
             event.replyAsync {
                 type(CommandReply.Type.INFORMATION)

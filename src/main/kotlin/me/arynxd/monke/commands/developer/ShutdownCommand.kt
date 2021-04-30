@@ -1,6 +1,5 @@
 package me.arynxd.monke.commands.developer
 
-import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.events.types.command.CommandEvent
@@ -20,7 +19,7 @@ class ShutdownCommand : Command(
             type(CommandReply.Type.SUCCESS)
             title(
                 translate(
-                    language = event.getLanguage(),
+                    language = event.language(),
                     key = "command.shutdown.response.success"
                 )
             )

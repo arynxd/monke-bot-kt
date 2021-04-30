@@ -6,7 +6,7 @@ import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.handlers.GuildDataHandler
 import me.arynxd.monke.objects.events.types.command.CommandPreprocessEvent
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
-import me.arynxd.monke.util.plurifyLong
+import me.arynxd.monke.util.plurify
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
@@ -43,7 +43,7 @@ class JDAEvents(val monke: Monke) : ListenerAdapter() {
                     description = "Server: *${it.guild.name}* with owner **${
                         it.user.asTag
                     }**\n\n" +
-                            "Now at **${serverCount}** server${plurifyLong(serverCount)}.",
+                            "Now at **${serverCount}** server${serverCount.plurify()}.",
                     color = DEFAULT_EMBED_COLOUR.rgb,
                     timestamp = Instant.now()
                 )
@@ -65,7 +65,7 @@ class JDAEvents(val monke: Monke) : ListenerAdapter() {
                     description = "Server: *${it.guild.name}* with owner **${
                         it.user.asTag
                     }**\n\n" +
-                            "Now at **${serverCount}** server${plurifyLong(serverCount)}.",
+                            "Now at **${serverCount}** server${serverCount.plurify()}.",
                     color = DEFAULT_EMBED_COLOUR.rgb,
                     timestamp = Instant.now()
                 )

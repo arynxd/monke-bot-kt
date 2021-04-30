@@ -27,7 +27,7 @@ class PluginReloadCommand(parent: Command) : SubCommand(
     )
 ) {
     override fun runSync(event: CommandEvent) {
-        val plugin = event.getArgument<LoadedPlugin>(0)
+        val plugin = event.argument<LoadedPlugin>(0)
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title("Reloaded plugin '${plugin.config.name}'")
