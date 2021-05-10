@@ -10,6 +10,7 @@ import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.isValidUrl
 
 @Suppress("UNUSED")

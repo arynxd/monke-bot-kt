@@ -2,6 +2,7 @@ package me.arynxd.monke.commands.developer.plugin
 
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.threads.CommandReply
 
 class PluginListCommand(parent: Command) : SubCommand(
     parent,

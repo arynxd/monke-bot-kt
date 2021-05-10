@@ -8,7 +8,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentInt
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
-import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.ratelimit.RateLimitedAction
 import me.arynxd.monke.util.plurify
@@ -37,11 +37,11 @@ class ClearCommand : Command(
 ) {
 
     override fun runSync(event: CommandEvent) {
-        val limiter = event.monke.handlers.get(RateLimitHandler::class).getRateLimiter(event.guildIdLong)
+        val limiter = event.monke.handlers[RateLimitHandler::class].getRateLimiter(event.guildIdLong)
         val language = event.language()
 
         if (!limiter.canTake(RateLimitedAction.BULK_DELETE)) {
-            event.replyAsync {
+            val resp = event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     translate(
@@ -50,21 +50,21 @@ class ClearCommand : Command(
                     )
                 )
                 footer()
-                send()
             }
+            event.thread.post(resp)
             return
         }
 
         event.channel.iterableHistory
             .takeAsync(event.argument<Int>(0) + 2) //Account for 1 based indexing from the user + ignoring the users message
             .thenApply { list ->
-                list.filter { //Dont remove the original message as we need to reply to it
-                    it.idLong != event.message.idLong
+                list.filter { //Dont remove the original message + our reply if one exists as we need to reply to it
+                    it.idLong != event.message.idLong && !event.thread.responseIds.contains(it.idLong)
                 }
             }
             .thenAccept {
                 event.channel.purgeMessages(it)
-                event.replyAsync {
+                val resp = event.replyAsync {
                     type(CommandReply.Type.SUCCESS)
                     title(
                         translate(
@@ -77,9 +77,10 @@ class ClearCommand : Command(
                         )
                     )
                     footer()
-                    send()
                     limiter.take(RateLimitedAction.BULK_DELETE)
                 }
+
+                event.thread.post(resp)
             }
     }
 }

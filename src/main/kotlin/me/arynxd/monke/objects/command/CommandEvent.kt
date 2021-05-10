@@ -2,12 +2,12 @@ package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.Monke
 import me.arynxd.monke.events.CommandPreprocessEvent
+import me.arynxd.monke.handlers.CommandThreadHandler
 import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.handlers.GuildDataHandler
 import me.arynxd.monke.objects.cache.GuildData
+import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.translation.Language
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.TextChannel
 
 class CommandEvent(
     val monke: Monke,
@@ -24,6 +24,7 @@ class CommandEvent(
     val member = event.member
     val user = event.user
     val jda = event.jda
+    val thread = monke.handlers[CommandThreadHandler::class].getOrNew(message.idLong)
 
     @Suppress("UNCHECKED_CAST")
     fun <T> argument(indie: Int, default: T? = null): T {
@@ -52,11 +53,19 @@ class CommandEvent(
             .toMutableList()
     }
 
-    suspend fun reply(function: suspend CommandReply.() -> Unit) = function(CommandReply(this))
+    suspend fun reply(reply: suspend CommandReply.() -> Unit): CommandReply {
+        val repl = CommandReply(this)
+        reply(repl)
+        return repl
+    }
 
-    fun replyAsync(function: CommandReply.() -> Unit) = function(CommandReply(this))
+    fun replyAsync(reply: CommandReply.() -> Unit): CommandReply {
+        val repl = CommandReply(this)
+        reply(repl)
+        return repl
+    }
 
-    fun isDeveloper(): Boolean = monke.handlers.get(ConfigHandler::class).config.developers.contains(user.id)
+    fun isDeveloper(): Boolean = monke.handlers[ConfigHandler::class].config.developers.contains(user.id)
 
     fun isArgumentPresent(indie: Int): Boolean = indie < args.size
 
@@ -64,5 +73,5 @@ class CommandEvent(
 
     fun language(): Language = dataCache().language
 
-    fun dataCache(): GuildData = monke.handlers.get(GuildDataHandler::class).getData(guildIdLong)
+    fun dataCache(): GuildData = monke.handlers[GuildDataHandler::class].getData(guildIdLong)
 }

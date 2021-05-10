@@ -6,6 +6,7 @@ import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentLong
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.prettyPrintJson
 import me.arynxd.monke.util.splitStringCodeblock
 import net.dv8tion.jda.api.requests.Request
@@ -48,13 +49,14 @@ class JsonCommand : Command(
                 }```"
             }
 
-            event.replyAsync {
+            val resp = event.replyAsync {
                 type(CommandReply.Type.SUCCESS)
                 footer()
-                chunks(json)
             }
+
+            event.thread.postChunks(resp, json)
         }.queue(null) {
-            event.replyAsync {
+            val resp = event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     translate(
@@ -63,8 +65,9 @@ class JsonCommand : Command(
                     )
                 )
                 footer()
-                send()
             }
+
+            event.thread.post(resp)
         }
     }
 }

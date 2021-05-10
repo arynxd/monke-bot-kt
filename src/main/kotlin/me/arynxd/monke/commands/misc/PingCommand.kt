@@ -3,6 +3,7 @@ package me.arynxd.monke.commands.misc
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.threads.CommandReply
 
 @Suppress("UNUSED")
 class PingCommand : Command(

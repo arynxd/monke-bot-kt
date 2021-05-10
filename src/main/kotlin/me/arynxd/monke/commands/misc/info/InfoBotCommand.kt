@@ -4,6 +4,7 @@ import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.threads.CommandReply
 
 class InfoBotCommand(parent: Command) : SubCommand(
     parent,

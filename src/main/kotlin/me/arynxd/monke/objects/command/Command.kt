@@ -2,6 +2,7 @@ package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.handlers.CooldownHandler
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.plurify
 

@@ -6,6 +6,7 @@ import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.exception.TestException
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 
@@ -63,6 +64,7 @@ class TestCommand : Command(
             footer()
             send()
         }
+
         try {
             withTimeout(7000) {
                 val messageEvent = event.monke.jda.await<GuildMessageReceivedEvent> { guildEvent ->

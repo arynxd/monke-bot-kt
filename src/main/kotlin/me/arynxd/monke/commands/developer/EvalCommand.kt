@@ -11,6 +11,7 @@ import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.postBin
@@ -68,7 +69,7 @@ class EvalCommand : Command(
                 import java.time.* 
                 import me.arynxd.monke.handlers.*
                 import me.arynxd.monke.objects.command.*
-                import me.arynxd.monke.objects.command.CommandReply.Type
+                import me.arynxd.monke.objects.command.threads.CommandReply.Type
                 import dev.minn.jda.ktx.Embed
                 import dev.minn.jda.ktx.await
                 """.trimIndent()
@@ -101,7 +102,7 @@ class EvalCommand : Command(
         engine.put("monke", monke)
 
         val script = event.vararg<String>(0)
-            .joinToString(separator = " ")
+            .joinToString(separator = "")
             .replace(codeBlockRegex, "")
 
         val language = event.language()

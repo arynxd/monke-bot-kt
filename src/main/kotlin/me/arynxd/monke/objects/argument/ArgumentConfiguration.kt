@@ -35,6 +35,7 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
     suspend fun validateArguments(event: CommandEvent): Triple<List<Any>, List<Argument<*>>, List<Argument<*>>> {
         val args = event.args.map { it.toString() } //Using toString to avoid un-needed casting (args should already be strings)
         event.args.clear()
+
         val invalidArguments = mutableListOf<Argument<*>>()
         val validArguments = mutableListOf<Any>()
         val varargIndex = expected.indexOfLast { it.type == Type.VARARG }
@@ -55,17 +56,29 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
             )
         }
 
-        args.zip(expected).forEach {
-            val result = it.second.verify(it.first, event)
-            if (result == null) {
-                invalidArguments.add(it.second)
-            }
-            else {
-                validArguments.add(result)
+        if (varargIndex == -1) {
+            args.zip(expected).forEach {
+                val result = it.second.verify(it.first, event)
+                if (result == null) {
+                    invalidArguments.add(it.second)
+                }
+                else {
+                    validArguments.add(result)
+                }
             }
         }
 
         if (varargIndex != -1) {
+            args.subList(0, varargIndex).zip(expected).forEach { pair: Pair<String, Argument<*>> ->
+                val result = pair.second.verify(pair.first, event)
+                if (result == null) {
+                    invalidArguments.add(pair.second)
+                }
+                else {
+                    validArguments.add(result)
+                }
+            }
+
             for (arg in args.subList(varargIndex, args.size)) {
                 val result = expected[varargIndex].verify(arg, event)
 

@@ -5,7 +5,7 @@ import me.arynxd.monke.Monke
 import me.arynxd.monke.events.CommandPreprocessEvent
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandFlag
-import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.command.SubCommand
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.handlers.Handler
@@ -16,7 +16,6 @@ import me.arynxd.monke.util.markdownSanitize
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
 import kotlin.reflect.KClass
 
 const val COMMAND_PACKAGE = "me.arynxd.monke.commands"
@@ -30,10 +29,11 @@ class CommandHandler(
     )
 ) : Handler() {
     private val reflections = Reflections(COMMAND_PACKAGE, SubTypesScanner())
+    val spaceRegex = Regex("\\s+")
     val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
 
     fun handlePreprocessEvent(event: CommandPreprocessEvent) {
-        val prefix = monke.handlers.get(GuildDataHandler::class).getData(event.guild.idLong).prefix
+        val prefix = monke.handlers[GuildDataHandler::class].getData(event.guild.idLong).prefix
 
         val contentRaw = event.message.contentRaw
 
@@ -49,7 +49,7 @@ class CommandHandler(
             }
         ).replace(SUBSTITUTION_REGEX, "")
 
-        val args = content.split(Regex("\\s+"))
+        val args = content.split(spaceRegex)
             .filter { it.isNotBlank() }
             .toMutableList()
 
@@ -61,7 +61,7 @@ class CommandHandler(
         val command = commandMap[query]
 
         if (command == null) {
-            val language = monke.handlers.get(GuildDataHandler::class).getData(event.guild.idLong).language
+            val language = monke.handlers[GuildDataHandler::class].getData(event.guild.idLong).language
             CommandReply.sendError(
                 message = event.message,
                 text = translate(
@@ -134,8 +134,8 @@ class CommandHandler(
                 }
             }
 
-            monke.handlers.get(CooldownHandler::class).addCommand(event.user, command)
-            monke.handlers.get(MetricsHandler::class).commandCounter.labels(
+            monke.handlers[CooldownHandler::class].addCommand(event.user, command)
+            monke.handlers[MetricsHandler::class].commandCounter.labels(
                 if (command is SubCommand)
                     command.parent.metaData.name
                 else

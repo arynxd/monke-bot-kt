@@ -7,7 +7,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentLanguage
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
-import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 
@@ -33,24 +33,24 @@ class LanguageCommand : Command(
         val language = cache.language
 
         if (!event.isArgumentPresent(0)) {
-            event.replyAsync {
-                type(CommandReply.Type.INFORMATION)
-                title(
-                    translate(
-                        language = language,
-                        key = "command.language.response.get_response",
-                        values = arrayOf(language.commonName)
+            val resp = event.replyAsync {
+                    type(CommandReply.Type.INFORMATION)
+                    title(
+                        translate(
+                            language = language,
+                            key = "command.language.response.get_response",
+                            values = arrayOf(language.commonName)
+                        )
                     )
-                )
-                footer()
-                send()
-            }
+                    footer()
+                }
+            event.thread.post(resp)
             return
         }
 
         val newLanguage = event.argument<Language>(0)
         if (language == newLanguage) {
-            event.replyAsync {
+            val resp = event.replyAsync {
                 type(CommandReply.Type.INFORMATION)
                 title(
                     translate(
@@ -60,12 +60,13 @@ class LanguageCommand : Command(
                     )
                 )
                 footer()
-                send()
             }
+
+            event.thread.post(resp)
             return
         }
 
-        event.replyAsync {
+        val resp = event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title(
                 translate(
@@ -75,9 +76,9 @@ class LanguageCommand : Command(
                 )
             )
             footer()
-            send()
-
             cache.language = newLanguage
         }
+
+        event.thread.post(resp)
     }
 }

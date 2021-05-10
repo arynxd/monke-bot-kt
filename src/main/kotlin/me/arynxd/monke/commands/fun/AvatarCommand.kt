@@ -7,7 +7,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentUser
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
-import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.command.CommandEvent
 
 @Suppress("UNUSED")
