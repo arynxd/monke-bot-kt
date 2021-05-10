@@ -9,7 +9,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentMember
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 
 @Suppress("UNUSED")
 class InfoCommand : Command(
@@ -19,13 +19,11 @@ class InfoCommand : Command(
         category = CommandCategory.MISC,
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentMember(
-                    name = "member",
-                    description = "The member to show information for.",
-                    required = false,
-                    type = Type.REGULAR,
-                )
+            ArgumentMember(
+                name = "member",
+                description = "The member to show information for.",
+                required = false,
+                type = Type.REGULAR,
             )
         )
     )

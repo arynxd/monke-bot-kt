@@ -9,7 +9,7 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentCommand
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import net.dv8tion.jda.api.entities.MessageEmbed
 
@@ -23,13 +23,11 @@ class HelpCommand : Command(
         aliases = listOf("?", "commands"),
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentCommand(
-                    name = "command",
-                    description = "The command to show help for.",
-                    required = false,
-                    type = Type.REGULAR,
-                )
+            ArgumentCommand(
+                name = "command",
+                description = "The command to show help for.",
+                required = false,
+                type = Type.REGULAR,
             )
         )
     )

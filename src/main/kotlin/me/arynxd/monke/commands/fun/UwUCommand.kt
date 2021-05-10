@@ -7,7 +7,7 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.CommandReply
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import net.dv8tion.jda.api.entities.MessageEmbed
 
 @Suppress("UNUSED")
@@ -19,14 +19,12 @@ class UwUCommand : Command(
         aliases = listOf("owo"),
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentString(
-                    name = "text",
-                    description = "The text to UwUfy.",
-                    required = true,
-                    type = Type.VARARG,
-                    condition = { it.isNotBlank() && it.length < MessageEmbed.TEXT_MAX_LENGTH }
-                )
+            ArgumentString(
+                name = "text",
+                description = "The text to UwUfy.",
+                required = true,
+                type = Type.VARARG,
+                condition = { it.isNotBlank() && it.length < MessageEmbed.TEXT_MAX_LENGTH }
             )
         )
     )

@@ -2,21 +2,22 @@ package me.arynxd.monke.objects.argument.types
 
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.objects.argument.Argument
+import me.arynxd.monke.objects.argument.ArgumentBuilder
 import me.arynxd.monke.objects.argument.Type
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 
-class ArgumentServer(
+class ArgumentGuild(
     override val name: String,
     override val description: String,
     override val required: Boolean,
     override val type: Type,
-    override val condition: (Guild) -> Boolean = { true },
-) : Argument<Guild>() {
+    override val condition: (Guild) -> Boolean = { true }
 
+) : Argument<Guild>() {
     override suspend fun convert(input: String, event: CommandEvent): Guild? {
         if (input.equals("this", true)) {
             return event.guild
@@ -43,7 +44,8 @@ class ArgumentMember(
     override val description: String,
     override val required: Boolean,
     override val type: Type,
-    override val condition: (Member) -> Boolean = { true },
+    override val condition: (Member) -> Boolean = { true }
+
 ) : Argument<Member>() {
 
     override suspend fun convert(input: String, event: CommandEvent): Member? {
@@ -83,7 +85,7 @@ class ArgumentUser(
     override val description: String,
     override val required: Boolean,
     override val type: Type,
-    override val condition: (User) -> Boolean = { true },
+    override val condition: (User) -> Boolean = { true }
 ) : Argument<User>() {
 
     override suspend fun convert(input: String, event: CommandEvent): User? {
@@ -117,6 +119,7 @@ class ArgumentUser(
         return null
     }
 }
+
 private fun isBotMention(event: CommandEvent): Boolean {
     val content = event.message.contentRaw
     val id = event.jda.selfUser.idLong

@@ -8,7 +8,7 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.CommandReply
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 
 @Suppress("UNUSED")
@@ -19,13 +19,11 @@ class LanguageCommand : Command(
         category = CommandCategory.CONFIGURATION,
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentLanguage(
-                    name = "language",
-                    description = "The new language.",
-                    required = false,
-                    type = Type.REGULAR,
-                )
+            ArgumentLanguage(
+                name = "language",
+                description = "The new language.",
+                required = false,
+                type = Type.REGULAR,
             )
         )
     )

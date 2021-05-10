@@ -4,9 +4,9 @@ import dev.minn.jda.ktx.await
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
-import me.arynxd.monke.objects.argument.types.ArgumentServer
+import me.arynxd.monke.objects.argument.types.ArgumentGuild
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.parseDateTime
 import net.dv8tion.jda.api.entities.Guild
@@ -21,13 +21,11 @@ class InfoServerCommand(parent: Command) : SubCommand(
         flags = listOf(CommandFlag.SUSPENDING),
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentServer(
-                    name = "server",
-                    description = "The server to show information for or nothing for the current server.",
-                    required = false,
-                    type = Type.REGULAR,
-                )
+            ArgumentGuild(
+                name = "server",
+                description = "The server to show information for or nothing for the current server.",
+                required = false,
+                type = Type.REGULAR,
             )
         )
     )

@@ -1,7 +1,7 @@
 package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import net.dv8tion.jda.api.Permission
 
 data class CommandMetaData @JvmOverloads constructor(
@@ -11,7 +11,7 @@ data class CommandMetaData @JvmOverloads constructor(
 
     val aliases: List<String> = emptyList(),
     val flags: List<CommandFlag> = emptyList(),
-    val arguments: ArgumentConfiguration = ArgumentConfiguration(emptyList()),
+    val arguments: ArgumentConfiguration = ArgumentConfiguration(),
     var isDisabled: Boolean = false,
     val cooldown: Long = 1000L,
 

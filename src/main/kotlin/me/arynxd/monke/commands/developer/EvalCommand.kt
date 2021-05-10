@@ -10,7 +10,7 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.postBin
@@ -34,13 +34,11 @@ class EvalCommand : Command(
         flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.SUSPENDING),
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentString(
-                    name = "code",
-                    description = "The code to evaluate.",
-                    required = true,
-                    type = Type.VARARG,
-                )
+            ArgumentString (
+                name = "code",
+                description = "The code to evaluate.",
+                required = true,
+                type = Type.VARARG
             )
         )
     )
@@ -108,7 +106,6 @@ class EvalCommand : Command(
 
         val language = event.language()
         val okHttpClient = monke.handlers.okHttpClient
-        val startTime = System.currentTimeMillis()
 
         System.setOut(newSysOut)
 
@@ -150,24 +147,6 @@ class EvalCommand : Command(
             )
         )
 
-        reply.field(
-            title = translate(language, "command.eval.keyword.code"),
-            description = "```kt\n${script.takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, monke)}```",
-            inline = true
-        )
-
-        reply.field(
-            title = "Language",
-            description = "Kotlin",
-            inline = true
-        )
-
-        reply.field(
-            title = translate(language, "command.eval.keyword.duration"),
-            description = "${System.currentTimeMillis() - startTime}ms",
-            inline = true
-        )
-
         if (isSuccessful) {
             reply.type(CommandReply.Type.SUCCESS)
             reply.field(
@@ -182,7 +161,7 @@ class EvalCommand : Command(
             reply.field(
                 title = translate(language, "command.eval.keyword.error"),
                 description = output,
-                inline = false
+                inline = true
             )
         }
 
@@ -193,10 +172,17 @@ class EvalCommand : Command(
         )
 
         reply.field(
-            title = "Saved Console Output",
+            title = "Saved Stdout",
             description = sysOut,
             inline = true
         )
+
+        reply.field(
+            title = translate(language, "command.eval.keyword.code"),
+            description = "```kt\n${script.takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, monke)}```",
+            inline = false
+        )
+
         reply.footer()
         reply.send()
     }

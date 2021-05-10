@@ -2,7 +2,7 @@ package me.arynxd.monke.commands.music
 
 import me.arynxd.monke.handlers.MusicHandler
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 
 @Suppress("UNUSED")
 class PauseCommand : Command(

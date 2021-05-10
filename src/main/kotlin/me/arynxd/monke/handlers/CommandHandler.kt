@@ -2,15 +2,12 @@ package me.arynxd.monke.handlers
 
 import kotlinx.coroutines.*
 import me.arynxd.monke.Monke
+import me.arynxd.monke.events.CommandPreprocessEvent
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandFlag
 import me.arynxd.monke.objects.command.CommandReply
 import me.arynxd.monke.objects.command.SubCommand
-import me.arynxd.monke.objects.events.interfaces.IEventListener
-import me.arynxd.monke.objects.events.types.command.CommandEvent
-import me.arynxd.monke.objects.events.types.command.CommandExceptionEvent
-import me.arynxd.monke.objects.events.types.command.CommandPreprocessEvent
-import me.arynxd.monke.objects.events.types.BaseEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.handlers.whenEnabled
@@ -19,6 +16,7 @@ import me.arynxd.monke.util.markdownSanitize
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 import kotlin.reflect.KClass
 
 const val COMMAND_PACKAGE = "me.arynxd.monke.commands"
@@ -30,17 +28,11 @@ class CommandHandler(
         TranslationHandler::class,
         GuildDataHandler::class
     )
-) : Handler(), IEventListener {
+) : Handler() {
     private val reflections = Reflections(COMMAND_PACKAGE, SubTypesScanner())
     val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
 
-    override fun onEvent(event: BaseEvent) {
-        if (event is CommandPreprocessEvent) {
-            handlePreprocessEvent(event)
-        }
-    }
-
-    private fun handlePreprocessEvent(event: CommandPreprocessEvent) {
+    fun handlePreprocessEvent(event: CommandPreprocessEvent) {
         val prefix = monke.handlers.get(GuildDataHandler::class).getData(event.guild.idLong).prefix
 
         val contentRaw = event.message.contentRaw
@@ -116,26 +108,14 @@ class CommandHandler(
     }
 
     private fun launchCommand(command: Command, event: CommandEvent) {
-        val isExecutable = runBlocking {
-            command.isExecutable(event)
-        }
+        GlobalScope.launch {
+            val isExecutable = command.isExecutable(event)
 
-        if (!isExecutable) {
-            return
-        }
+            if (!isExecutable) {
+                return@launch
+            }
 
-        monke.handlers.get(CooldownHandler::class).addCommand(event.user, command)
-        monke.handlers.get(MetricsHandler::class).commandCounter.labels(
-            if (command is SubCommand)
-                command.parent.metaData.name
-            else
-                command.metaData.name
-        ).inc()
-
-        monke.eventProcessor.fireEvent(event)
-
-        if (command.hasFlag(CommandFlag.SUSPENDING)) {
-            GlobalScope.launch {
+            if (command.hasFlag(CommandFlag.SUSPENDING)) {
                 try {
                     withTimeout(7_500) { //7.5 Seconds
                         command.runSuspend(event)
@@ -145,14 +125,22 @@ class CommandHandler(
                     handleException(event, exception)
                 }
             }
-        }
-        else {
-            try {
-                command.runSync(event)
+            else {
+                try {
+                    command.runSync(event)
+                }
+                catch (exception: Exception) {
+                    handleException(event, exception)
+                }
             }
-            catch (exception: Exception) {
-                handleException(event, exception)
-            }
+
+            monke.handlers.get(CooldownHandler::class).addCommand(event.user, command)
+            monke.handlers.get(MetricsHandler::class).commandCounter.labels(
+                if (command is SubCommand)
+                    command.parent.metaData.name
+                else
+                    command.metaData.name
+            ).inc()
         }
     }
 
@@ -169,8 +157,6 @@ class CommandHandler(
         monke.handlers
             .get(ExceptionHandler::class)
             .handle(exception, "From command '${event.command.metaData.name}'")
-
-        monke.eventProcessor.fireEvent(CommandExceptionEvent(monke, exception, event))
     }
 
     /**

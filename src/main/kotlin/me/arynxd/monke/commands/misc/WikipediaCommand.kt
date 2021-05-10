@@ -8,7 +8,7 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.CommandReply
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.getWikipediaPage
 import me.arynxd.monke.util.parseDateTime
 
@@ -22,13 +22,11 @@ class WikipediaCommand : Command(
         cooldown = 3000L,
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentString(
-                    name = "subject",
-                    description = "The subject to query Wikipedia with.",
-                    required = true,
-                    type = Type.VARARG
-                )
+            ArgumentString(
+                name = "subject",
+                description = "The subject to query Wikipedia with.",
+                required = true,
+                type = Type.VARARG
             )
         )
     )

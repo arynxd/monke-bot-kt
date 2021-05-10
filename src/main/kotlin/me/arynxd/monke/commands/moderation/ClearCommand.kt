@@ -9,7 +9,7 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.CommandReply
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.ratelimit.RateLimitedAction
 import me.arynxd.monke.util.plurify
 import net.dv8tion.jda.api.Permission
@@ -23,14 +23,12 @@ class ClearCommand : Command(
         aliases = listOf("purge"),
         cooldown = 10_000L,
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentInt(
-                    name = "amount",
-                    description = "The amount to clear. 1 - 50",
-                    required = true,
-                    type = Type.REGULAR,
-                    condition = { it in 1..50 },
-                )
+            ArgumentInt(
+                name = "amount",
+                description = "The amount to clear. 1 - 50",
+                required = true,
+                type = Type.REGULAR,
+                condition = { it in 1..50 },
             )
         ),
         memberPermissions = listOf(Permission.MESSAGE_MANAGE),

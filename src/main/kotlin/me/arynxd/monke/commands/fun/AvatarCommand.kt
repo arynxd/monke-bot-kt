@@ -8,7 +8,7 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.CommandReply
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 
 @Suppress("UNUSED")
 class AvatarCommand : Command(
@@ -19,13 +19,11 @@ class AvatarCommand : Command(
         aliases = listOf("avi", "pfp", "av"),
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentUser(
-                    name = "user",
-                    description = "The user to get the avatar for.",
-                    required = false,
-                    type = Type.REGULAR,
-                )
+            ArgumentUser(
+                name = "user",
+                description = "The user to get the avatar for.",
+                required = false,
+                type = Type.REGULAR,
             )
         )
     )

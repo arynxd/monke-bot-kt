@@ -4,7 +4,7 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentPlugin
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.plugins.LoadedPlugin
 
 class PluginReloadCommand(parent: Command) : SubCommand(
@@ -15,13 +15,11 @@ class PluginReloadCommand(parent: Command) : SubCommand(
         category = CommandCategory.DEVELOPER,
         flags = listOf(CommandFlag.DEVELOPER_ONLY),
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentPlugin(
-                    name = "plugin",
-                    description = "The plugin to reload.",
-                    required = true,
-                    type = Type.REGULAR
-                )
+            ArgumentPlugin(
+                name = "plugin",
+                description = "The plugin to reload.",
+                required = true,
+                type = Type.REGULAR
             )
         )
     )

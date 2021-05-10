@@ -1,28 +1,29 @@
-package me.arynxd.monke.objects.events.types.command
+package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.Monke
+import me.arynxd.monke.events.CommandPreprocessEvent
+import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.handlers.GuildDataHandler
 import me.arynxd.monke.objects.cache.GuildData
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.events.types.BaseEvent
 import me.arynxd.monke.objects.translation.Language
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.TextChannel
 
 class CommandEvent(
-    override val monke: Monke,
+    val monke: Monke,
     val args: MutableList<Any>,
     val command: Command,
 
-    event: CommandPreprocessEvent
-) : BaseEvent, GenericCommandEvent(
-    monke = monke,
-
-    jda = event.jda,
-    channel = event.channel,
-    user = event.user,
-    member = event.member,
-    guild = event.guild,
-    message = event.message
+    val event: CommandPreprocessEvent
 ) {
+    val channel = event.channel
+    val guild = event.guild
+    val selfMember = guild.selfMember
+    val guildIdLong = guild.idLong
+    val message = event.message
+    val member = event.member
+    val user = event.user
+    val jda = event.jda
 
     @Suppress("UNCHECKED_CAST")
     fun <T> argument(indie: Int, default: T? = null): T {
@@ -50,6 +51,12 @@ class CommandEvent(
             .map { it as T }
             .toMutableList()
     }
+
+    suspend fun reply(function: suspend CommandReply.() -> Unit) = function(CommandReply(this))
+
+    fun replyAsync(function: CommandReply.() -> Unit) = function(CommandReply(this))
+
+    fun isDeveloper(): Boolean = monke.handlers.get(ConfigHandler::class).config.developers.contains(user.id)
 
     fun isArgumentPresent(indie: Int): Boolean = indie < args.size
 

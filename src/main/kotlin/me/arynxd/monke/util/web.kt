@@ -7,7 +7,7 @@ import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.handlers.translateInternal
 import me.arynxd.monke.objects.command.CommandReply
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.web.RedditPost
 import me.arynxd.monke.objects.web.WIKIPEDIA_API

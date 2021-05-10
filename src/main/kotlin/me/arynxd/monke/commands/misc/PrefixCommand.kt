@@ -8,7 +8,7 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.CommandReply
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 
 @Suppress("UNUSED")
 class PrefixCommand : Command(
@@ -18,14 +18,12 @@ class PrefixCommand : Command(
         category = CommandCategory.MISC,
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentString(
-                    name = "prefix",
-                    description = "The new prefix. 5 characters or less.",
-                    required = false,
-                    type = Type.REGULAR,
-                    condition = { it.length <= 5 }
-                )
+            ArgumentString(
+                name = "prefix",
+                description = "The new prefix. 5 characters or less.",
+                required = false,
+                type = Type.REGULAR,
+                condition = { it.length <= 5 }
             )
         )
     )

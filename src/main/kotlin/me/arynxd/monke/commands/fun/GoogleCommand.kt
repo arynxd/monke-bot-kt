@@ -7,7 +7,7 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import java.net.URLEncoder
@@ -23,14 +23,12 @@ class GoogleCommand : Command(
         cooldown = 3000L,
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentString(
-                    name = "query",
-                    description = "The search query.",
-                    required = true,
-                    type = Type.VARARG,
-                    condition = { it.isNotBlank() }
-                )
+            ArgumentString(
+                name = "query",
+                description = "The search query.",
+                required = true,
+                type = Type.VARARG,
+                condition = { it.isNotBlank() }
             )
         )
     )

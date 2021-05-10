@@ -2,17 +2,51 @@ package me.arynxd.monke.events
 
 import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.Monke
+import me.arynxd.monke.handlers.CommandHandler
 import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.handlers.GuildDataHandler
-import me.arynxd.monke.objects.events.types.command.CommandPreprocessEvent
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import me.arynxd.monke.util.plurify
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import java.lang.IllegalArgumentException
 import java.time.Instant
+
+data class CommandPreprocessEvent(
+    val monke: Monke,
+    val message: Message,
+    val guild: Guild,
+    val user: User,
+    val member: Member,
+    val jda: JDA,
+    val channel: TextChannel
+) {
+
+    constructor(event: GuildMessageReceivedEvent, monke: Monke) : this(
+        monke,
+        event.message,
+        event.guild,
+        event.author,
+        event.member?: throw IllegalArgumentException("member was null"),
+        event.jda,
+        event.channel
+    )
+
+    constructor(event: GuildMessageUpdateEvent, monke: Monke) : this(
+        monke,
+        event.message,
+        event.guild,
+        event.author,
+        event.member?: throw IllegalArgumentException("member was null"),
+        event.jda,
+        event.channel
+    )
+}
 
 class JDAEvents(val monke: Monke) : ListenerAdapter() {
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
@@ -20,7 +54,7 @@ class JDAEvents(val monke: Monke) : ListenerAdapter() {
             return
         }
 
-        monke.eventProcessor.fireEvent(CommandPreprocessEvent(event, monke))
+        monke.handlers.get(CommandHandler::class).handlePreprocessEvent(CommandPreprocessEvent(event, monke))
     }
 
     override fun onGuildMessageUpdate(event: GuildMessageUpdateEvent) {
@@ -28,7 +62,7 @@ class JDAEvents(val monke: Monke) : ListenerAdapter() {
             return
         }
 
-        monke.eventProcessor.fireEvent(CommandPreprocessEvent(event, monke))
+        monke.handlers.get(CommandHandler::class).handlePreprocessEvent(CommandPreprocessEvent(event, monke))
     }
 
     override fun onGuildJoin(event: GuildJoinEvent) {

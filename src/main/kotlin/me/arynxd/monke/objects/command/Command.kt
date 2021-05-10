@@ -2,7 +2,6 @@ package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.handlers.CooldownHandler
 import me.arynxd.monke.handlers.translate
-import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.plurify
 
@@ -118,7 +117,7 @@ abstract class Command(
             return false
         }
 
-        val argResult = metaData.arguments.isArgumentsValid(commandEvent)
+        val argResult = metaData.arguments.validateArguments(commandEvent)
 
         if (argResult.third.isNotEmpty()) {
             val requiredCount = argResult.third.size

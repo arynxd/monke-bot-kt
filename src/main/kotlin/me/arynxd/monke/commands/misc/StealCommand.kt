@@ -10,7 +10,7 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.CommandReply
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.ratelimit.RateLimitedAction
 import me.arynxd.monke.util.getIcon
 import net.dv8tion.jda.api.Permission
@@ -31,20 +31,18 @@ class StealCommand : Command(
         cooldown = 180_000L, // 2 Minutes
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentString(
-                    name = "name",
-                    description = "The new emoji name, ( must be A-Z or _ and 2 - 32 characters long ).",
-                    required = true,
-                    type = Type.REGULAR,
-                    condition = { it.matches(EMOJI_REGEX) }
-                ),
-                ArgumentURL(
-                    name = "emoji",
-                    description = "The emoji. Must be a valid image URL.",
-                    required = true,
-                    type = Type.REGULAR,
-                )
+            ArgumentString(
+                name = "name",
+                description = "The new emoji name, ( must be A-Z or _ and 2 - 32 characters long ).",
+                required = true,
+                type = Type.REGULAR,
+                condition = { it.matches(EMOJI_REGEX) }
+            ),
+            ArgumentURL(
+                name = "emoji",
+                description = "The emoji. Must be a valid image URL.",
+                required = true,
+                type = Type.REGULAR,
             )
         )
     )

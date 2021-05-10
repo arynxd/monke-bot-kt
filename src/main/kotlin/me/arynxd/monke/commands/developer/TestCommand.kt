@@ -5,7 +5,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.exception.TestException
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 

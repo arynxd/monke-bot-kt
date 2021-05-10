@@ -9,7 +9,7 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.isValidUrl
 
 @Suppress("UNUSED")
@@ -20,16 +20,13 @@ class PlayCommand : Command(
         category = CommandCategory.MUSIC,
         flags = listOf(CommandFlag.SUSPENDING),
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentString(
-                    name = "song",
-                    description = "The track to play.",
-                    required = true,
-                    type = Type.VARARG
-                )
+            ArgumentString(
+                name = "song",
+                description = "The track to play.",
+                required = true,
+                type = Type.VARARG
             )
         ),
-
         finalCheck = { it.member.voiceState?.channel != null },
         finalCheckFail = {
             it.replyAsync {

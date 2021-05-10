@@ -2,7 +2,7 @@ package me.arynxd.monke.objects.argument.types
 
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.Type
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.plugins.LoadedPlugin
 
 class ArgumentPlugin(

@@ -1,12 +1,11 @@
 package me.arynxd.monke.objects.argument
 
-import me.arynxd.monke.handlers.TranslationHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 
-class ArgumentConfiguration(val expected: List<Argument<*>>) {
+class ArgumentConfiguration(vararg val expected: Argument<*>) {
 
     fun isConfigurationValid(): Boolean {
         if (expected.count { it.type == Type.VARARG } > 1) { // Is there more than 1 vararg
@@ -24,28 +23,27 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
             return false
         }
 
-        if (requiredIndex != -1 && expected.subList(0, requiredIndex)
+        if (requiredIndex != -1 && expected.asList().subList(0, requiredIndex)
                 .find { !it.required } != null
         ) { //Is there an optional before a required
             return false
         }
 
-
         return true
     }
 
-    suspend fun isArgumentsValid(event: CommandEvent): Triple<List<Any>, List<Argument<*>>, List<Argument<*>>> {
-        val args = event.args.map { it.toString() }
+    suspend fun validateArguments(event: CommandEvent): Triple<List<Any>, List<Argument<*>>, List<Argument<*>>> {
+        val args = event.args.map { it.toString() } //Using toString to avoid un-needed casting (args should already be strings)
         event.args.clear()
-        val invalidArguments: MutableList<Argument<*>> = mutableListOf()
-        val validArguments: MutableList<Any> = mutableListOf()
+        val invalidArguments = mutableListOf<Argument<*>>()
+        val validArguments = mutableListOf<Any>()
         val varargIndex = expected.indexOfLast { it.type == Type.VARARG }
 
         if (args.size < expected.count { it.required }) { //Missing required args
             return Triple(
                 emptyList(),
                 emptyList(),
-                expected.subList(args.size, expected.size).filter { it.required } //Collect missing args
+                expected.asList().subList(args.size, expected.size).filter { it.required } //Collect missing args
             )
         }
 
@@ -53,34 +51,21 @@ class ArgumentConfiguration(val expected: List<Argument<*>>) {
             return Triple(
                 emptyList(),
                 emptyList(),
-                expected.subList(args.size, expected.size).filter { it.required } //Collect missing args
+                expected.asList().subList(args.size, expected.size).filter { it.required } //Collect missing args
             )
         }
 
-
-        if (varargIndex == -1) {
-            args.zip(expected).forEach { pair: Pair<String, Argument<*>> ->
-                val result = pair.second.verify(pair.first, event)
-                if (result == null) {
-                    invalidArguments.add(pair.second)
-                }
-                else {
-                    validArguments.add(result)
-                }
+        args.zip(expected).forEach {
+            val result = it.second.verify(it.first, event)
+            if (result == null) {
+                invalidArguments.add(it.second)
+            }
+            else {
+                validArguments.add(result)
             }
         }
 
         if (varargIndex != -1) {
-            args.subList(0, varargIndex).zip(expected).forEach { pair: Pair<String, Argument<*>> ->
-                val result = pair.second.verify(pair.first, event)
-                if (result == null) {
-                    invalidArguments.add(pair.second)
-                }
-                else {
-                    validArguments.add(result)
-                }
-            }
-
             for (arg in args.subList(varargIndex, args.size)) {
                 val result = expected[varargIndex].verify(arg, event)
 

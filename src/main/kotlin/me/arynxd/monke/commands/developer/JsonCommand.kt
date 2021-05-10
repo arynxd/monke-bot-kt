@@ -5,7 +5,7 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentLong
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.prettyPrintJson
 import me.arynxd.monke.util.splitStringCodeblock
 import net.dv8tion.jda.api.requests.Request
@@ -23,13 +23,11 @@ class JsonCommand : Command(
         flags = listOf(CommandFlag.DEVELOPER_ONLY),
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentLong(
-                    name = "message-id",
-                    description = "The ID to get from. Must be a message from the current channel.",
-                    required = true,
-                    type = Type.REGULAR
-                ),
+            ArgumentLong(
+                name = "message-id",
+                description = "The ID to get from. Must be a message from the current channel.",
+                required = true,
+                type = Type.REGULAR
             )
         ),
     )

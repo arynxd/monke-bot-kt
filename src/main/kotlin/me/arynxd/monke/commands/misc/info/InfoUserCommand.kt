@@ -5,7 +5,7 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentMember
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.parseDateTime
 import net.dv8tion.jda.api.entities.Member
 
@@ -17,13 +17,11 @@ class InfoUserCommand(parent: Command) : SubCommand(
         category = CommandCategory.MISC,
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentMember(
-                    name = "member",
-                    description = "The member to show information for.",
-                    required = false,
-                    type = Type.REGULAR,
-                )
+            ArgumentMember(
+                name = "member",
+                description = "The member to show information for.",
+                required = false,
+                type = Type.REGULAR,
             )
         )
     )

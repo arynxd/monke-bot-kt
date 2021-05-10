@@ -8,7 +8,7 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.CommandReply
-import me.arynxd.monke.objects.events.types.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandEvent
 import kotlin.random.Random
 
 @Suppress("UNUSED")
@@ -20,22 +20,19 @@ class RandomNumberCommand : Command(
         aliases = listOf("number"),
 
         arguments = ArgumentConfiguration(
-            listOf(
-                ArgumentLong(
-                    name = "number-one",
-                    description = "The first number in the range. Bigger than 0.",
-                    required = true,
-                    type = Type.REGULAR,
-                    condition = { it > 0 }
-                ),
-
-                ArgumentLong(
-                    name = "number-two",
-                    description = "The second number in the range. Bigger than 0.",
-                    required = true,
-                    type = Type.REGULAR,
-                    condition = { it > 0 }
-                )
+            ArgumentLong(
+                name = "number-one",
+                description = "The first number in the range. Bigger than 0.",
+                required = true,
+                type = Type.REGULAR,
+                condition = { it > 0 }
+            ),
+            ArgumentLong(
+                name = "number-two",
+                description = "The second number in the range. Bigger than 0.",
+                required = true,
+                type = Type.REGULAR,
+                condition = { it > 0 }
             )
         )
     )
