@@ -102,7 +102,7 @@ class EvalCommand : Command(
         engine.put("monke", monke)
 
         val script = event.vararg<String>(0)
-            .joinToString(separator = "")
+            .joinToString(separator = " ")
             .replace(codeBlockRegex, "")
 
         val language = event.language()
