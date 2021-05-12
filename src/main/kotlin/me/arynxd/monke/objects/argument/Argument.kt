@@ -1,12 +1,10 @@
 package me.arynxd.monke.objects.argument
 
-import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.SubCommand
 import me.arynxd.monke.objects.translation.Language
-import java.lang.IllegalArgumentException
 
 abstract class Argument<T> {
     abstract val name: String

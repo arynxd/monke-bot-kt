@@ -35,7 +35,7 @@ class CommandReply(val event: CommandEvent) {
         if (messageIds.size >= 2) {
             event.channel.deleteMessagesByIds(messageIds.subList(1, messageIds.size).map { it.toString() }).queue()
         }
-        else {
+        else if (messageIds.size > 1){
             event.channel.deleteMessageById(messageIds[1]).queue()
         }
     }

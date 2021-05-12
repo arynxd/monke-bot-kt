@@ -67,11 +67,11 @@ class CommandEvent(
 
     fun isDeveloper(): Boolean = monke.handlers[ConfigHandler::class].config.developers.contains(user.id)
 
-    fun isArgumentPresent(indie: Int): Boolean = indie < args.size
+    fun isArgumentPresent(indie: Int) = indie < args.size
 
-    fun prefix(): String = dataCache().prefix
+    fun prefix() = dataCache().prefix
 
-    fun language(): Language = dataCache().language
+    fun language() = dataCache().language
 
-    fun dataCache(): GuildData = monke.handlers[GuildDataHandler::class].getData(guildIdLong)
+    fun dataCache() = monke.handlers[GuildDataHandler::class].getData(guildIdLong)
 }

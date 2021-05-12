@@ -87,8 +87,8 @@ class Monke : ListenerAdapter() {
         handlers.enableHandlers()
         initTasks()
 
-        handlers.get(MetricsHandler::class).guildCount.set(getGuildCount().toDouble())
-        handlers.get(MetricsHandler::class).userCount.set(getUserCount().toDouble())
+        handlers[MetricsHandler::class].guildCount.set(getGuildCount().toDouble())
+        handlers[MetricsHandler::class].userCount.set(getUserCount().toDouble())
 
         MessageAction.setDefaultMentionRepliedUser(false)
         MessageAction.setDefaultMentions(emptyList())
@@ -106,16 +106,16 @@ class Monke : ListenerAdapter() {
              | |  | | (_) | | | |   <  __/ |_) | (_) | |_ 
              |_|  |_|\___/|_| |_|_|\_\___|_.__/ \___/ \__|
                                                             
-                        ${handlers.get(ConfigHandler::class).config.api.website}
+                        ${handlers[ConfigHandler::class].config.api.website}
         """.trimIndent()
         )
     }
 
     private fun initTasks() {
-        val taskHandler = handlers.get(TaskHandler::class)
+        val taskHandler = handlers[TaskHandler::class]
 
         taskHandler.addRepeatingTask(30, TimeUnit.SECONDS) {
-            handlers.get(PaginationHandler::class).cleanup()
+            handlers[PaginationHandler::class].cleanup()
         }
 
         taskHandler.addRepeatingTask(2, TimeUnit.MINUTES) {

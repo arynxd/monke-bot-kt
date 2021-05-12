@@ -43,7 +43,7 @@ class CommandHandler(
 
                 contentRaw.startsWith(prefix) -> contentRaw.substring(prefix.length, contentRaw.length)
 
-                contentRaw.startsWith(prefix.repeat(1)) -> return
+                contentRaw.startsWith(prefix.repeat(1)) -> return //TODO: fix this check
 
                 else -> return
             }
@@ -154,8 +154,7 @@ class CommandHandler(
             send()
         }
 
-        monke.handlers
-            .get(ExceptionHandler::class)
+        monke.handlers[ExceptionHandler::class]
             .handle(exception, "From command '${event.command.metaData.name}'")
     }
 

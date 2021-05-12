@@ -23,7 +23,7 @@ class GuildDataHandler(
     }
 
     fun initGuild(guildId: Long) {
-        monke.handlers.get(DatabaseHandler::class).database
+        monke.handlers[DatabaseHandler::class].database
             .insertOrUpdate(GUILDS) {
                 set(GUILDS.GUILD_ID, guildId)
                 onConflict { set(GUILDS.GUILD_ID, guildId) } //Do nothing

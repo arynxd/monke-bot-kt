@@ -12,7 +12,6 @@ class ArgumentLong(
     override val type: Type,
     override val condition: (Long) -> Boolean = { true }
 ) : Argument<Long>() {
-
     override suspend fun convert(input: String, event: CommandEvent) = input.toLongOrNull()
 }
 
@@ -23,7 +22,6 @@ class ArgumentInt(
     override val type: Type,
     override val condition: (Int) -> Boolean = { true }
 ) : Argument<Int>() {
-
     override suspend fun convert(input: String, event: CommandEvent) = input.toIntOrNull()
 }
 

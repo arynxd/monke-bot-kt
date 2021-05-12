@@ -69,10 +69,10 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
         }
 
         if (varargIndex != -1) {
-            args.subList(0, varargIndex).zip(expected).forEach { pair: Pair<String, Argument<*>> ->
-                val result = pair.second.verify(pair.first, event)
+            args.subList(0, varargIndex).zip(expected).forEach {
+                val result = it.second.verify(it.first, event)
                 if (result == null) {
-                    invalidArguments.add(pair.second)
+                    invalidArguments.add(it.second)
                 }
                 else {
                     validArguments.add(result)
