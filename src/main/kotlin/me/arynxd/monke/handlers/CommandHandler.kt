@@ -147,12 +147,13 @@ class CommandHandler(
     private fun handleException(event: CommandEvent, exception: Exception) {
         val monke = event.monke
 
-        event.replyAsync {
+        val resp = event.replyAsync {
             type(CommandReply.Type.EXCEPTION)
             title("Something went wrong whilst executing that command. Please report this to the devs!")
             footer()
-            send()
         }
+
+        event.thread.post(resp)
 
         monke.handlers[ExceptionHandler::class]
             .handle(exception, "From command '${event.command.metaData.name}'")

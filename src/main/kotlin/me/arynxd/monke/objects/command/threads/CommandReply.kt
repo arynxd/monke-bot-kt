@@ -27,17 +27,13 @@ class CommandReply(val event: CommandEvent) {
             throw IllegalArgumentException("IDs were empty")
         }
 
+        println(messageIds)
         event.channel.editMessageById(messageIds[0], embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
             .queue(callback)
 
-        if (messageIds.size >= 2) {
-            event.channel.deleteMessagesByIds(messageIds.subList(1, messageIds.size).map { it.toString() }).queue()
-        }
-        else if (messageIds.size > 1){
-            event.channel.deleteMessageById(messageIds[1]).queue()
-        }
+        doDelete(messageIds)
     }
 
     fun send(callback: ((Message) -> Unit) = {}) {
@@ -114,12 +110,8 @@ class CommandReply(val event: CommandEvent) {
             throw IllegalStateException(TYPE_NOT_SET_ERROR)
         }
 
-        if (messageIds.isEmpty()) {
-            throw IllegalArgumentException("IDs were empty")
-        }
-
         val target = parts.size
-        val ids = mutableListOf<Long>()
+        val gatheredIds = mutableListOf<Long>()
         var idCount = 0
 
         if (messageIds.size > parts.size) {
@@ -129,20 +121,15 @@ class CommandReply(val event: CommandEvent) {
                 event.channel.editMessageById(id, parts[i].toString())
                     .mentionRepliedUser(false)
                     .allowedMentions(mentions)
-                    .queue() {
+                    .queue {
+                        idCount++
                         if (idCount >= target) {
-                            ids.add(it.idLong)
-                            idCount++
-                            callback(ids)
+                            gatheredIds.add(it.idLong)
+                            doDelete(gatheredIds)
+                            callback(gatheredIds)
                         }
+                        it.suppressEmbeds(true).queue()
                     }
-            }
-
-            if (messageIds.size >= 2) {
-                event.channel.deleteMessagesByIds(messageIds.subList(1, messageIds.size).map { it.toString() }).queue()
-            }
-            else {
-                event.channel.deleteMessageById(messageIds[0]).queue()
             }
         }
         else {
@@ -150,41 +137,41 @@ class CommandReply(val event: CommandEvent) {
                 event.channel.editMessageById(id, parts[i].toString())
                     .mentionRepliedUser(false)
                     .allowedMentions(mentions)
-                    .queue() {
+                    .queue {
+                        idCount++
                         if (idCount >= target) {
-                            ids.add(it.idLong)
-                            idCount++
-                            callback(ids)
+                            gatheredIds.add(it.idLong)
+                            doDelete(gatheredIds)
+                            callback(gatheredIds)
                         }
+                        it.suppressEmbeds(true).queue()
                     }
-
-                event.channel.retrieveMessageById(id).queue() {m ->
-                    m.editMessage(parts[i].toString())
-                        .mentionRepliedUser(false)
-                        .allowedMentions(mentions)
-                        .queue() {
-                            if (idCount >= target) {
-                                ids.add(it.idLong)
-                                idCount++
-                                callback(ids)
-                            }
-                        }
-
-                    m.suppressEmbeds(true).queue()
-                }
             }
             for (part in parts.subList(messageIds.size, parts.size)) {
-                event.channel.sendMessage(part.toString())
+                event.message.reply(part.toString())
                     .mentionRepliedUser(false)
                     .allowedMentions(mentions)
-                    .queue() {
+                    .queue {
+                        idCount++
                         if (idCount >= target) {
-                            ids.add(it.idLong)
-                            idCount++
-                            callback(ids)
+                            gatheredIds.add(it.idLong)
+                            doDelete(gatheredIds)
+                            callback(gatheredIds)
                         }
+                        it.suppressEmbeds(true).queue()
                     }
             }
+        }
+    }
+
+    private fun doDelete(sentIds: List<Long>) {
+        val toDelete = sentIds.map { it.toString() }
+        if (toDelete.size > 1) { //Only if there's extra replies to delete
+            event.channel.deleteMessageById(toDelete.first()).queue()
+        }
+        else if (toDelete.size >= 2) {
+                                                //Dont delete the current reply
+            event.channel.deleteMessagesByIds(toDelete.subList(1, toDelete.size)).queue()
         }
     }
 

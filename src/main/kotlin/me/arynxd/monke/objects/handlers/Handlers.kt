@@ -103,4 +103,6 @@ class Handlers(val monke: Monke) {
             LOGGER.info("Handler - ${it.javaClass.simpleName} stopped.")
         }
     }
+
+    fun size() = handlers.size
 }

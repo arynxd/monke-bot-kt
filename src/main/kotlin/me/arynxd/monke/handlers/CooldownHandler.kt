@@ -28,21 +28,21 @@ class CooldownHandler(
     fun addCommand(user: User, command: Command) {
         users[user.idLong]!!.addCommand(command)
     }
+}
 
-    class CooledUser {
-        private val commands: MutableMap<Command, Long> = mutableMapOf()
+class CooledUser {
+    private val commands: MutableMap<Command, Long> = mutableMapOf()
 
-        fun addCommand(command: Command) {
-            commands[command] = System.currentTimeMillis() + command.metaData.cooldown
-        }
+    fun addCommand(command: Command) {
+        commands[command] = System.currentTimeMillis() + command.metaData.cooldown
+    }
 
-        fun getRemaining(command: Command): Long {
-            return commands[command] ?: 0L
-        }
+    fun getRemaining(command: Command): Long {
+        return commands[command] ?: 0L
+    }
 
-        fun isOnCooldown(command: Command): Boolean {
-            val cooldown = commands[command] ?: return false
-            return System.currentTimeMillis() <= cooldown
-        }
+    fun isOnCooldown(command: Command): Boolean {
+        val cooldown = commands[command] ?: return false
+        return System.currentTimeMillis() <= cooldown
     }
 }

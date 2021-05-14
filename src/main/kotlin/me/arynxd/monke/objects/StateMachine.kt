@@ -7,7 +7,7 @@ import kotlin.reflect.cast
 class StateMachine <T : GenericEvent> (
     val clazz: KClass<T>,
     val predicate: (T) -> Boolean,
-    val transformer: (T, Int, StateMachine<*>) -> Int
+    val transformer: (T, Int, StateMachine<T>) -> Int
 ) {
     private var state = 0
 

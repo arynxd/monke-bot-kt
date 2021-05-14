@@ -5,6 +5,8 @@ import me.arynxd.monke.handlers.*
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.plugins.Plugins
+import me.arynxd.monke.util.Debuggable
+import me.arynxd.monke.util.debug
 import me.arynxd.monke.util.parseUptime
 import me.arynxd.monke.util.plurify
 import net.dv8tion.jda.api.JDA
@@ -34,7 +36,7 @@ fun main() {
     Monke()
 }
 
-class Monke : ListenerAdapter() {
+class Monke : ListenerAdapter(), Debuggable {
     val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(10)
     val handlers = Handlers(this)
     val plugins = Plugins(this)
@@ -45,7 +47,7 @@ class Monke : ListenerAdapter() {
         try {
             return JDABuilder
                 .create(
-                    handlers.get(ConfigHandler::class).config.token,
+                    handlers[ConfigHandler::class].config.token,
                     GatewayIntent.GUILD_MEMBERS,
 
                     GatewayIntent.GUILD_MESSAGES,
@@ -189,5 +191,11 @@ class Monke : ListenerAdapter() {
                 LocalDateTime.now()
             )
         )
+    }
+
+    override fun toDebugString(): String {
+        return """
+            Handlers: ${this.handlers.size()}
+        """.trimIndent()
     }
 }

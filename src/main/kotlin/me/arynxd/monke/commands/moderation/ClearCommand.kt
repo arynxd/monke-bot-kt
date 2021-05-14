@@ -71,8 +71,8 @@ class ClearCommand : Command(
                             language = language,
                             key = "command.clear.response.cleared",
                             values = arrayOf(
-                                it.size - 1,
-                                (it.size - 1).plurify()
+                                it.size,
+                                it.size.plurify()
                             )
                         )
                     )

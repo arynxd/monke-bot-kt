@@ -40,7 +40,7 @@ class HelpCommand : Command(
             return
         }
 
-        event.monke.handlers.get(PaginationHandler::class).addPaginator(
+        event.monke.handlers[PaginationHandler::class].addPaginator(
             Paginator(
                 monke = event.monke,
                 pages = getHelpPages(prefix, event),
@@ -108,7 +108,7 @@ class HelpCommand : Command(
 
     private fun getHelpPages(prefix: String, event: CommandEvent): List<MessageEmbed> {
         val result = mutableListOf<MessageEmbed>()
-        val commands = event.monke.handlers.get(CommandHandler::class)
+        val commands = event.monke.handlers[CommandHandler::class]
                 .commandMap
                 .values
                 .distinct()
