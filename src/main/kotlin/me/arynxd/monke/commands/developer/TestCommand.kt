@@ -31,8 +31,7 @@ class TestCommand : Command(
                     key = "command.test.keyword.success"
                 )
             )
-            footer()
-            send()
+            event.thread.post(this)
         }
 
         event.reply {
@@ -44,7 +43,7 @@ class TestCommand : Command(
                 )
             )
             footer()
-            send()
+            event.thread.post(this)
         }
 
         event.reply {
@@ -62,7 +61,7 @@ class TestCommand : Command(
                 )
             )
             footer()
-            send()
+            event.thread.post(this)
         }
 
         try {
@@ -81,7 +80,7 @@ class TestCommand : Command(
                         )
                     )
                     footer()
-                    send()
+                    event.thread.post(this)
                 }
             }
         }
@@ -95,7 +94,7 @@ class TestCommand : Command(
                     )
                 )
                 footer()
-                send()
+                event.thread.post(this)
             }
         }
 

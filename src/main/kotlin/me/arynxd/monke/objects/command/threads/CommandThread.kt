@@ -2,23 +2,43 @@ package me.arynxd.monke.objects.command.threads
 
 import me.arynxd.monke.handlers.CommandThreadHandler
 import me.arynxd.monke.objects.command.CommandEvent
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 
 class CommandThread(val messageId: Long, val responseIds: List<Long>) {
+    val hasPosts = responseIds.isNotEmpty()
+
     fun post(reply: CommandReply) {
         if (responseIds.isEmpty()) {
             reply.send() {
-                reply.event.monke.handlers[CommandThreadHandler::class].put(
+                reply.monke.handlers[CommandThreadHandler::class].put(
                     CommandThread(messageId, listOf(it.idLong))
                 )
             }
         }
         else {
             reply.replace(responseIds) {
-                reply.event.monke.handlers[CommandThreadHandler::class].put(
+                reply.monke.handlers[CommandThreadHandler::class].put(
                     CommandThread(messageId, listOf(it.idLong))
                 )
             }
+        }
+    }
+
+    suspend fun awaitPost(reply: CommandReply): Message {
+        if (responseIds.isEmpty()) {
+            val message = reply.await()
+            reply.monke.handlers[CommandThreadHandler::class].put(
+                CommandThread(messageId, listOf(message.idLong))
+            )
+            return message
+        }
+        else {
+            val message = reply.replaceAwait(responseIds)
+            reply.monke.handlers[CommandThreadHandler::class].put(
+                CommandThread(messageId, listOf(message.idLong))
+            )
+            return message
         }
     }
 
@@ -26,7 +46,7 @@ class CommandThread(val messageId: Long, val responseIds: List<Long>) {
         reply.replaceChunks(responseIds, chunks) {
             val ids = (responseIds + it).distinct()
             val thread = CommandThread(messageId, ids)
-            reply.event.monke.handlers[CommandThreadHandler::class].put(thread)
+            reply.monke.handlers[CommandThreadHandler::class].put(thread)
         }
     }
 }

@@ -12,6 +12,7 @@ import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.isValidUrl
+import me.arynxd.monke.util.markdownSanitize
 
 @Suppress("UNUSED")
 class PlayCommand : Command(
@@ -34,7 +35,7 @@ class PlayCommand : Command(
                 type(CommandReply.Type.EXCEPTION)
                 title("You are not in a voice channel.")
                 footer()
-                send()
+                it.thread.post(this)
             }
         }
     )
@@ -42,7 +43,7 @@ class PlayCommand : Command(
     override suspend fun runSuspend(event: CommandEvent) {
         val channel = event.channel
         val voiceChannel = event.member.voiceState!!.channel!!
-        val musicHandler = event.monke.handlers.get(MusicHandler::class)
+        val musicHandler = event.monke.handlers[MusicHandler::class]
         val musicManager = musicHandler.getGuildMusicManager(event.guild, channel, voiceChannel)
 
         if (musicManager.channel != channel) {
@@ -50,7 +51,7 @@ class PlayCommand : Command(
                 type(CommandReply.Type.EXCEPTION)
                 title("I'm locked to ${musicManager.channel.asMention} for this session.")
                 footer()
-                send()
+                event.thread.post(this)
             }
             return
         }
@@ -61,7 +62,7 @@ class PlayCommand : Command(
                 type(CommandReply.Type.EXCEPTION)
                 title("Join ${musicManager.voiceChannel.name} to use my music commands.")
                 footer()
-                send()
+                event.thread.post(this)
             }
             return
         }
@@ -70,7 +71,7 @@ class PlayCommand : Command(
         val query = event.vararg<String>(0).joinToString(" ").let {
             if (it.isValidUrl()) it
             else "ytsearch:$it"
-        }
+        }.markdownSanitize()
 
         musicHandler.playerManager.loadItemOrdered(musicManager, query, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) {
@@ -86,7 +87,7 @@ class PlayCommand : Command(
                     type(CommandReply.Type.SUCCESS)
                     title(message)
                     footer()
-                    send()
+                    event.thread.post(this)
                 }
             }
 
@@ -104,7 +105,7 @@ class PlayCommand : Command(
                     type(CommandReply.Type.SUCCESS)
                     title(message)
                     footer()
-                    send()
+                    event.thread.post(this)
                 }
             }
 
@@ -113,7 +114,7 @@ class PlayCommand : Command(
                     type(CommandReply.Type.EXCEPTION)
                     title("No matches were found for `$query`")
                     footer()
-                    send()
+                    event.thread.post(this)
                 }
             }
 
@@ -122,7 +123,7 @@ class PlayCommand : Command(
                     type(CommandReply.Type.EXCEPTION)
                     title("Something went wrong when loading that track, ${exception.cause}")
                     footer()
-                    send()
+                    event.thread.post(this)
                 }
             }
         })

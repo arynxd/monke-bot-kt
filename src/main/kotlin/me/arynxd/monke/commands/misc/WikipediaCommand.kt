@@ -49,7 +49,7 @@ class WikipediaCommand : Command(
                         key = "command.wiki.response.not_found"
                     )
                 )
-                send()
+                event.thread.post(this)
             }
             return
         }
@@ -67,7 +67,7 @@ class WikipediaCommand : Command(
             title(page.getTitle())
             description(page.getExtract().toString())
             footer(lastEdited)
-            send()
+            event.thread.post(this)
         }
     }
 }

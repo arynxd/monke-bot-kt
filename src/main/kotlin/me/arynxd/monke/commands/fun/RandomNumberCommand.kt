@@ -52,7 +52,7 @@ class RandomNumberCommand : Command(
                     )
                 )
                 footer()
-                send()
+                event.thread.post(this)
             }
             return
         }
@@ -61,7 +61,7 @@ class RandomNumberCommand : Command(
             type(CommandReply.Type.SUCCESS)
             title("I choose ${Random.nextLong(lowerBound, upperBound)}!")
             footer()
-            send()
+            event.thread.post(this)
         }
     }
 }

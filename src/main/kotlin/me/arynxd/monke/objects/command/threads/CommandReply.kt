@@ -2,6 +2,7 @@ package me.arynxd.monke.objects.command.threads
 
 import dev.minn.jda.ktx.Embed
 import dev.minn.jda.ktx.await
+import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import me.arynxd.monke.util.ERROR_EMBED_COLOUR
@@ -10,11 +11,19 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.User
 import java.time.Instant
 
 const val TYPE_NOT_SET_ERROR = "Type is not set"
 
-class CommandReply(val event: CommandEvent) {
+class CommandReply(val message: Message, val channel: TextChannel, val user: User, val monke: Monke) {
+    constructor(event: CommandEvent) : this(
+        message = event.message,
+        channel = event.channel,
+        user = event.user,
+        monke = event.monke
+    )
+
     private val embed = EmbedBuilder()
     private val mentions = mutableListOf<Message.MentionType>()
     private var type = Type.UNKNOWN
@@ -28,7 +37,7 @@ class CommandReply(val event: CommandEvent) {
             throw IllegalArgumentException("IDs were empty")
         }
 
-        event.channel.editMessageById(messageIds[0], embed.build())
+        channel.editMessageById(messageIds[0], embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
             .override(true)
@@ -37,12 +46,31 @@ class CommandReply(val event: CommandEvent) {
         doDelete(messageIds)
     }
 
+    suspend fun replaceAwait(messageIds: List<Long>): Message {
+        if (type == Type.UNKNOWN) {
+            throw IllegalStateException(TYPE_NOT_SET_ERROR)
+        }
+
+        if (messageIds.isEmpty()) {
+            throw IllegalArgumentException("IDs were empty")
+        }
+
+        val message = channel.editMessageById(messageIds[0], embed.build())
+            .mentionRepliedUser(false)
+            .allowedMentions(mentions)
+            .override(true)
+            .await()
+
+        doDelete(messageIds)
+        return message
+    }
+
     fun send(callback: ((Message) -> Unit) = {}) {
         if (type == Type.UNKNOWN) {
             throw IllegalStateException(TYPE_NOT_SET_ERROR)
         }
 
-        event.message.reply(embed.build())
+        message.reply(embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
             .queue(callback)
@@ -53,7 +81,7 @@ class CommandReply(val event: CommandEvent) {
             throw IllegalStateException(TYPE_NOT_SET_ERROR)
         }
 
-        return event.message.reply(embed.build())
+        return message.reply(embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
             .override(true)
@@ -89,7 +117,7 @@ class CommandReply(val event: CommandEvent) {
 
     fun timestamp(time: Instant = Instant.now()) = embed.setTimestamp(time)
 
-    fun footer(text: String = event.user.asTag, url: String = event.user.effectiveAvatarUrl) =
+    fun footer(text: String = user.asTag, url: String = user.effectiveAvatarUrl) =
         embed.setFooter(text.take(MessageEmbed.TEXT_MAX_LENGTH), url)
 
     fun thumbnail(url: String?) = embed.setThumbnail(url)
@@ -101,7 +129,7 @@ class CommandReply(val event: CommandEvent) {
     fun mentions(vararg mentions: Message.MentionType) = this.mentions.addAll(mentions)
 
     fun chunks(parts: List<Any>) = parts.forEach {
-        event.message.reply(it.toString())
+       message.reply(it.toString())
             .mentionRepliedUser(false)
             .override(true )
             .allowedMentions(mentions)
@@ -150,7 +178,7 @@ class CommandReply(val event: CommandEvent) {
 
     private fun doReply(parts: List<Any>, callback: (Message) -> Unit) {
         for (part in parts) {
-            event.message.reply(part.toString())
+            message.reply(part.toString())
                 .mentionRepliedUser(false)
                 .allowedMentions(mentions)
                 .override(true)
@@ -162,7 +190,7 @@ class CommandReply(val event: CommandEvent) {
 
     private fun doEdit(ids: List<Long>, parts: List<Any>, callback: (Message) -> Unit) {
         for ((i, id) in ids.withIndex()) {
-            event.channel.editMessageById(id, parts[i].toString())
+            channel.editMessageById(id, parts[i].toString())
                 .mentionRepliedUser(false)
                 .allowedMentions(mentions)
                 .override(true)
@@ -176,10 +204,10 @@ class CommandReply(val event: CommandEvent) {
         val toDelete = sentIds.map { it.toString() }.toMutableList()
         toDelete.removeAt(0) //Leave 1 reply
         if (toDelete.size >= 2) {
-            event.channel.deleteMessagesByIds(toDelete.subList(1, toDelete.size)).queue()
+            channel.deleteMessagesByIds(toDelete.subList(1, toDelete.size)).queue()
         }
         else if (toDelete.size >= 1) {
-            event.channel.deleteMessageById(toDelete.first()).queue()
+            channel.deleteMessageById(toDelete.first()).queue()
         }
     }
 

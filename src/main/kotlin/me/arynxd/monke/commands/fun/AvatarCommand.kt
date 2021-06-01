@@ -44,7 +44,7 @@ class AvatarCommand : Command(
             )
             image(user.effectiveAvatarUrl, 2048)
             footer()
-            send()
+            event.thread.post(this)
         }
     }
 }

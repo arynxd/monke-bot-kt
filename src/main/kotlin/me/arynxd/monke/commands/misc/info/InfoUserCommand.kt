@@ -51,7 +51,7 @@ class InfoUserCommand(parent: Command) : SubCommand(
 
             footer()
             thumbnail(member.user.effectiveAvatarUrl)
-            send()
+            event.thread.post(this)
         }
     }
 

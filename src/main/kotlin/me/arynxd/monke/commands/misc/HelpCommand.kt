@@ -82,7 +82,7 @@ class HelpCommand : Command(
             title("$keywordFor $prefix${command.getName(language)}")
             fields(fields)
             footer()
-            send()
+            event.thread.post(this)
         }
     }
 

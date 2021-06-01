@@ -37,7 +37,7 @@ class CatCommand : Command(
                     )
                 )
                 footer()
-                send()
+                event.thread.post(this)
             }
             return
         }

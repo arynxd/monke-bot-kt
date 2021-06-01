@@ -28,7 +28,7 @@ class PingCommand : Command(
             description(description)
             footer()
             var time = System.currentTimeMillis()
-            val message = await()
+            val message = event.thread.awaitPost(this)
             time = System.currentTimeMillis() - time
             description(description + "\n\n **Message**: ${time}ms")
             message.editMessage(build()).queue()

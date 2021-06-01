@@ -49,14 +49,13 @@ class JsonCommand : Command(
                 }```"
             }
 
-            val resp = event.replyAsync {
+            event.replyAsync {
                 type(CommandReply.Type.SUCCESS)
                 footer()
+                event.thread.postChunks(this, json)
             }
-
-            event.thread.postChunks(resp, json)
         }.queue(null) {
-            val resp = event.replyAsync {
+            event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     translate(
@@ -65,9 +64,8 @@ class JsonCommand : Command(
                     )
                 )
                 footer()
+                event.thread.post(this)
             }
-
-            event.thread.post(resp)
         }
     }
 }

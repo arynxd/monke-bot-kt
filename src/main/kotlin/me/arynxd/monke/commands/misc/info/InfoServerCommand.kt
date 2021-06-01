@@ -59,7 +59,7 @@ class InfoServerCommand(parent: Command) : SubCommand(
             field(emotes, getEmoteString(guild, language), false)
             thumbnail(guild.iconUrl)
             footer()
-            send()
+            event.thread.post(this)
         }
     }
 

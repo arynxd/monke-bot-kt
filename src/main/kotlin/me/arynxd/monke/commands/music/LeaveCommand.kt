@@ -28,7 +28,7 @@ class LeaveCommand : Command(
 ) {
     override fun runSync(event: CommandEvent) {
         val audioManager = event.guild.audioManager
-        val musicHandler = event.monke.handlers.get(MusicHandler::class)
+        val musicHandler = event.monke.handlers[MusicHandler::class]
         musicHandler.leaveChannel(event.guild)
 
         event.replyAsync {
@@ -43,7 +43,7 @@ class LeaveCommand : Command(
                 )
             )
             footer()
-            send()
+            event.thread.post(this)
         }
     }
 }

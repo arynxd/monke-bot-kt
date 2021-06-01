@@ -37,17 +37,17 @@ class CommandHandler(
 
         val contentRaw = event.message.contentRaw
 
-        val content = markdownSanitize(
-            when {
+        val content = when {
                 isBotMention(event) -> contentRaw.substring(contentRaw.indexOf(char = '>') + 1, contentRaw.length)
 
                 contentRaw.startsWith(prefix) -> contentRaw.substring(prefix.length, contentRaw.length)
 
-                contentRaw.startsWith(prefix.repeat(1)) -> return //TODO: fix this check
+                contentRaw.startsWith(prefix.repeat(1)) -> return 
 
                 else -> return
             }
-        ).replace(SUBSTITUTION_REGEX, "")
+            .markdownSanitize()
+            .replace(SUBSTITUTION_REGEX, "")
 
         val args = content.split(spaceRegex)
             .filter { it.isNotBlank() }
@@ -61,10 +61,16 @@ class CommandHandler(
         val command = commandMap[query]
 
         if (command == null) {
+            val message = event.message
             val language = monke.handlers[GuildDataHandler::class].getData(event.guild.idLong).language
-            CommandReply.sendError(
-                message = event.message,
-                text = translate(
+            val thread = event.monke.handlers[CommandThreadHandler::class].getOrNew(message.idLong)
+            val channel = event.channel
+            val user = event.user
+
+            val reply = CommandReply(message, channel, user, monke)
+            reply.type(CommandReply.Type.EXCEPTION)
+            reply.description(
+                translate(
                     language = language,
                     key = "command_error.command_not_found",
                     values = arrayOf(
@@ -73,6 +79,7 @@ class CommandHandler(
                     )
                 )
             )
+            thread.post(reply)
             return
         }
 

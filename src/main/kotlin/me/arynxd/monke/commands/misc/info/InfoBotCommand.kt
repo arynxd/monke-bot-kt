@@ -47,7 +47,7 @@ class InfoBotCommand(parent: Command) : SubCommand(
             field(uptime, monke.getUptimeString(), true)
 
             footer()
-            send()
+            event.thread.post(this)
         }
     }
 }

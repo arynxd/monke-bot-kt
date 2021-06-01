@@ -36,7 +36,7 @@ class PauseCommand : Command(
                 type(CommandReply.Type.SUCCESS)
                 title("Un-paused the player")
                 footer()
-                send()
+                event.thread.post(this)
             }
             musicManager.player.isPaused = false
             return
@@ -46,7 +46,7 @@ class PauseCommand : Command(
             type(CommandReply.Type.SUCCESS)
             title("Paused the player")
             footer()
-            send()
+            event.thread.post(this)
         }
         musicManager.player.isPaused = true
     }

@@ -55,7 +55,7 @@ class GoogleCommand : Command(
                     )
                 )
                 footer()
-                send()
+                event.thread.post(this)
             }
             return@withContext
         }
@@ -65,7 +65,7 @@ class GoogleCommand : Command(
             title("*${names[0].text()}*")
             description("${links[0].attr("href")} \n\n ${descriptions[0].text()}")
             footer()
-            send()
+            event.thread.post(this)
         }
     }
 }

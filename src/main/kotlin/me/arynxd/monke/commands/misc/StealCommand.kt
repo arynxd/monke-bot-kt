@@ -64,7 +64,7 @@ class StealCommand : Command(
                         key = "command_error.rate_limited"
                     )
                 )
-                send()
+                event.thread.post(this)
             }
             return
         }
@@ -79,7 +79,7 @@ class StealCommand : Command(
                         values = arrayOf(url)
                     )
                 )
-                send()
+                event.thread.post(this)
             }
             return
         }
@@ -95,7 +95,7 @@ class StealCommand : Command(
                             values = arrayOf(it.asMention)
                         )
                     )
-                    send()
+                    event.thread.post(this)
                     limiter.take(RateLimitedAction.EMOJI_CREATE)
                 }
             },
@@ -109,7 +109,7 @@ class StealCommand : Command(
                             values = arrayOf(url)
                         )
                     )
-                    send()
+                    event.thread.post(this)
                 }
             }
         )

@@ -46,7 +46,7 @@ class UwUCommand : Command(
             type(CommandReply.Type.SUCCESS)
             description(sentence)
             footer()
-            send()
+            event.thread.post(this)
         }
     }
 }

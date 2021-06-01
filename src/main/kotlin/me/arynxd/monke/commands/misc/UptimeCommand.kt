@@ -23,7 +23,7 @@ class UptimeCommand : Command(
             type(CommandReply.Type.SUCCESS)
             title("$uptime: ${event.monke.getUptimeString()}")
             footer()
-            send()
+            event.thread.post(this)
         }
     }
 }

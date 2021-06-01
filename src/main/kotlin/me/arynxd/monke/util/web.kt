@@ -77,7 +77,7 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
                 )
             )
             footer()
-            send()
+            event.thread.post(this)
         }
         return
     }
@@ -106,7 +106,7 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
         description(description)
         image(post.getURL())
         footer(footer)
-        send()
+        event.thread.post(this)
     }
 }
 

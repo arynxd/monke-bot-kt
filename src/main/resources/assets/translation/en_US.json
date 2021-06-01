@@ -390,6 +390,18 @@
         "cleared": "Cleared %0 message%1"
       }
     },
+    "cleanup": {
+      "name": "cleanup",
+      "description": "Cleans up the bot's message",
+      "aliases": "",
+
+      "argument": {
+        "amount": {
+          "name": "amount",
+          "description": "The amount of messages to check. Must be less than 25"
+        }
+      }
+    },
     "plugin": {
       "name": "plugin",
       "description": "Controls the currently running plugins.",

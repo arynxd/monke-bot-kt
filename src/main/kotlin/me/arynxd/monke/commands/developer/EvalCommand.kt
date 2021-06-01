@@ -185,7 +185,7 @@ class EvalCommand : Command(
         )
 
         reply.footer()
-        reply.send()
+        event.thread.post(reply)
     }
 
     private suspend fun doEval(code: String, language: Language, client: OkHttpClient): Pair<String, Boolean> {

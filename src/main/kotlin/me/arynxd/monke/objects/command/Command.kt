@@ -12,6 +12,7 @@ abstract class Command(
 ) {
     suspend fun isExecutable(commandEvent: CommandEvent): Boolean {
         val language = commandEvent.language()
+        val thread = commandEvent.thread
 
         if (hasFlag(CommandFlag.DISABLED) || metaData.isDisabled) {
             commandEvent.reply {
@@ -23,7 +24,7 @@ abstract class Command(
                     )
                 )
                 footer()
-                send()
+                thread.post(this)
             }
             return false
         }
@@ -38,7 +39,7 @@ abstract class Command(
                     )
                 )
                 footer()
-                send()
+                thread.post(this)
             }
             return false
         }
@@ -53,7 +54,7 @@ abstract class Command(
                     )
                 )
                 footer()
-                send()
+                thread.post(this)
             }
             return false
         }
@@ -71,7 +72,7 @@ abstract class Command(
                     )
                 )
                 footer()
-                send()
+                thread.post(this)
             }
             return false
         }
@@ -89,17 +90,17 @@ abstract class Command(
                     )
                 )
                 footer()
-                send()
+                thread.post(this)
             }
             return false
         }
 
         val cooldown = "%.2f".format(
-            commandEvent.monke.handlers.get(CooldownHandler::class)
+            commandEvent.monke.handlers[CooldownHandler::class]
                 .getRemaining(commandEvent.user, commandEvent.command) / 1000F
         )
 
-        val isOnCooldown = commandEvent.monke.handlers.get(CooldownHandler::class)
+        val isOnCooldown = commandEvent.monke.handlers[CooldownHandler::class]
             .isOnCooldown(commandEvent.user, commandEvent.command)
 
         if (isOnCooldown) {
@@ -113,7 +114,7 @@ abstract class Command(
                     )
                 )
                 footer()
-                send()
+                thread.post(this)
             }
             return false
         }
@@ -146,7 +147,7 @@ abstract class Command(
                     )
                 )
                 footer()
-                send()
+                thread.post(this)
             }
             return false
         }
@@ -176,7 +177,7 @@ abstract class Command(
                     )
                 )
                 footer()
-                send()
+                thread.post(this)
             }
 
             return false

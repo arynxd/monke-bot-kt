@@ -24,8 +24,7 @@ class ShutdownCommand : Command(
                     key = "command.shutdown.response.success"
                 )
             )
-            footer()
-            await()
+            event.thread.awaitPost(this)
         }
 
         event.monke.handlers.disableHandlers()

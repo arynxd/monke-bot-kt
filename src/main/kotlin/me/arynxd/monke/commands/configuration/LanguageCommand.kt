@@ -33,7 +33,7 @@ class LanguageCommand : Command(
         val language = cache.language
 
         if (!event.isArgumentPresent(0)) {
-            val resp = event.replyAsync {
+            event.replyAsync {
                     type(CommandReply.Type.INFORMATION)
                     title(
                         translate(
@@ -43,14 +43,14 @@ class LanguageCommand : Command(
                         )
                     )
                     footer()
+                    event.thread.post(this)
                 }
-            event.thread.post(resp)
             return
         }
 
         val newLanguage = event.argument<Language>(0)
         if (language == newLanguage) {
-            val resp = event.replyAsync {
+            event.replyAsync {
                 type(CommandReply.Type.INFORMATION)
                 title(
                     translate(
@@ -60,13 +60,12 @@ class LanguageCommand : Command(
                     )
                 )
                 footer()
+                event.thread.post(this)
             }
-
-            event.thread.post(resp)
             return
         }
 
-        val resp = event.replyAsync {
+        event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title(
                 translate(
@@ -77,8 +76,7 @@ class LanguageCommand : Command(
             )
             footer()
             cache.language = newLanguage
+            event.thread.post(this)
         }
-
-        event.thread.post(resp)
     }
 }

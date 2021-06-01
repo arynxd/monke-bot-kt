@@ -42,7 +42,7 @@ class PrefixCommand : Command(
                         values = arrayOf(cache.prefix)
                     )
                 )
-                send()
+                event.thread.post(this)
             }
             return
         }
@@ -59,7 +59,7 @@ class PrefixCommand : Command(
                         values = arrayOf(prefix)
                     )
                 )
-                send()
+                event.thread.post(this)
             }
             return
         }
@@ -73,7 +73,7 @@ class PrefixCommand : Command(
                     values = arrayOf(prefix)
                 )
             )
-            send()
+            event.thread.post(this)
             cache.prefix = prefix
         }
     }

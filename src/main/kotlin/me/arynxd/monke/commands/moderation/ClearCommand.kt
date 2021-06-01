@@ -1,5 +1,11 @@
 package me.arynxd.monke.commands.moderation
 
+import dev.minn.jda.ktx.asFlow
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.take
 import me.arynxd.monke.handlers.RateLimitHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
@@ -39,6 +45,7 @@ class ClearCommand : Command(
     override fun runSync(event: CommandEvent) {
         val limiter = event.monke.handlers[RateLimitHandler::class].getRateLimiter(event.guildIdLong)
         val language = event.language()
+        val thread = event.thread
 
         if (!limiter.canTake(RateLimitedAction.BULK_DELETE)) {
             val resp = event.replyAsync {
@@ -55,8 +62,10 @@ class ClearCommand : Command(
             return
         }
 
+        val amount = event.argument<Int>(0)
+        val amountToTake = if (thread.hasPosts) amount + 2 else amount + 1
         event.channel.iterableHistory
-            .takeAsync(event.argument<Int>(0) + 2) //Account for 1 based indexing from the user + ignoring the users message
+            .takeAsync(amountToTake) //Account for 1 based indexing from the user + ignoring the users message
             .thenApply { list ->
                 list.filter { //Dont remove the original message + our reply if one exists as we need to reply to it
                     it.idLong != event.message.idLong && !event.thread.responseIds.contains(it.idLong)
@@ -64,23 +73,23 @@ class ClearCommand : Command(
             }
             .thenAccept {
                 event.channel.purgeMessages(it)
-                val resp = event.replyAsync {
+                event.replyAsync {
                     type(CommandReply.Type.SUCCESS)
                     title(
                         translate(
                             language = language,
                             key = "command.clear.response.cleared",
                             values = arrayOf(
-                                it.size,
-                                it.size.plurify()
+                                amount,
+                                amount.plurify()
                             )
                         )
                     )
                     footer()
                     limiter.take(RateLimitedAction.BULK_DELETE)
+                    event.thread.post(this)
                 }
-
-                event.thread.post(resp)
             }
+
     }
 }

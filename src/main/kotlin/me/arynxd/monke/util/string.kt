@@ -69,5 +69,4 @@ fun String.prettyPrintJson(): String {
 
 fun splitStringCodeblock(input: String): List<String> = input.chunked(Message.MAX_CONTENT_LENGTH - 20)
 
-fun markdownSanitize(input: String): String =
-    MarkdownSanitizer.sanitize(input, MarkdownSanitizer.SanitizationStrategy.REMOVE)
+fun String.markdownSanitize() = MarkdownSanitizer.sanitize(this, MarkdownSanitizer.SanitizationStrategy.REMOVE)
