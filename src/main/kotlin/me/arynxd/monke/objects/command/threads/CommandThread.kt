@@ -2,6 +2,7 @@ package me.arynxd.monke.objects.command.threads
 
 import me.arynxd.monke.handlers.CommandThreadHandler
 import me.arynxd.monke.objects.command.CommandEvent
+import net.dv8tion.jda.api.entities.TextChannel
 
 class CommandThread(val messageId: Long, val responseIds: List<Long>) {
     fun post(reply: CommandReply) {
@@ -23,9 +24,9 @@ class CommandThread(val messageId: Long, val responseIds: List<Long>) {
 
     fun postChunks(reply: CommandReply, chunks: List<Any>) {
         reply.replaceChunks(responseIds, chunks) {
-            reply.event.monke.handlers[CommandThreadHandler::class].put(
-                CommandThread(messageId, it)
-            )
+            val ids = (responseIds + it).distinct()
+            val thread = CommandThread(messageId, ids)
+            reply.event.monke.handlers[CommandThreadHandler::class].put(thread)
         }
     }
 }

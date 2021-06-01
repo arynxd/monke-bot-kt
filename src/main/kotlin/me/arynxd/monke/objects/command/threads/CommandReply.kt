@@ -9,6 +9,7 @@ import me.arynxd.monke.util.SUCCESS_EMBED_COLOUR
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.TextChannel
 import java.time.Instant
 
 const val TYPE_NOT_SET_ERROR = "Type is not set"
@@ -27,10 +28,10 @@ class CommandReply(val event: CommandEvent) {
             throw IllegalArgumentException("IDs were empty")
         }
 
-        println(messageIds)
         event.channel.editMessageById(messageIds[0], embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
+            .override(true)
             .queue(callback)
 
         doDelete(messageIds)
@@ -55,6 +56,7 @@ class CommandReply(val event: CommandEvent) {
         return event.message.reply(embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
+            .override(true)
             .await()
     }
 
@@ -101,6 +103,7 @@ class CommandReply(val event: CommandEvent) {
     fun chunks(parts: List<Any>) = parts.forEach {
         event.message.reply(it.toString())
             .mentionRepliedUser(false)
+            .override(true )
             .allowedMentions(mentions)
             .queue()
     }
@@ -115,63 +118,68 @@ class CommandReply(val event: CommandEvent) {
         var idCount = 0
 
         if (messageIds.size > parts.size) {
-            val sub = messageIds.subList(0, parts.size)
-
-            for ((i, id) in sub.withIndex()) {
-                event.channel.editMessageById(id, parts[i].toString())
-                    .mentionRepliedUser(false)
-                    .allowedMentions(mentions)
-                    .queue {
-                        idCount++
-                        if (idCount >= target) {
-                            gatheredIds.add(it.idLong)
-                            doDelete(gatheredIds)
-                            callback(gatheredIds)
-                        }
-                        it.suppressEmbeds(true).queue()
-                    }
+            doEdit(messageIds.subList(0, parts.size), parts) {
+                idCount++
+                if (idCount >= target) {
+                    gatheredIds.add(it.idLong)
+                    callback(gatheredIds)
+                    doDelete(gatheredIds)
+                }
             }
+            doDelete(messageIds.subList(parts.size, messageIds.size))
         }
         else {
-            for ((i, id) in messageIds.withIndex()) {
-                event.channel.editMessageById(id, parts[i].toString())
-                    .mentionRepliedUser(false)
-                    .allowedMentions(mentions)
-                    .queue {
-                        idCount++
-                        if (idCount >= target) {
-                            gatheredIds.add(it.idLong)
-                            doDelete(gatheredIds)
-                            callback(gatheredIds)
-                        }
-                        it.suppressEmbeds(true).queue()
-                    }
+            doEdit(messageIds, parts) {
+                idCount++
+                if (idCount >= target) {
+                    gatheredIds.add(it.idLong)
+                    callback(gatheredIds)
+                    doDelete(gatheredIds)
+                }
             }
-            for (part in parts.subList(messageIds.size, parts.size)) {
-                event.message.reply(part.toString())
-                    .mentionRepliedUser(false)
-                    .allowedMentions(mentions)
-                    .queue {
-                        idCount++
-                        if (idCount >= target) {
-                            gatheredIds.add(it.idLong)
-                            doDelete(gatheredIds)
-                            callback(gatheredIds)
-                        }
-                        it.suppressEmbeds(true).queue()
-                    }
+            doReply(parts.subList(messageIds.size, parts.size)) {
+                idCount++
+                if (idCount >= target) {
+                    gatheredIds.add(it.idLong)
+                    callback(gatheredIds)
+                    doDelete(gatheredIds)
+                }
             }
         }
     }
 
-    private fun doDelete(sentIds: List<Long>) {
-        val toDelete = sentIds.map { it.toString() }
-        if (toDelete.size > 1) { //Only if there's extra replies to delete
-            event.channel.deleteMessageById(toDelete.first()).queue()
+    private fun doReply(parts: List<Any>, callback: (Message) -> Unit) {
+        for (part in parts) {
+            event.message.reply(part.toString())
+                .mentionRepliedUser(false)
+                .allowedMentions(mentions)
+                .override(true)
+                .queue {
+                    callback(it)
+                }
         }
-        else if (toDelete.size >= 2) {
-                                                //Dont delete the current reply
+    }
+
+    private fun doEdit(ids: List<Long>, parts: List<Any>, callback: (Message) -> Unit) {
+        for ((i, id) in ids.withIndex()) {
+            event.channel.editMessageById(id, parts[i].toString())
+                .mentionRepliedUser(false)
+                .allowedMentions(mentions)
+                .override(true)
+                .queue {
+                    callback(it)
+                }
+        }
+    }
+
+    private fun doDelete(sentIds: List<Long>) {
+        val toDelete = sentIds.map { it.toString() }.toMutableList()
+        toDelete.removeAt(0) //Leave 1 reply
+        if (toDelete.size >= 2) {
             event.channel.deleteMessagesByIds(toDelete.subList(1, toDelete.size)).queue()
+        }
+        else if (toDelete.size >= 1) {
+            event.channel.deleteMessageById(toDelete.first()).queue()
         }
     }
 

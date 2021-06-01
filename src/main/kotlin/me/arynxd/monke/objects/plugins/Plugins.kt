@@ -93,7 +93,7 @@ class Plugins(val monke: Monke) {
                 exception
             )
             plugin.onDisable()
-            monke.handlers.get(ExceptionHandler::class)
+            monke.handlers[ExceptionHandler::class]
                 .handle(exception, "A plugin had an uncaught exception")
             return
         }
