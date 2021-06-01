@@ -42,7 +42,7 @@ class CommandHandler(
 
                 contentRaw.startsWith(prefix) -> contentRaw.substring(prefix.length, contentRaw.length)
 
-                contentRaw.startsWith(prefix.repeat(1)) -> return 
+                contentRaw.startsWith(prefix.repeat(1)) -> return
 
                 else -> return
             }

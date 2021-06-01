@@ -67,8 +67,8 @@ class PlayCommand : Command(
             return
         }
 
-
-        val query = event.vararg<String>(0).joinToString(" ").let {
+        val vararg = event.vararg<String>(0).joinToString(" ")
+        val query = vararg.let {
             if (it.isValidUrl()) it
             else "ytsearch:$it"
         }.markdownSanitize()
@@ -112,7 +112,7 @@ class PlayCommand : Command(
             override fun noMatches() {
                 event.replyAsync {
                     type(CommandReply.Type.EXCEPTION)
-                    title("No matches were found for `$query`")
+                    title("No matches were found for `$vararg`")
                     footer()
                     event.thread.post(this)
                 }

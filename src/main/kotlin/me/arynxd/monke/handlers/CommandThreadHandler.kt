@@ -42,5 +42,5 @@ class CommandThreadHandler(
 
 //No idea why the compiler wants this but whatever
 private operator fun <K, V> LoadingCache<K, V>.set(messageId: K, value: V) {
-    this[messageId] = value
+    this.put(messageId, value)
 }
