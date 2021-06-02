@@ -1,11 +1,9 @@
-package me.arynxd.monke.objects
+package me.arynxd.monke.util
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import me.arynxd.monke.objects.handlers.LOGGER
-import me.arynxd.monke.util.loadResource
-import me.arynxd.monke.util.readFully
 import java.lang.IllegalStateException
 
 object EmojiValidator {

@@ -17,7 +17,7 @@ class TranslationHandler(
     override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
 ) : Handler() {
     override fun onEnable() {
-        val lang = Language.getLanguageByName(monke.handlers.get(ConfigHandler::class).config.preferredLanguage)
+        val lang = Language.getLanguageByName(monke.handlers[ConfigHandler::class].config.preferredLanguage)
         if (lang == null) {
             LOGGER.warn("Language specified in the config file was invalid, falling back to defaults.")
             internalLanguage = Language.DEFAULT

@@ -23,7 +23,7 @@ repositories {
 dependencies {
     //Kotlin
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
-    implementation "ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0"
+    implementation 'ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0'
 
     //Prometheus
     implementation 'io.prometheus:simpleclient:0.10.0'
@@ -32,9 +32,9 @@ dependencies {
 
     //Database
     implementation 'org.postgresql:postgresql:42.2.18'
-    implementation "org.ktorm:ktorm-core:3.3.0"
+    implementation 'org.ktorm:ktorm-core:3.3.0'
     implementation 'com.zaxxer:HikariCP:4.0.2'
-    implementation "org.ktorm:ktorm-support-postgresql:3.3.0"
+    implementation 'org.ktorm:ktorm-support-postgresql:3.3.0'
 
     //Discord
     implementation 'net.dv8tion:JDA:4.2.1_253'
@@ -43,11 +43,12 @@ dependencies {
     implementation 'club.minnced:discord-webhooks:0.5.6'
 
     //Util
-    implementation "ch.qos.logback:logback-classic:1.2.3"
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
     implementation 'org.reflections:reflections:0.9.12'
     implementation 'org.jetbrains.kotlin:kotlin-scripting-jsr223:1.4.30'
     implementation 'com.github.ben-manes.caffeine:caffeine:3.0.0'
     implementation 'org.jsoup:jsoup:1.13.1'
+    implementation 'com.kotcrab.remark:remark:1.2.0'
 }
 
 compileKotlin {

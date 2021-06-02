@@ -2,12 +2,11 @@ package me.arynxd.monke
 
 import me.arynxd.monke.events.JDAEvents
 import me.arynxd.monke.handlers.*
-import me.arynxd.monke.objects.EmojiValidator
+import me.arynxd.monke.util.EmojiValidator
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.plugins.Plugins
 import me.arynxd.monke.util.Debuggable
-import me.arynxd.monke.util.debug
 import me.arynxd.monke.util.parseUptime
 import me.arynxd.monke.util.plurify
 import net.dv8tion.jda.api.JDA

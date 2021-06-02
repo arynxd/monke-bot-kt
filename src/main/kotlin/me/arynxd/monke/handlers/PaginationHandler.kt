@@ -5,7 +5,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import me.arynxd.monke.Monke
-import me.arynxd.monke.objects.Paginator
+import me.arynxd.monke.util.Paginator
 import me.arynxd.monke.objects.handlers.Handler
 import kotlin.reflect.KClass
 

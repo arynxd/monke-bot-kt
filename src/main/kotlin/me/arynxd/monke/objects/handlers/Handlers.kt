@@ -20,8 +20,8 @@ val LOGGER: Logger = LoggerFactory.getLogger(Monke::class.java)
 class Handlers(val monke: Monke) {
     private val reflections = Reflections(HANDLER_PACKAGE, SubTypesScanner())
 
-    val handlers: Map<KClass<*>, Handler> = loadHandlers()
-    val okHttpClient: OkHttpClient = OkHttpClient()
+    val handlers = loadHandlers()
+    val okHttpClient = OkHttpClient()
 
     operator fun <T : Any> get(clazz: KClass<T>): T {
         if (!handlers.containsKey(clazz)) {

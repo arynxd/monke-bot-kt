@@ -1,6 +1,6 @@
 package me.arynxd.monke.objects.argument.types
 
-import me.arynxd.monke.objects.EmojiValidator
+import me.arynxd.monke.util.EmojiValidator
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.command.CommandEvent

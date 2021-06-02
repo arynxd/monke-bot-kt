@@ -4,7 +4,7 @@ import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.CommandHandler
 import me.arynxd.monke.handlers.PaginationHandler
 import me.arynxd.monke.handlers.translate
-import me.arynxd.monke.objects.Paginator
+import me.arynxd.monke.util.Paginator
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentCommand
