@@ -152,6 +152,10 @@
         "int-test": {
           "name": "int-test",
           "description": "Test the int type. Must be greater than 0."
+        },
+        "emoji": {
+          "name": "emoji",
+          "description": "An emoji"
         }
       },
       "keyword": {

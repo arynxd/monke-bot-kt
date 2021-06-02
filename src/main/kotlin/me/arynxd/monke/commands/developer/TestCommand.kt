@@ -4,6 +4,9 @@ import dev.minn.jda.ktx.await
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.objects.argument.ArgumentConfiguration
+import me.arynxd.monke.objects.argument.Type
+import me.arynxd.monke.objects.argument.types.ArgumentEmoji
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
@@ -16,7 +19,16 @@ class TestCommand : Command(
         name = "test",
         description = "Tests the bot's basic functionality.",
         category = CommandCategory.DEVELOPER,
-        flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.SUSPENDING)
+        flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.SUSPENDING),
+
+        arguments = ArgumentConfiguration(
+            ArgumentEmoji(
+                name = "emoji",
+                description = "An emoji",
+                required = true,
+                type = Type.REGULAR
+            )
+        )
     )
 ) {
 
