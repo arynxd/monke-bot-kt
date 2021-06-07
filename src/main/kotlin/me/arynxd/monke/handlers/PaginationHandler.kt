@@ -26,14 +26,14 @@ class PaginationHandler(
             .filter { (it.key.lastUsed + 30_000) < System.currentTimeMillis() } //Has the paginator been left for 30 seconds
             .forEach {
                 it.key.delete()
-                it.value.cancel(translateInternal("cancel_reason.timeout"))
+                it.value.cancel(translateInternal { path = "cancel_reason.timeout" })
             }
     }
 
     override fun onDisable() {
         paginators.entries.forEach {
             it.key.delete()
-            it.value.cancel(translateInternal("cancel_reason.bot_shutdown"))
+            it.value.cancel(translateInternal { path = "cancel_reason.bot_shutdown" })
         }
     }
 }

@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.requests.ErrorResponse
+import net.dv8tion.jda.internal.utils.Checks
+import java.lang.IllegalArgumentException
 
 class Paginator(
     val monke: Monke,
@@ -22,12 +24,12 @@ class Paginator(
     var lastUsed = System.currentTimeMillis()
 
     suspend fun paginate() {
-        require(pages.isNotEmpty()) { translateInternal("internal_error.pagination_pages_empty") }
+        Checks.notEmpty(pages, "Pages")
 
         sentMessage = message.reply(pages.first()).mentionRepliedUser(false).await()
-        sentMessage.addReaction(Emoji.ARROW_LEFT.getAsReaction()).queue()
-        sentMessage.addReaction(Emoji.ARROW_RIGHT.getAsReaction()).queue()
-        sentMessage.addReaction(Emoji.WASTE_BASKET.getAsReaction()).queue()
+        sentMessage.addReaction(Emoji.ARROW_LEFT.asReaction).queue()
+        sentMessage.addReaction(Emoji.ARROW_RIGHT.asReaction).queue()
+        sentMessage.addReaction(Emoji.WASTE_BASKET.asReaction).queue()
 
         awaitReaction()
     }
@@ -45,19 +47,19 @@ class Paginator(
         }
 
         when (event.reactionEmote.emoji) {
-            Emoji.ARROW_LEFT.getAsReaction() -> {
+            Emoji.ARROW_LEFT.asReaction -> {
                 page--
                 event.reaction.removeReaction(author).queue()
                 changePage()
             }
 
-            Emoji.ARROW_RIGHT.getAsReaction() -> {
+            Emoji.ARROW_RIGHT.asReaction -> {
                 page++
                 event.reaction.removeReaction(author).queue()
                 changePage()
             }
 
-            Emoji.WASTE_BASKET.getAsReaction() -> sentMessage.delete().queue()
+            Emoji.WASTE_BASKET.asReaction -> sentMessage.delete().queue()
 
             else -> event.reaction.removeReaction(author).queue()
         }

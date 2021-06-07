@@ -20,6 +20,7 @@ import kotlin.reflect.KClass
 
 const val COMMAND_PACKAGE = "me.arynxd.monke.commands"
 val SUBSTITUTION_REGEX = Regex("(%[0-9]*)")
+val SPACE_REGEX = Regex("\\s+")
 
 class CommandHandler(
     override val monke: Monke,
@@ -29,7 +30,6 @@ class CommandHandler(
     )
 ) : Handler() {
     private val reflections = Reflections(COMMAND_PACKAGE, SubTypesScanner())
-    val spaceRegex = Regex("\\s+")
     val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
 
     fun handlePreprocessEvent(event: CommandPreprocessEvent) {
@@ -49,7 +49,7 @@ class CommandHandler(
             .markdownSanitize()
             .replace(SUBSTITUTION_REGEX, "")
 
-        val args = content.split(spaceRegex)
+        val args = content.split(SPACE_REGEX)
             .filter { it.isNotBlank() }
             .toMutableList()
 
@@ -70,14 +70,14 @@ class CommandHandler(
             val reply = CommandReply(message, channel, user, monke)
             reply.type(CommandReply.Type.EXCEPTION)
             reply.description(
-                translate(
-                    language = language,
-                    key = "command_error.command_not_found",
+                translate {
+                    lang = language
+                    path = "command_error.command_not_found"
                     values = arrayOf(
                         query,
                         prefix
                     )
-                )
+                }
             )
             thread.post(reply)
             return
@@ -208,20 +208,20 @@ class CommandHandler(
 
             if (instance !is Command) {
                 LOGGER.warn(
-                    translateInternal(
-                        "internal_error.non_command_class",
-                        cls.simpleName
-                    )
+                    translateInternal {
+                        path = "internal_error.non_command_class"
+                        values = arrayOf(cls.simpleName)
+                    }
                 )
                 continue
             }
 
             if (!registerCommand(instance, commands)) {
                 LOGGER.warn(
-                    translateInternal(
-                        "internal_error.duplicate_command",
-                        cls.simpleName
-                    )
+                    translateInternal {
+                        path = "internal_error.duplicate_command"
+                        values = arrayOf(cls.simpleName)
+                    }
                 )
             }
         }

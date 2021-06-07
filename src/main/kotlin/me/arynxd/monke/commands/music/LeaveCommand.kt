@@ -34,13 +34,13 @@ class LeaveCommand : Command(
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title(
-                translate(
-                    language = event.language,
-                    key = "music.channel_left",
+                translate{
+                    lang = event.language
+                    path = "music.channel_left"
                     values = arrayOf(
                         audioManager.connectedChannel?.name ?: throw IllegalStateException("Voice channel not present")
                     )
-                )
+                }
             )
             footer()
             event.thread.post(this)

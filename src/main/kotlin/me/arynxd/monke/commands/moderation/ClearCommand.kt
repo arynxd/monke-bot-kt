@@ -1,6 +1,7 @@
 package me.arynxd.monke.commands.moderation
 
 import dev.minn.jda.ktx.asFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
@@ -47,10 +48,10 @@ class ClearCommand : Command(
             val resp = event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command_error.rate_limited"
-                    )
+                    translate{
+                        lang = language
+                        path = "command_error.rate_limited"
+                    }
                 )
                 footer()
             }
@@ -70,14 +71,14 @@ class ClearCommand : Command(
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title(
-                translate(
-                    language = language,
-                    key = "command.clear.response.cleared",
+                translate {
+                    lang = language
+                    path = "command.clear.response.cleared"
                     values = arrayOf(
                         amount,
                         amount.plurify()
                     )
-                )
+                }
             )
             footer()
             limiter.take(RateLimitedAction.BULK_DELETE)

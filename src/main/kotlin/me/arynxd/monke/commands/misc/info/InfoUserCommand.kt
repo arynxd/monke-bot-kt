@@ -1,6 +1,8 @@
 package me.arynxd.monke.commands.misc.info
 
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.handlers.translateAll
+import me.arynxd.monke.handlers.translationStep
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentMember
@@ -33,13 +35,24 @@ class InfoUserCommand(parent: Command) : SubCommand(
 
         val language = event.language
 
-        val information = translate(language, "command.info.keyword.information_for_user")
-        val boosting = translate(language, "command.info.keyword.boosting_since")
-        val notBoosting = translate(language, "command.info.keyword.not_boosting")
-        val joinedAt = translate(language, "command.info.keyword.joined_at")
-        val createdAt = translate(language, "command.info.keyword.created_at")
-        val roles = translate(language, "command.info.keyword.roles")
-        val noRoles = translate(language, "command.info.keyword.no_roles")
+        val translations = translateAll(language,
+                translationStep { path = "command.info.keyword.information_for_user" },
+                translationStep { path = "command.info.keyword.boosting_since" },
+                translationStep { path = "command.info.keyword.not_boosting" },
+
+                translationStep { path = "command.info.keyword.joined_at" },
+                translationStep { path = "command.info.keyword.created_at" },
+                translationStep { path = "command.info.keyword.roles" },
+                translationStep { path = "command.info.keyword.no_roles" }
+            )
+
+        val information = translations[0]
+        val boosting = translations[1]
+        val notBoosting = translations[2]
+        val joinedAt = translations[3]
+        val createdAt = translations[4]
+        val roles = translations[5]
+        val noRoles = translations[6]
 
         event.replyAsync {
             type(CommandReply.Type.INFORMATION)

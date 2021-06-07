@@ -8,7 +8,6 @@
     "invalid_login": "The token provided was invalid! If you just launched the bot, the config file should have been created now.",
     "invalid_build": "The selected configuration was invalid, this could be due to missing intents or a mistake by the developer!",
     "web_service_error": "%0 didn't provide any valid data in their response.",
-    "pagination_pages_empty": "Cannot paginate with no pages.",
     "language_key_not_found": "Key %0 does not exist for language %1,",
     "language_not_found": "Language %0 not found."
   },

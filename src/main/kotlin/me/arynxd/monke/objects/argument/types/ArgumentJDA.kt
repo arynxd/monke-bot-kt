@@ -2,9 +2,9 @@ package me.arynxd.monke.objects.argument.types
 
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.objects.argument.Argument
-import me.arynxd.monke.objects.argument.ArgumentBuilder
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.util.equalsIgnoreCase
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
@@ -19,7 +19,7 @@ class ArgumentGuild(
 
 ) : Argument<Guild>() {
     override suspend fun convert(input: String, event: CommandEvent): Guild? {
-        if (input.equals("this", true)) {
+        if (input.equalsIgnoreCase("this")) {
             return event.guild
         }
 

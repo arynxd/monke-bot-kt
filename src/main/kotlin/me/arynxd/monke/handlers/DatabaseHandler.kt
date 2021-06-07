@@ -25,7 +25,7 @@ class DatabaseHandler(
 
     private fun getHikari(): HikariDataSource {
         val hikariConfig = HikariConfig()
-        val configuration = monke.handlers.get(ConfigHandler::class).config.database
+        val configuration = monke.handlers[ConfigHandler::class].config.database
 
         hikariConfig.driverClassName = configuration.driverName
         hikariConfig.jdbcUrl = configuration.jdbcURL
@@ -44,10 +44,10 @@ class DatabaseHandler(
         }
         catch (exception: IllegalArgumentException) {
             LOGGER.error(
-                translateInternal(
-                    key = "internal_error.database_offline",
+                translateInternal{
+                    path = "internal_error.database_offline"
                     values = arrayOf(exception)
-                )
+                }
             )
             exitProcess(1)
         }

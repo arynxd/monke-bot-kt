@@ -2,6 +2,9 @@ package me.arynxd.monke.commands.misc.info
 
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.handlers.translateAll
+import me.arynxd.monke.handlers.translationStep
+import me.arynxd.monke.objects.Emoji
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentGuild
@@ -35,22 +38,39 @@ class InfoServerCommand(parent: Command) : SubCommand(
         val guild = event.argument(0, event.guild)
         val language = event.language
 
-        val informationFor = translate(language, "command.info.keyword.information_for_server")
-        val isPartnered = translate(language, "command.info.keyword.is_partnered")
-        val isVerified = translate(language, "command.info.keyword.is_verified")
-        val isPublic = translate(language, "command.info.keyword.is_public")
-        val boostCount = translate(language, "command.info.keyword.boost_count")
-        val memberCount = translate(language, "command.info.keyword.member_count")
-        val createdAt = translate(language, "command.info.keyword.created_at")
-        val emotes = translate(language, "command.info.keyword.emotes")
+        val translations = translateAll(language,
+                translationStep { path = "command.info.keyword.information_for_server" },
+
+                translationStep { path = "command.info.keyword.is_partnered"},
+                translationStep { path = "command.info.keyword.is_verified" },
+                translationStep { path = "command.info.keyword.is_public" },
+                translationStep { path = "command.info.keyword.is_verified" },
+
+                translationStep { path = "command.info.keyword.boost_count" },
+                translationStep { path = "command.info.keyword.member_count" },
+                translationStep { path = "command.info.keyword.created_at" },
+
+                translationStep { path = "command.info.keyword.emotes" },
+            )
+
+        val informationFor = translations[0]
+
+        val isPartnered = translations[1]
+        val isVerified = translations[2]
+        val isPublic = translations[3]
+
+        val boostCount = translations[4]
+        val memberCount = translations[5]
+        val createdAt = translations[6]
+        val emotes = translations[7]
 
         event.reply {
             type(CommandReply.Type.INFORMATION)
             title("$informationFor **${guild.name}**")
 
-            field(isPartnered, getFeature(guild, "PARTNERED", language), true)
-            field(isVerified, getFeature(guild, "VERIFIED", language), true)
-            field(isPublic, getFeature(guild, "PUBLIC", language), true)
+            field(isPartnered, hasFeature(guild, "PARTNERED"), true)
+            field(isVerified, hasFeature(guild, "VERIFIED"), true)
+            field(isPublic, hasFeature(guild, "PUBLIC"), true)
 
             field(boostCount, guild.boostCount.toString(), true)
             field(memberCount, "${guild.memberCount} / ${guild.maxMembers}", true)
@@ -63,20 +83,20 @@ class InfoServerCommand(parent: Command) : SubCommand(
         }
     }
 
-    private fun getFeature(guild: Guild, feature: String, language: Language): String {
+    private fun hasFeature(guild: Guild, feature: String): String {
         return if (guild.features.contains(feature))
-            translate(language, "keyword.yes")
+            Emoji.ENABLED.asChat
         else
-            translate(language, "keyword.no")
+            Emoji.DISABLED.asChat
     }
 
     private suspend fun getEmoteString(guild: Guild, language: Language): String {
         val emotes = guild.retrieveEmotes().await()
         if (emotes.isEmpty()) {
-            return translate(language, "command.info.keyword.no_emotes")
+            return translate { lang = language; path = "command.info.keyword.no_emotes" }
         }
 
-        val none = translate(language, "keyword.none")
+        val none = translate { lang = language; path = "keyword.none" }
 
         val animated =
             if (emotes.none { it.isAnimated })
@@ -92,15 +112,15 @@ class InfoServerCommand(parent: Command) : SubCommand(
                 emotes.filter { !it.isAnimated }
                     .joinToString(separator = " ") { it.asMention }
 
-        return translate(
-            language = language,
-            key = "command.info.child.server.response.emote",
+        return translate {
+            lang = language
+            path = "command.info.child.server.response.emote"
             values = arrayOf(
                 emotes.size,
                 guild.maxEmotes,
                 animated,
                 regular
             )
-        )
+        }
     }
 }

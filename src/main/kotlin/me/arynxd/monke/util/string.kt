@@ -30,6 +30,8 @@ fun String.isValidUrl(): Boolean {
     }
 }
 
+fun String?.equalsIgnoreCase(other: String?) = this?.equals(other, true)?: false
+
 fun Int.plurify() = if (this != 1) "s" else ""
 fun Long.plurify() = if (this != 1L) "s" else ""
 

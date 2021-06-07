@@ -32,8 +32,12 @@ suspend fun getPosts(subreddit: String, monke: Monke): List<RedditPost> {
         val posts = mutableListOf<RedditPost>()
 
         if (!it.isSuccessful || body == null) {
-            val error = translateInternal("internal_error.web_service_error", "Reddit")
-            LOGGER.error(error)
+            LOGGER.error(
+                translateInternal {
+                    path = "internal_error.web_service_error"
+                    values = arrayOf("Reddit")
+                }
+            )
             return emptyList()
         }
 
@@ -71,10 +75,10 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
         event.replyAsync {
             type(CommandReply.Type.EXCEPTION)
             title(
-                translate(
-                    language = language,
-                    key = "command_error.nsfw_reddit_post"
-                )
+                translate {
+                    lang = language
+                    path = "command_error.nsfw_reddit_post"
+                }
             )
             footer()
             event.thread.post(this)
@@ -82,23 +86,23 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
         return
     }
 
-    val description = translate(
-        language = language,
-        key = "command_response.reddit_description",
+    val description = translate {
+        lang = language
+        path = "command_response.reddit_description"
         values = arrayOf(
             post.getSubreddit().toString(),
             post.getAuthor().toString()
         )
-    )
+    }
 
-    val footer = translate(
-        language = language,
-        key = "command_response.reddit_footer",
+    val footer = translate {
+        lang = language
+        path = "command_response.reddit_footer"
         values = arrayOf(
             post.getUpvotes() ?: "0",
             post.getDownvotes() ?: "0"
         )
-    )
+    }
 
     event.replyAsync {
         type(CommandReply.Type.SUCCESS)
@@ -120,10 +124,10 @@ suspend fun getWikipediaPage(event: CommandEvent, subject: String): WikipediaPag
 
         if (!response.isSuccessful || body == null) {
             LOGGER.error(
-                translateInternal(
-                    key = "internal_error.web_service_error",
+                translateInternal {
+                    path = "internal_error.web_service_error"
                     values = arrayOf("Wikipedia")
-                )
+                }
             )
             return null
         }

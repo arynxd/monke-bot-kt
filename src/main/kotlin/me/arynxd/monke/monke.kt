@@ -2,17 +2,15 @@ package me.arynxd.monke
 
 import me.arynxd.monke.events.JDAEvents
 import me.arynxd.monke.handlers.*
-import me.arynxd.monke.util.classes.EmojiValidator
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.plugins.Plugins
 import me.arynxd.monke.util.Debuggable
+import me.arynxd.monke.util.classes.EmojiValidator
 import me.arynxd.monke.util.classes.MonkeInfo
-import me.arynxd.monke.util.parseUptime
 import me.arynxd.monke.util.plurify
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
-import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.ReadyEvent
@@ -21,11 +19,6 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
-import java.lang.management.ManagementFactory
-import java.text.DecimalFormat
-import java.time.Duration
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -75,12 +68,12 @@ class Monke : ListenerAdapter(), Debuggable {
                 }.build()
         }
         catch (exception: LoginException) {
-            LOGGER.error(translateInternal("internal_error.invalid_login"))
+            LOGGER.error(translateInternal { path = "internal_error.invalid_login" })
             exitProcess(1)
 
         }
         catch (exception: IllegalArgumentException) {
-            LOGGER.error(translateInternal("internal_error.invalid_build"))
+            LOGGER.error(translateInternal { path = "internal_error.invalid_build" })
             exitProcess(1)
         }
     }

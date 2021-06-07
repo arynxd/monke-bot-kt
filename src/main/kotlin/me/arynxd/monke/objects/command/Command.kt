@@ -18,10 +18,10 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command_error.disabled"
-                    )
+                    translate {
+                        lang = language
+                        path = "command_error.disabled"
+                    }
                 )
                 footer()
                 thread.post(this)
@@ -33,10 +33,10 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command_error.developer_only"
-                    )
+                    translate {
+                        lang = language
+                        path = "command_error.developer_only"
+                    }
                 )
                 footer()
                 thread.post(this)
@@ -48,10 +48,10 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command_error.argument_config"
-                    )
+                    translate {
+                        lang = language
+                        path = "command_error.argument_config"
+                    }
                 )
                 footer()
                 thread.post(this)
@@ -65,11 +65,11 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command_error.member_permission",
+                    translate {
+                        lang = language
+                        path = "command_error.member_permission"
                         values = arrayOf(perms)
-                    )
+                    }
                 )
                 footer()
                 thread.post(this)
@@ -83,11 +83,11 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command_error.bot_permission",
+                    translate {
+                        lang = language
+                        path = "command_error.bot_permission"
                         values = arrayOf(perms)
-                    )
+                    }
                 )
                 footer()
                 thread.post(this)
@@ -107,11 +107,11 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command_error.cooldown",
+                    translate {
+                        lang = language
+                        path = "command_error.cooldown"
                         values = arrayOf(cooldown)
-                    )
+                    }
                 )
                 footer()
                 thread.post(this)
@@ -136,15 +136,15 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 description(
-                    translate(
-                        language = language,
-                        key = "command_error.required_args",
+                    translate {
+                        lang = language
+                        path = "command_error.required_args"
                         values = arrayOf(
                             requiredCount,
                             requiredCount.plurify(),
                             missing
                         )
-                    )
+                    }
                 )
                 footer()
                 thread.post(this)
@@ -167,14 +167,14 @@ abstract class Command(
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 description(
-                    translate(
-                        language = language,
-                        key = "command_error.invalid_args",
+                    translate {
+                        lang = language
+                        path = "command_error.invalid_args"
                         values = arrayOf(
                             invalidCount.plurify(),
                             invalid
                         )
-                    )
+                    }
                 )
                 footer()
                 thread.post(this)
@@ -202,25 +202,28 @@ abstract class Command(
         return children.isNotEmpty()
     }
 
-    open fun getDescription(language: Language): String {
-        return translate(language, "command.${metaData.name}.description")
+    open fun getDescription(language: Language) = translate {
+        lang = language
+        path = "command.${metaData.name}.description"
     }
 
-    open fun getName(language: Language): String {
-        return translate(language, "command.${metaData.name}.name")
+    open fun getName(language: Language)= translate {
+        lang = language
+        path = "command.${metaData.name}.name"
     }
 
-    fun getAliases(language: Language): List<String> {
-        return translate(language, "command.${metaData.name}.aliases").split("/")
-    }
+    fun getAliases(language: Language) = translate {
+        lang = language
+        path =  "command.${metaData.name}.aliases"
+    }.split("/")
 
     open suspend fun runSuspend(event: CommandEvent) {
         //Placeholder method
-        throw UnsupportedOperationException("Incorrect run method called")
+        throw UnsupportedOperationException("Incorrect run method called. Expected sync, called suspend")
     }
 
     open fun runSync(event: CommandEvent) {
         //Placeholder method
-        throw UnsupportedOperationException("Incorrect run method called")
+        throw UnsupportedOperationException("Incorrect run method called. Expected suspend, called sync")
     }
 }

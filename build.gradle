@@ -47,7 +47,6 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-scripting-jsr223:1.4.30'
     implementation 'com.github.ben-manes.caffeine:caffeine:3.0.0'
     implementation 'org.jsoup:jsoup:1.13.1'
-    implementation 'com.kotcrab.remark:remark:1.2.0'
 }
 
 compileKotlin {

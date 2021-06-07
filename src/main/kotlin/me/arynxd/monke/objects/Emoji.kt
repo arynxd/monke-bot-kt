@@ -47,25 +47,31 @@ enum class Emoji(val emote: String, val unicode: String? = null, val isAnimated:
     SIX(":six:", "\u0036\uFE0F"),
     SEVEN(":seven:", "\u0037\uFE0F"),
     EIGHT(":eight:", "\u0038\uFE0F"),
-    NINE(":nine:", "\u0039\uFE0F");
+    NINE(":nine:", "\u0039\uFE0F"),
 
-    fun getAsChat(): String {
-        if (this.unicode == null) {
-            if (this.isAnimated) {
-                return "<a:emote:${this.emote}>"
+    ENABLED("851423342535901194"),
+    DISABLED("851424226908176394")
+    ;
+
+    val asChat: String
+        get() {
+            if (this.unicode == null) {
+                if (this.isAnimated) {
+                    return "<a:emote:${this.emote}>"
+                }
+                return "<:emote:${this.emote}>"
             }
-            return "<:emote:${this.emote}>"
+            return this.emote
         }
-        return this.emote
-    }
 
 
-    fun getAsReaction(): String {
-        if (this.unicode == null) {
-            return "emote:" + this.emote
+    val asReaction: String
+        get() {
+            if (this.unicode == null) {
+                return "emote:" + this.emote
+            }
+            return this.unicode
         }
-        return this.unicode
-    }
 
     companion object {
         fun getPoll(): List<Emoji> {

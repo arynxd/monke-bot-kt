@@ -5,6 +5,7 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.SubCommand
 import me.arynxd.monke.objects.translation.Language
+import net.dv8tion.jda.internal.utils.Checks
 
 abstract class Argument<T> {
     abstract val name: String
@@ -26,7 +27,10 @@ abstract class Argument<T> {
                 "${command.parent.getName(language)}.child.${command.getName(language)}"
             else
                 command.getName(language)
-        return translate(language, "command.$commandName.argument.$name.description")
+        return translate {
+            lang = language
+            path = "command.$commandName.argument.$name.description"
+        }
     }
 
     fun getName(language: Language, command: Command): String {
@@ -35,23 +39,9 @@ abstract class Argument<T> {
                 "${command.parent.getName(language)}.child.${command.getName(language)}"
             else
                 command.getName(language)
-        return translate(language, "command.$commandName.argument.$name.name")
-    }
-}
-
-data class ArgumentBuilder<T>(
-    var name: String? = null,
-    var description: String? = null,
-    var required: Boolean? = null,
-    var type: Type? = null,
-    var condition: (T) -> Boolean = { true }
-) {
-    fun verify() {
-        when {
-            name == null -> throw IllegalArgumentException("name was null")
-            description == null -> throw IllegalArgumentException("description was null")
-            required == null -> throw IllegalArgumentException("required was null")
-            type == null -> throw IllegalArgumentException("type was null")
+        return translate {
+            lang = language
+            path = "command.$commandName.argument.$name.name"
         }
     }
 }

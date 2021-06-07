@@ -16,8 +16,8 @@ val SUCCESS_EMBED_COLOUR: Color = Color.decode("#66B393")
 
 suspend fun awaitConfirmation(message: Message, user: User, monke: Monke): Boolean? {
     val userId = user.idLong
-    message.addReaction(Emoji.GREEN_TICK.getAsReaction()).queue()
-    message.addReaction(Emoji.GREEN_CROSS.getAsReaction()).queue()
+    message.addReaction(Emoji.GREEN_TICK.asReaction).queue()
+    message.addReaction(Emoji.GREEN_CROSS.asReaction).queue()
     return try {
         withTimeout(10_000) {
             val event = monke.jda.await<GuildMessageReactionAddEvent> {
@@ -29,8 +29,8 @@ suspend fun awaitConfirmation(message: Message, user: User, monke: Monke): Boole
             }
 
             return@withTimeout when (event.reactionEmote.emoji) {
-                Emoji.GREEN_TICK.getAsReaction() -> true
-                Emoji.GREEN_CROSS.getAsReaction() -> false
+                Emoji.GREEN_TICK.asReaction -> true
+                Emoji.GREEN_CROSS.asReaction -> false
                 else -> null
             }
         }

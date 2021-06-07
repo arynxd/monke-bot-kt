@@ -1,9 +1,8 @@
 package me.arynxd.monke.commands.misc.info
 
 import me.arynxd.monke.MONKE_VERSION
-import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.handlers.translateAll
-import me.arynxd.monke.handlers.translationStage
+import me.arynxd.monke.handlers.translationStep
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
@@ -22,23 +21,23 @@ class InfoBotCommand(parent: Command) : SubCommand(
         val language = event.language
 
         val translations = translateAll(language,
-            translationStage { path = "command.info.child.bot.keyword.jvm_version" },
+            translationStep { path = "command.info.child.bot.keyword.jvm_version" },
 
-            translationStage { path = "command.info.child.bot.keyword.jda_version" },
+            translationStep { path = "command.info.child.bot.keyword.jda_version" },
 
-            translationStage { path = "command.info.child.bot.keyword.monke_version" },
+            translationStep { path = "command.info.child.bot.keyword.monke_version" },
 
-            translationStage { path = "command.info.child.bot.keyword.thread_count" },
+            translationStep { path = "command.info.child.bot.keyword.thread_count" },
 
-            translationStage { path = "command.info.child.bot.keyword.memory_usage" },
+            translationStep { path = "command.info.child.bot.keyword.memory_usage" },
 
-            translationStage { path = "command.info.child.bot.keyword.cpu_usage" },
+            translationStep { path = "command.info.child.bot.keyword.cpu_usage" },
 
-            translationStage { path = "command.info.child.bot.keyword.total_users" },
+            translationStep { path = "command.info.child.bot.keyword.total_users" },
 
-            translationStage { path = "command.info.child.bot.keyword.total_servers" },
+            translationStep { path = "command.info.child.bot.keyword.total_servers" },
 
-            translationStage { path = "command.info.child.bot.keyword.uptime" }
+            translationStep { path = "command.info.child.bot.keyword.uptime" }
         )
 
         val jvmVersion = translations[0]

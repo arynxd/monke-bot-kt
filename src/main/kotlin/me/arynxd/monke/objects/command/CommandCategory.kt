@@ -12,6 +12,8 @@ enum class CommandCategory(private val key: String) {
     CONFIGURATION("configuration"),
     MUSIC("music");
 
-    fun getName(language: Language) =
-        translate(language, "command.category.$key")
+    fun getName(language: Language) = translate {
+        lang = language
+        path = "command.category.$key"
+    }
 }

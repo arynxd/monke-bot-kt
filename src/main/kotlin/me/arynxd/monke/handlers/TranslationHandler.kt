@@ -121,13 +121,25 @@ fun translateInternal(fn: TranslationBuilder.() -> Unit): String {
     return builder.build()
 }
 
-fun translationStage(fn: TranslationBuilder.() -> Unit): TranslationBuilder {
+fun translationStep(fn: TranslationBuilder.() -> Unit): TranslationBuilder {
+    val builder = TranslationBuilder(null, null, emptyArray(), false)
+    fn(builder)
+    return builder
+}
+
+fun translationStepInternal(fn: TranslationBuilder.() -> Unit): TranslationBuilder {
     val builder = TranslationBuilder(null, null, emptyArray(), true)
     fn(builder)
     return builder
 }
 
-fun translateAll(lang: Language? = null, vararg builders: TranslationBuilder) = builders.map { it.lang = lang; it.build() }
+fun translateAll(lang: Language? = null, vararg builders: TranslationBuilder) = builders.map {
+        if (it.lang == null) {
+            it.lang = lang;
+        }
+
+        return@map it.build()
+    }
 
 data class TranslationBuilder(
     var lang: Language?,
