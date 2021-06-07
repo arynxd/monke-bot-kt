@@ -100,10 +100,10 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
         )
     }
 
-    fun field(title: String?, description: String?, inline: Boolean) =
+    fun field(title: Any?, description: Any?, inline: Boolean) =
         embed.addField(
-            title?.take(MessageEmbed.TITLE_MAX_LENGTH),
-            description?.take(MessageEmbed.VALUE_MAX_LENGTH),
+            title.toString().take(MessageEmbed.TITLE_MAX_LENGTH),
+            description.toString().take(MessageEmbed.VALUE_MAX_LENGTH),
             inline
         )
 

@@ -6,6 +6,7 @@ import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.util.classes.MonkeInfo
 
 @Suppress("UNUSED")
 class UptimeCommand : Command(
@@ -17,11 +18,14 @@ class UptimeCommand : Command(
 ) {
 
     override fun runSync(event: CommandEvent) {
-        val language = event.language()
-        val uptime = translate(language, "command.uptime.keyword.uptime")
+        val language = event.language
+        val uptime = translate {
+            lang = language
+            path = "command.uptime.keyword.uptime"
+        }
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)
-            title("$uptime: ${event.monke.getUptimeString()}")
+            title("$uptime: ${MonkeInfo.getUptimeString()}")
             footer()
             event.thread.post(this)
         }

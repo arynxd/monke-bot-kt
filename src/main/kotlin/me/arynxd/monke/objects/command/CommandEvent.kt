@@ -8,6 +8,7 @@ import me.arynxd.monke.handlers.GuildDataHandler
 import me.arynxd.monke.objects.cache.GuildData
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.translation.Language
+import java.lang.IllegalStateException
 
 class CommandEvent(
     val monke: Monke,
@@ -26,8 +27,20 @@ class CommandEvent(
     val jda = event.jda
     val thread = monke.handlers[CommandThreadHandler::class].getOrNew(message.idLong)
 
+    val isDeveloper: Boolean
+        get() = monke.handlers[ConfigHandler::class].config.developers.contains(user.id)
+
+    val dataCache: GuildData
+        get() = monke.handlers[GuildDataHandler::class].getData(guildIdLong)
+
+    val prefix: String
+        get() = dataCache.prefix
+
+    val language: Language
+        get() = dataCache.language
+
     @Suppress("UNCHECKED_CAST")
-    fun <T> argument(indie: Int, default: T? = null): T {
+    inline fun <reified T> argument(indie: Int, default: T? = null): T {
         if (indie < 0) {
             throw NoSuchElementException("Argument $indie does not exist")
         }
@@ -39,17 +52,17 @@ class CommandEvent(
             return default
         }
 
-        return args[indie] as T
+        return args[indie] as? T?: throw IllegalStateException("Argument ${args[indie]} was not of type ${T::class.simpleName}")
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> vararg(start: Int): MutableList<T> {
+    inline fun <reified T> vararg(start: Int): MutableList<T> {
         if (start > args.size || start < 0) {
             throw NoSuchElementException("Variable argument $start does not exist")
         }
 
         return args.subList(start, args.size)
-            .map { it as T }
+            .map { it as? T?: throw IllegalStateException("Argument $it was not of type ${T::class.simpleName}") }
             .toMutableList()
     }
 
@@ -65,13 +78,5 @@ class CommandEvent(
         return repl
     }
 
-    fun isDeveloper(): Boolean = monke.handlers[ConfigHandler::class].config.developers.contains(user.id)
-
     fun isArgumentPresent(indie: Int) = indie < args.size
-
-    fun prefix() = dataCache().prefix
-
-    fun language() = dataCache().language
-
-    fun dataCache() = monke.handlers[GuildDataHandler::class].getData(guildIdLong)
 }

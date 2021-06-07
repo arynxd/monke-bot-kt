@@ -46,10 +46,10 @@ class RandomNumberCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = event.language(),
-                        key = "command.rng.response.lower_>_upper"
-                    )
+                    translate {
+                        lang = event.language
+                        path = "command.rng.response.lower_>_upper"
+                    }
                 )
                 footer()
                 event.thread.post(this)

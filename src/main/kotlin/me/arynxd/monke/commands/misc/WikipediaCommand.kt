@@ -37,31 +37,30 @@ class WikipediaCommand : Command(
             else it
         }
 
-        val language = event.language()
+        val language = event.language
 
         val page = getWikipediaPage(event, subject)
         if (page == null) {
             event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command.wiki.response.not_found"
-                    )
+                    translate {
+                        lang = language
+                        path = "command.wiki.response.not_found"
+                    }
                 )
                 event.thread.post(this)
             }
             return
         }
 
-        val lastEdited = translate(
-            language = language,
-            key = "command.wiki.keyword.last_edited",
+        val lastEdited = translate {
+            lang = language
+            path = "command.wiki.keyword.last_edited"
             values = arrayOf(
-                parseDateTime(page.getTimestamp()).toString()
+                parseDateTime(page.getTimestamp())
             )
-        )
-
+        }
         event.reply {
             type(CommandReply.Type.SUCCESS)
             title(page.getTitle())

@@ -23,7 +23,10 @@ class CommandThread(val messageId: Long, val responseIds: List<Long>) {
                 )
             }
         }
+
     }
+
+    fun contains(id: Long) = responseIds.contains(id)
 
     suspend fun awaitPost(reply: CommandReply): Message {
         if (responseIds.isEmpty()) {

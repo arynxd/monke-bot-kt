@@ -75,7 +75,7 @@ class EvalCommand : Command(
                 """.trimIndent()
             )
 
-            LOGGER.info(translateInternal("internal_error.eval_reflection_warning"))
+            LOGGER.info(translateInternal { path = "internal_error.eval_reflection_warning" })
         }
     }
 
@@ -105,7 +105,7 @@ class EvalCommand : Command(
             .joinToString(separator = " ")
             .replace(codeBlockRegex, "")
 
-        val language = event.language()
+        val language = event.language
         val okHttpClient = monke.handlers.okHttpClient
 
         System.setOut(newSysOut)
@@ -142,16 +142,19 @@ class EvalCommand : Command(
 
         val reply = CommandReply(event)
         reply.title(
-            translate(
-                language = language,
-                key = "command.eval.keyword.evaluated_result"
-            )
+            translate {
+                lang = language
+                path = "command.eval.keyword.evaluated_result"
+            }
         )
 
         if (isSuccessful) {
             reply.type(CommandReply.Type.SUCCESS)
             reply.field(
-                title = translate(language, "command.eval.keyword.result"),
+                title = translate {
+                    lang = language
+                    path = "command.eval.keyword.result"
+                },
                 description = output,
                 inline = true
             )
@@ -160,7 +163,10 @@ class EvalCommand : Command(
         else {
             reply.type(CommandReply.Type.EXCEPTION)
             reply.field(
-                title = translate(language, "command.eval.keyword.error"),
+                title = translate {
+                    lang = language
+                    path = "command.eval.keyword.error"
+                },
                 description = output,
                 inline = true
             )
@@ -179,7 +185,10 @@ class EvalCommand : Command(
         )
 
         reply.field(
-            title = translate(language, "command.eval.keyword.code"),
+            title = translate {
+                lang = language
+                path = "command.eval.keyword.code"
+            },
             description = "```kt\n${script.takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, monke)}```",
             inline = false
         )
@@ -229,10 +238,10 @@ class EvalCommand : Command(
             else -> {
                 val o = out.toString()
                 if (o.isBlank()) {
-                    translate(
-                        language = language,
-                        key = "command.eval.keyword.no_error"
-                    )
+                    translate {
+                        lang = language
+                        path = "command.eval.keyword.no_error"
+                    }
                 }
                 else {
                     if (o.length > MessageEmbed.VALUE_MAX_LENGTH) {

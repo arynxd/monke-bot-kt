@@ -51,18 +51,18 @@ class StealCommand : Command(
     override fun runSync(event: CommandEvent) {
         val name = event.argument<String>(0)
         val url = event.argument<URL>(1)
-        val language = event.language()
+        val language = event.language
         val icon = getIcon(url)
-        val limiter = event.monke.handlers.get(RateLimitHandler::class).getRateLimiter(event.guildIdLong)
+        val limiter = event.monke.handlers[RateLimitHandler::class].getRateLimiter(event.guildIdLong)
 
         if (!limiter.canTake(RateLimitedAction.EMOJI_CREATE)) {
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command_error.rate_limited"
-                    )
+                    translate {
+                        lang = language
+                        path = "command_error.rate_limited"
+                    }
                 )
                 event.thread.post(this)
             }
@@ -73,11 +73,11 @@ class StealCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command.steal.response.invalid_image",
+                    translate {
+                        lang = language
+                        path = "command.steal.response.invalid_image"
                         values = arrayOf(url)
-                    )
+                    }
                 )
                 event.thread.post(this)
             }
@@ -89,11 +89,11 @@ class StealCommand : Command(
                 event.replyAsync {
                     type(CommandReply.Type.SUCCESS)
                     title(
-                        translate(
-                            language = language,
-                            key = "command.steal.response.emoji_success",
+                        translate {
+                            lang = language
+                            path = "command.steal.response.emoji_success"
                             values = arrayOf(it.asMention)
-                        )
+                        }
                     )
                     event.thread.post(this)
                     limiter.take(RateLimitedAction.EMOJI_CREATE)
@@ -103,11 +103,11 @@ class StealCommand : Command(
                 event.replyAsync {
                     type(CommandReply.Type.EXCEPTION)
                     title(
-                        translate(
-                            language = language,
-                            key = "command.steal.response.emoji_add_error",
+                        translate {
+                            lang = language
+                            path = "command.steal.response.emoji_add_error"
                             values = arrayOf(url)
-                        )
+                        }
                     )
                     event.thread.post(this)
                 }

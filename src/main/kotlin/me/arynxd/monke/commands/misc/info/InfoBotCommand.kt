@@ -2,9 +2,12 @@ package me.arynxd.monke.commands.misc.info
 
 import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.handlers.translateAll
+import me.arynxd.monke.handlers.translationStage
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
+import me.arynxd.monke.util.classes.MonkeInfo
 
 class InfoBotCommand(parent: Command) : SubCommand(
     parent,
@@ -15,36 +18,56 @@ class InfoBotCommand(parent: Command) : SubCommand(
     )
 ) {
     override fun runSync(event: CommandEvent) {
-        val monke = event.monke
-        val language = event.language()
+        val jda = event.jda
+        val language = event.language
 
-        val jvmVersion = translate(language, "command.info.child.bot.keyword.jvm_version")
-        val jdaVersion = translate(language, "command.info.child.bot.keyword.jda_version")
-        val monkeVersion = translate(language, "command.info.child.bot.keyword.monke_version")
+        val translations = translateAll(language,
+            translationStage { path = "command.info.child.bot.keyword.jvm_version" },
 
-        val threadCount = translate(language, "command.info.child.bot.keyword.thread_count")
-        val memoryUsage = translate(language, "command.info.child.bot.keyword.memory_usage")
-        val cpuUsage = translate(language, "command.info.child.bot.keyword.cpu_usage")
+            translationStage { path = "command.info.child.bot.keyword.jda_version" },
 
-        val totalUsers = translate(language, "command.info.child.bot.keyword.total_users")
-        val totalServers = translate(language, "command.info.child.bot.keyword.total_servers")
-        val uptime = translate(language, "command.info.child.bot.keyword.uptime")
+            translationStage { path = "command.info.child.bot.keyword.monke_version" },
+
+            translationStage { path = "command.info.child.bot.keyword.thread_count" },
+
+            translationStage { path = "command.info.child.bot.keyword.memory_usage" },
+
+            translationStage { path = "command.info.child.bot.keyword.cpu_usage" },
+
+            translationStage { path = "command.info.child.bot.keyword.total_users" },
+
+            translationStage { path = "command.info.child.bot.keyword.total_servers" },
+
+            translationStage { path = "command.info.child.bot.keyword.uptime" }
+        )
+
+        val jvmVersion = translations[0]
+        val jdaVersion = translations[1]
+        val monkeVersion = translations[2]
+
+        val threadCount = translations[3]
+        val memoryUsage = translations[4]
+        val cpuUsage = translations[5]
+
+        val totalUsers = translations[6]
+        val totalServers = translations[7]
+        val uptime = translations[8]
 
         event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title("${event.jda.selfUser.name} information")
 
-            field(jvmVersion, monke.getJavaVersion(), true)
-            field(jdaVersion, monke.getJDAVersion(), true)
+            field(jvmVersion, MonkeInfo.getJavaVersion(), true)
+            field(jdaVersion, MonkeInfo.getJDAVersion(), true)
             field(monkeVersion, MONKE_VERSION, true)
 
-            field(threadCount, monke.getThreadCount().toString(), true)
-            field(memoryUsage, monke.getMemoryFormatted(), true)
-            field(cpuUsage, "${monke.getCPUUsage()}%", true)
+            field(threadCount, MonkeInfo.getThreadCount(), true)
+            field(memoryUsage, MonkeInfo.getMemoryFormatted(), true)
+            field(cpuUsage, "${MonkeInfo.getCPUUsage()}%", true)
 
-            field(totalUsers, monke.getUserCount().toString(), true)
-            field(totalServers, monke.getGuildCount().toString(), true)
-            field(uptime, monke.getUptimeString(), true)
+            field(totalUsers, MonkeInfo.getUserCount(jda), true)
+            field(totalServers, MonkeInfo.getGuildCount(jda), true)
+            field(uptime, MonkeInfo.getUptimeString(), true)
 
             footer()
             event.thread.post(this)

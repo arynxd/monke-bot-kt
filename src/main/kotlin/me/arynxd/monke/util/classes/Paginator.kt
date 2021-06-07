@@ -1,4 +1,4 @@
-package me.arynxd.monke.util
+package me.arynxd.monke.util.classes
 
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.Monke

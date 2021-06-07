@@ -36,7 +36,7 @@ class GoogleCommand : Command(
 ) {
     override suspend fun runSuspend(event: CommandEvent) = withContext(Dispatchers.IO) {
         val query = URLEncoder.encode(event.vararg<String>(0).joinToString(" "), "utf-8")
-        val language = event.language()
+        val language = event.language
 
         val url = "https://www.google.com/search?q=$query&safe=active&hl=en"
         val doc = Jsoup.connect(url).get()
@@ -49,10 +49,10 @@ class GoogleCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command.google.response.no_results"
-                    )
+                    translate {
+                        lang = language
+                        path = "command.google.response.no_results"
+                    }
                 )
                 footer()
                 event.thread.post(this)

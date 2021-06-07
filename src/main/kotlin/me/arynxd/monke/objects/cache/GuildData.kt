@@ -18,7 +18,7 @@ class GuildData(
             setSetting(GUILDS.PREFIX, value)
         }
 
-    var language: Language = Language.getLanguageByCode(getSetting(GUILDS.LANGUAGE, Language.DEFAULT.code))
+    var language: Language = Language.getLanguageOrThrow(getSetting(GUILDS.LANGUAGE, Language.DEFAULT.code))
         set(value) {
             field = value
             setSetting(GUILDS.LANGUAGE, value.code)

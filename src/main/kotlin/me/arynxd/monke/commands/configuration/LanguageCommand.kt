@@ -29,18 +29,17 @@ class LanguageCommand : Command(
     )
 ) {
     override fun runSync(event: CommandEvent) {
-        val cache = event.dataCache()
-        val language = cache.language
-
+        val cache = event.dataCache
+        val guildLanguage = event.language
         if (!event.isArgumentPresent(0)) {
             event.replyAsync {
                     type(CommandReply.Type.INFORMATION)
                     title(
-                        translate(
-                            language = language,
-                            key = "command.language.response.get_response",
-                            values = arrayOf(language.commonName)
-                        )
+                        translate {
+                            lang = guildLanguage
+                            path = "command.language.response.get_response"
+                            values = arrayOf(guildLanguage.commonName)
+                        }
                     )
                     footer()
                     event.thread.post(this)
@@ -49,15 +48,15 @@ class LanguageCommand : Command(
         }
 
         val newLanguage = event.argument<Language>(0)
-        if (language == newLanguage) {
+        if (guildLanguage == newLanguage) {
             event.replyAsync {
                 type(CommandReply.Type.INFORMATION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command.language.response.exists_response",
-                        values = arrayOf(language.commonName)
-                    )
+                    translate {
+                        lang = guildLanguage
+                        path = "command.language.response.exists_response"
+                        values = arrayOf(guildLanguage.commonName)
+                    }
                 )
                 footer()
                 event.thread.post(this)
@@ -68,11 +67,11 @@ class LanguageCommand : Command(
         event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title(
-                translate(
-                    language = newLanguage,
-                    key = "command.language.response.set_response",
+                translate {
+                    lang = newLanguage
+                    path = "command.language.response.set_response"
                     values = arrayOf(newLanguage.commonName)
-                )
+                }
             )
             footer()
             cache.language = newLanguage

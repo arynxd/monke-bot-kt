@@ -11,11 +11,11 @@ enum class Language(val code: String, val aliases: List<String>, val commonName:
 //    DE("de", listOf("deutsch", "german"), "Deutsch");
 
     companion object {
-        fun getLanguageByCode(code: String): Language {
+        fun getLanguageOrThrow(code: String): Language {
             return values().find { it.code == code } ?: throw TranslationException("Language $code was not found.")
         }
 
-        fun getLanguageByName(name: String): Language? {
+        fun getLanguageOrNull(name: String): Language? {
             return values().find { it.code == name || it.aliases.contains(name.toLowerCase()) }
         }
 

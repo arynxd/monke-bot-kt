@@ -29,18 +29,18 @@ class PrefixCommand : Command(
     )
 ) {
     override fun runSync(event: CommandEvent) {
-        val cache = event.dataCache()
-        val language = event.language()
+        val cache = event.dataCache
+        val language = event.language
 
         if (!event.isArgumentPresent(0)) {
             event.replyAsync {
                 type(CommandReply.Type.INFORMATION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command.prefix.response.prefix_here",
+                    translate {
+                        lang = language
+                        path = "command.prefix.response.prefix_here"
                         values = arrayOf(cache.prefix)
-                    )
+                    }
                 )
                 event.thread.post(this)
             }
@@ -53,11 +53,11 @@ class PrefixCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command.prefix.response.prefix_already",
+                    translate {
+                        lang = language
+                        path = "command.prefix.response.prefix_already"
                         values = arrayOf(prefix)
-                    )
+                    }
                 )
                 event.thread.post(this)
             }
@@ -67,11 +67,11 @@ class PrefixCommand : Command(
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title(
-                translate(
-                    language = language,
-                    key = "command.prefix.response.prefix_new",
+                translate {
+                    lang = language
+                    path = "command.prefix.response.prefix_new"
                     values = arrayOf(prefix)
-                )
+                }
             )
             event.thread.post(this)
             cache.prefix = prefix

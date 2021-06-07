@@ -4,7 +4,7 @@ import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.CommandHandler
 import me.arynxd.monke.handlers.PaginationHandler
 import me.arynxd.monke.handlers.translate
-import me.arynxd.monke.util.Paginator
+import me.arynxd.monke.util.classes.Paginator
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentCommand
@@ -34,7 +34,7 @@ class HelpCommand : Command(
     )
 ) {
     override fun runSync(event: CommandEvent) {
-        val prefix = event.prefix()
+        val prefix = event.prefix
         if (event.isArgumentPresent(0)) {
             getHelp(event, event.argument(0))
             return
@@ -50,8 +50,8 @@ class HelpCommand : Command(
     }
 
     private fun getHelp(event: CommandEvent, command: Command) {
-        val prefix = event.prefix()
-        val language = event.language()
+        val prefix = event.prefix
+        val language = event.language
 
         val fields = mutableListOf(
             MessageEmbed.Field(
@@ -74,10 +74,10 @@ class HelpCommand : Command(
         }
 
         event.replyAsync {
-            val keywordFor = translate(
-                language = event.language(),
-                key = "command.help.keyword.help_for"
-            )
+            val keywordFor = translate {
+                lang = event.language
+                path = "command.help.keyword.help_for"
+            }
             type(CommandReply.Type.INFORMATION)
             title("$keywordFor $prefix${command.getName(language)}")
             fields(fields)
@@ -87,11 +87,17 @@ class HelpCommand : Command(
     }
 
     private fun getDescription(command: Command, event: CommandEvent, name: String): String {
-        val prefix = event.prefix()
-        val language = event.language()
+        val prefix = event.prefix
+        val language = event.language
 
-        val description = translate(language, "command.help.keyword.description")
-        val usage = translate(language, "command.help.keyword.usage")
+        val description = translate {
+            lang = language
+            path = "command.help.keyword.description"
+        }
+        val usage = translate {
+            lang = language
+            path = "command.help.keyword.usage"
+        }
 
         val commandDescription = "__${description}:__ \n${command.getDescription(language)}"
         val args = "__${usage}:__ \n $prefix$name ${command.metaData.arguments.getArgumentsList(language, command)}\n\n " +
@@ -115,7 +121,7 @@ class HelpCommand : Command(
                 .groupBy { it.metaData.category }
 
         val pageCount = CommandCategory.values().size
-        val language = event.language()
+        val language = event.language
 
         for (category in CommandCategory.values()) {
             val cat = commands[category] ?: throw IllegalStateException("Category $category was not present")

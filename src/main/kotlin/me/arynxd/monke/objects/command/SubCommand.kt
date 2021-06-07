@@ -17,13 +17,16 @@ abstract class SubCommand(
     }
 
     override fun getName(language: Language): String {
-        return translate(language, "command.${parent.metaData.name}.child.${metaData.name}.name")
+        return translate {
+            lang = language
+            path = "command.${parent.metaData.name}.child.${metaData.name}.name"
+        }
     }
 
     override fun getDescription(language: Language): String {
-        return translate(
-            language,
-            "command.${parent.metaData.name}.child.${metaData.name}.description"
-        )
+        return translate{
+            lang = language
+            path = "command.${parent.metaData.name}.child.${metaData.name}.description"
+        }
     }
 }

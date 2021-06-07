@@ -2,11 +2,12 @@ package me.arynxd.monke
 
 import me.arynxd.monke.events.JDAEvents
 import me.arynxd.monke.handlers.*
-import me.arynxd.monke.util.EmojiValidator
+import me.arynxd.monke.util.classes.EmojiValidator
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.plugins.Plugins
 import me.arynxd.monke.util.Debuggable
+import me.arynxd.monke.util.classes.MonkeInfo
 import me.arynxd.monke.util.parseUptime
 import me.arynxd.monke.util.plurify
 import net.dv8tion.jda.api.JDA
@@ -89,8 +90,8 @@ class Monke : ListenerAdapter(), Debuggable {
         handlers.enableHandlers()
         initTasks()
 
-        handlers[MetricsHandler::class].guildCount.set(getGuildCount().toDouble())
-        handlers[MetricsHandler::class].userCount.set(getUserCount().toDouble())
+        handlers[MetricsHandler::class].guildCount.set(MonkeInfo.getGuildCount(jda).toDouble())
+        handlers[MetricsHandler::class].userCount.set(MonkeInfo.getUserCount(jda).toDouble())
 
         MessageAction.setDefaultMentionRepliedUser(false)
         MessageAction.setDefaultMentions(emptyList())
@@ -131,8 +132,8 @@ class Monke : ListenerAdapter(), Debuggable {
         val random = Random
 
         val status = listOf(
-            Activity.watching("${getGuildCount()} server" + getGuildCount().plurify()),
-            Activity.watching("${getUserCount()} user" + getUserCount().plurify()),
+            Activity.watching("${MonkeInfo.getGuildCount(jda)} server" + MonkeInfo.getGuildCount(jda).plurify()),
+            Activity.watching("${MonkeInfo.getUserCount(jda)} user" +MonkeInfo. getUserCount(jda).plurify()),
             Activity.listening("your commands"),
             Activity.playing("forknife!!!!"),
             Activity.competing("among monkes"),
@@ -143,56 +144,6 @@ class Monke : ListenerAdapter(), Debuggable {
         )
 
         jda.presence.setPresence(OnlineStatus.ONLINE, status[random.nextInt(status.size)])
-    }
-
-    fun getUserCount(): Long {
-        return jda.guildCache.sumBy { it.memberCount }.toLong()
-    }
-
-    fun getJDAVersion(): String {
-        return JDAInfo.VERSION
-    }
-
-    fun getJavaVersion(): String {
-        return System.getProperty("java.version")
-    }
-
-    fun getMaxMemory(): Long {
-        return Runtime.getRuntime().maxMemory()
-    }
-
-    fun getFreeMemory(): Long {
-        return Runtime.getRuntime().freeMemory()
-    }
-
-    fun getTotalMemory(): Long {
-        return Runtime.getRuntime().totalMemory()
-    }
-
-    fun getThreadCount(): Int {
-        return ManagementFactory.getThreadMXBean().threadCount
-    }
-
-    fun getGuildCount(): Long {
-        return jda.guildCache.size()
-    }
-
-    fun getMemoryFormatted(): String {
-        return (getTotalMemory() - getFreeMemory() shr 20).toString() + "MB / " + (getMaxMemory() shr 20) + "MB"
-    }
-
-    fun getCPUUsage(): String {
-        return DecimalFormat("#.##").format(ManagementFactory.getOperatingSystemMXBean().systemLoadAverage)
-    }
-
-    fun getUptimeString(): String {
-        val millis = ManagementFactory.getRuntimeMXBean().uptime
-        return parseUptime(
-            Duration.between(
-                LocalDateTime.now().minus(millis, ChronoUnit.MILLIS),
-                LocalDateTime.now()
-            )
-        )
     }
 
     override fun toDebugString(): String {

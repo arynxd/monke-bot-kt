@@ -58,10 +58,10 @@ class JsonCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = event.language(),
-                        key = "command.json.message_not_found"
-                    )
+                    translate {
+                        lang = event.language
+                        path = "command.json.message_not_found"
+                    }
                 )
                 footer()
                 event.thread.post(this)

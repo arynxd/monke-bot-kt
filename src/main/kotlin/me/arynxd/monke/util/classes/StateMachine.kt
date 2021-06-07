@@ -1,4 +1,4 @@
-package me.arynxd.monke.util
+package me.arynxd.monke.util.classes
 
 import net.dv8tion.jda.api.events.GenericEvent
 import kotlin.reflect.KClass

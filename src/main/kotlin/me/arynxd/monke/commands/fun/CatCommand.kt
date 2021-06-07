@@ -24,17 +24,17 @@ class CatCommand : Command(
         val random = Random
         val posts = getPosts(subreddits[random.nextInt(subreddits.size)], event.monke)
             .filter { it.isMedia() }
-        val language = event.language()
+        val language = event.language
 
         if (posts.isEmpty()) {
             event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command_error.corrupt_web_data",
+                    translate {
+                        lang = language
+                        path = "command_error.corrupt_web_data"
                         values = arrayOf("Reddit")
-                    )
+                    }
                 )
                 footer()
                 event.thread.post(this)

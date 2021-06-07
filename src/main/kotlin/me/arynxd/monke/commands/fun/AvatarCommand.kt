@@ -30,17 +30,17 @@ class AvatarCommand : Command(
 ) {
 
     override fun runSync(event: CommandEvent) {
-        val language = event.language()
+        val language = event.language
         val user = event.argument(0, event.user)
 
         event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title(
-                translate(
-                    language = language,
-                    key = "command.avatar.response.avatar_for_user",
+                translate{
+                    lang = language
+                    path = "command.avatar.response.avatar_for_user"
                     values = arrayOf(user.asTag)
-                )
+                }
             )
             image(user.effectiveAvatarUrl, 2048)
             footer()

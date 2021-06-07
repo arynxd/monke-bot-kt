@@ -9,6 +9,7 @@ import me.arynxd.monke.objects.exception.HandlerException
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.handlers.whenEnabled
+import me.arynxd.monke.util.classes.MonkeInfo
 import net.dv8tion.jda.api.events.DisconnectEvent
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.ResumedEvent
@@ -114,13 +115,13 @@ class MetricsHandler(
     }
 
     override fun onGuildJoin(event: GuildJoinEvent) {
-        guildCount.set(monke.getGuildCount().toDouble())
-        userCount.set(monke.getUserCount().toDouble())
+        guildCount.set(MonkeInfo.getGuildCount(monke.jda).toDouble())
+        userCount.set(MonkeInfo.getUserCount(monke.jda).toDouble())
     }
 
     override fun onGuildLeave(event: GuildLeaveEvent) {
-        guildCount.set(monke.getGuildCount().toDouble())
-        userCount.set(monke.getUserCount().toDouble())
+        guildCount.set(MonkeInfo.getGuildCount(monke.jda).toDouble())
+        userCount.set(MonkeInfo.getUserCount(monke.jda).toDouble())
     }
 
     override fun onHttpRequest(event: HttpRequestEvent) {
@@ -131,7 +132,7 @@ class MetricsHandler(
     }
 
     private fun getPrometheusPort(): Int {
-        return monke.handlers.get(ConfigHandler::class)
+        return monke.handlers[ConfigHandler::class]
             .config
             .prometheus
             .port.toIntOrNull() ?: throw HandlerException("Prometheus port was not a number.")

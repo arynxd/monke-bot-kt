@@ -33,15 +33,15 @@ class TestCommand : Command(
 ) {
 
     override suspend fun runSuspend(event: CommandEvent) {
-        val language = event.language()
+        val language = event.language
 
         event.reply {
             type(CommandReply.Type.SUCCESS)
             title(
-                translate(
-                    language = language,
-                    key = "command.test.keyword.success"
-                )
+                translate {
+                    lang = language
+                    path = "command.test.keyword.success"
+                }
             )
             event.thread.post(this)
         }
@@ -49,10 +49,10 @@ class TestCommand : Command(
         event.reply {
             type(CommandReply.Type.EXCEPTION)
             title(
-                translate(
-                    language = language,
-                    key = "command.test.keyword.error"
-                )
+                translate {
+                    lang = language
+                    path = "command.test.keyword.error"
+                }
             )
             footer()
             event.thread.post(this)
@@ -61,16 +61,16 @@ class TestCommand : Command(
         event.reply {
             type(CommandReply.Type.INFORMATION)
             title(
-                translate(
-                    language = language,
-                    key = "command.test.keyword.embed"
-                )
+                translate {
+                    lang = language
+                    path = "command.test.keyword.embed"
+                }
             )
             description(
-                translate(
-                    language = language,
-                    key = "command.test.keyword.event_waiting"
-                )
+                translate {
+                    lang = language
+                    path = "command.test.keyword.event_waiting"
+                }
             )
             footer()
             event.thread.post(this)
@@ -85,11 +85,11 @@ class TestCommand : Command(
                 event.reply {
                     type(CommandReply.Type.SUCCESS)
                     title(
-                        translate(
-                            language = language,
-                            key = "command.test.keyword.captured_result",
+                        translate {
+                            lang = language
+                            path = "command.test.keyword.captured_result"
                             values = arrayOf(messageEvent.message.contentRaw)
-                        )
+                        }
                     )
                     footer()
                     event.thread.post(this)
@@ -100,10 +100,10 @@ class TestCommand : Command(
             event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate(
-                        language = language,
-                        key = "command.test.keyword.time_out"
-                    )
+                    translate {
+                        lang = language
+                        path = "command.test.keyword.time_out"
+                    }
                 )
                 footer()
                 event.thread.post(this)

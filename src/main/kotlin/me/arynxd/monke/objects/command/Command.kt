@@ -11,7 +11,7 @@ abstract class Command(
     val children: MutableList<SubCommand> = mutableListOf()
 ) {
     suspend fun isExecutable(commandEvent: CommandEvent): Boolean {
-        val language = commandEvent.language()
+        val language = commandEvent.language
         val thread = commandEvent.thread
 
         if (hasFlag(CommandFlag.DISABLED) || metaData.isDisabled) {
@@ -29,7 +29,7 @@ abstract class Command(
             return false
         }
 
-        if (hasFlag(CommandFlag.DEVELOPER_ONLY) && !commandEvent.isDeveloper()) {
+        if (hasFlag(CommandFlag.DEVELOPER_ONLY) && !commandEvent.isDeveloper) {
             commandEvent.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(

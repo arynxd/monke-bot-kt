@@ -19,10 +19,10 @@ class ShutdownCommand : Command(
         event.reply {
             type(CommandReply.Type.SUCCESS)
             title(
-                translate(
-                    language = event.language(),
-                    key = "command.shutdown.response.success"
-                )
+                translate {
+                    lang = event.language
+                    path = "command.shutdown.response.success"
+                }
             )
             event.thread.awaitPost(this)
         }

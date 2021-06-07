@@ -1,21 +1,16 @@
 package me.arynxd.monke.commands.moderation
 
 import dev.minn.jda.ktx.asFlow
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import me.arynxd.monke.handlers.RateLimitHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentInt
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandMetaData
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
-import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.ratelimit.RateLimitedAction
 import me.arynxd.monke.util.plurify
 import net.dv8tion.jda.api.Permission
@@ -27,6 +22,7 @@ class ClearCommand : Command(
         description = "Clears messages from this channel.",
         category = CommandCategory.MODERATION,
         aliases = listOf("purge"),
+        flags = listOf(CommandFlag.SUSPENDING),
         cooldown = 10_000L,
         arguments = ArgumentConfiguration(
             ArgumentInt(
@@ -42,9 +38,9 @@ class ClearCommand : Command(
     )
 ) {
 
-    override fun runSync(event: CommandEvent) {
+    override suspend fun runSuspend(event: CommandEvent) {
         val limiter = event.monke.handlers[RateLimitHandler::class].getRateLimiter(event.guildIdLong)
-        val language = event.language()
+        val language = event.language
         val thread = event.thread
 
         if (!limiter.canTake(RateLimitedAction.BULK_DELETE)) {
@@ -64,32 +60,29 @@ class ClearCommand : Command(
 
         val amount = event.argument<Int>(0)
         val amountToTake = if (thread.hasPosts) amount + 2 else amount + 1
-        event.channel.iterableHistory
-            .takeAsync(amountToTake) //Account for 1 based indexing from the user + ignoring the users message
-            .thenApply { list ->
-                list.filter { //Dont remove the original message + our reply if one exists as we need to reply to it
-                    it.idLong != event.message.idLong && !event.thread.responseIds.contains(it.idLong)
-                }
-            }
-            .thenAccept {
-                event.channel.purgeMessages(it)
-                event.replyAsync {
-                    type(CommandReply.Type.SUCCESS)
-                    title(
-                        translate(
-                            language = language,
-                            key = "command.clear.response.cleared",
-                            values = arrayOf(
-                                amount,
-                                amount.plurify()
-                            )
-                        )
-                    )
-                    footer()
-                    limiter.take(RateLimitedAction.BULK_DELETE)
-                    event.thread.post(this)
-                }
-            }
 
+        val messages = event.channel.iterableHistory.asFlow()
+            .take(amountToTake)
+            .filter { it.idLong != event.message.idLong && event.thread.contains(it.idLong) }
+            .toList()
+
+        event.channel.purgeMessages(messages)
+        event.replyAsync {
+            type(CommandReply.Type.SUCCESS)
+            title(
+                translate(
+                    language = language,
+                    key = "command.clear.response.cleared",
+                    values = arrayOf(
+                        amount,
+                        amount.plurify()
+                    )
+                )
+            )
+            footer()
+            limiter.take(RateLimitedAction.BULK_DELETE)
+            event.thread.post(this)
+        }
     }
+
 }
