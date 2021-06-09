@@ -36,7 +36,7 @@ enum class Emoji(val emote: String, val unicode: String? = null, val isAnimated:
 
     STOP_SIGN(":octagonal_sign:", "\uD83D\uDED1"),
 
-    WASTE_BASKET(":wastebasket:", "\uD83D\uDDD1\uFE0F"),
+    WASTE_BASKET(":wastebasket:", "\uD83D\uDDD1"),
 
     ZERO(":zero:", "\u0030\uFE0F"),
     ONE(":one:", "\u0031\uFE0F"),

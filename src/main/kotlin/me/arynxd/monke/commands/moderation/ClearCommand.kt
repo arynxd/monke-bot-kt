@@ -22,7 +22,6 @@ class ClearCommand : Command(
         name = "clear",
         description = "Clears messages from this channel.",
         category = CommandCategory.MODERATION,
-        aliases = listOf("purge"),
         flags = listOf(CommandFlag.SUSPENDING),
         cooldown = 10_000L,
         arguments = ArgumentConfiguration(

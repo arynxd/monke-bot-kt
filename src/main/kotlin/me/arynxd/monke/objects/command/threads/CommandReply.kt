@@ -12,10 +12,13 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.internal.utils.Checks
 import java.time.Instant
 
-const val TYPE_NOT_SET_ERROR = "Type is not set"
 
+/**
+ * Provides a simple API to respond to a user, used in threading
+ */
 class CommandReply(val message: Message, val channel: TextChannel, val user: User, val monke: Monke) {
     constructor(event: CommandEvent) : this(
         message = event.message,
@@ -29,9 +32,7 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
     private var type = Type.UNKNOWN
 
     fun replace(messageIds: List<Long>, callback: ((Message) -> Unit) = {}) {
-        if (type == Type.UNKNOWN) {
-            throw IllegalStateException(TYPE_NOT_SET_ERROR)
-        }
+        checkType()
 
         if (messageIds.isEmpty()) {
             throw IllegalArgumentException("IDs were empty")
@@ -47,13 +48,8 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
     }
 
     suspend fun replaceAwait(messageIds: List<Long>): Message {
-        if (type == Type.UNKNOWN) {
-            throw IllegalStateException(TYPE_NOT_SET_ERROR)
-        }
-
-        if (messageIds.isEmpty()) {
-            throw IllegalArgumentException("IDs were empty")
-        }
+        checkType()
+        Checks.notEmpty(messageIds, "IDs")
 
         val message = channel.editMessageById(messageIds[0], embed.build())
             .mentionRepliedUser(false)
@@ -66,9 +62,7 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
     }
 
     fun send(callback: ((Message) -> Unit) = {}) {
-        if (type == Type.UNKNOWN) {
-            throw IllegalStateException(TYPE_NOT_SET_ERROR)
-        }
+        checkType()
 
         message.reply(embed.build())
             .mentionRepliedUser(false)
@@ -77,14 +71,11 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
     }
 
     suspend fun await(): Message {
-        if (type == Type.UNKNOWN) {
-            throw IllegalStateException(TYPE_NOT_SET_ERROR)
-        }
+        checkType()
 
         return message.reply(embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
-            .override(true)
             .await()
     }
 
@@ -137,9 +128,7 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
     }
 
     fun replaceChunks(messageIds: List<Long>, parts: List<Any>, callback: ((List<Long>) -> Unit) = {}) {
-        if (type == Type.UNKNOWN) {
-            throw IllegalStateException(TYPE_NOT_SET_ERROR)
-        }
+        checkType()
 
         val target = parts.size
         val gatheredIds = mutableListOf<Long>()
@@ -201,43 +190,23 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
     }
 
     private fun doDelete(sentIds: List<Long>) {
-        val toDelete = sentIds.map { it.toString() }.toMutableList()
-        toDelete.removeAt(0) //Leave 1 reply
-        if (toDelete.size >= 2) {
+        if (sentIds.size == 1) { //Dont delete if we only have 1 id
+            return
+        }
+        val toDelete = sentIds.map { it.toString() }
+        if (toDelete.size > 2) {
             channel.deleteMessagesByIds(toDelete.subList(1, toDelete.size)).queue()
         }
-        else if (toDelete.size >= 1) {
+        else if (toDelete.size == 2) {
             channel.deleteMessageById(toDelete.first()).queue()
         }
     }
 
     fun build() = embed.build()
 
-    companion object {
-        fun sendError(message: Message, text: String) {
-            val user = message.author
-            message.reply(
-                Embed(
-                    description = text,
-                    color = ERROR_EMBED_COLOUR.rgb,
-                    footerText = user.name,
-                    timestamp = Instant.now(),
-                    footerIcon = user.effectiveAvatarUrl
-                )
-            ).mentionRepliedUser(false).queue()
-        }
-
-        fun sendSuccess(message: Message, text: String) {
-            val user = message.author
-            message.reply(
-                Embed(
-                    description = text,
-                    color = SUCCESS_EMBED_COLOUR.rgb,
-                    timestamp = Instant.now(),
-                    footerText = user.name,
-                    footerIcon = user.effectiveAvatarUrl
-                )
-            ).mentionRepliedUser(false).queue()
+    private fun checkType() {
+        if (type == Type.UNKNOWN) {
+            throw IllegalStateException("Type is not set")
         }
     }
 

@@ -7,6 +7,7 @@ import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.handlers.GuildDataHandler
 import me.arynxd.monke.objects.cache.GuildData
 import me.arynxd.monke.objects.command.threads.CommandReply
+import me.arynxd.monke.objects.command.threads.CommandThread
 import me.arynxd.monke.objects.translation.Language
 import java.lang.IllegalStateException
 
@@ -25,7 +26,8 @@ class CommandEvent(
     val member = event.member
     val user = event.user
     val jda = event.jda
-    val thread = monke.handlers[CommandThreadHandler::class].getOrNew(message.idLong)
+    val thread: CommandThread
+        get() = monke.handlers[CommandThreadHandler::class].getOrNew(message.idLong)
 
     val isDeveloper: Boolean
         get() = monke.handlers[ConfigHandler::class].config.developers.contains(user.id)

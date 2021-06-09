@@ -42,7 +42,8 @@
     "cooldown": "You're on cooldown from that command (%0s remaining).",
     "command_not_found": "Command `%0` was not found.\n Type **%1help** for help.",
     "corrupt_web_data": "The data provided by %0 was corrupt, please report this to the developers!",
-    "nsfw_reddit_post": "The post found was NSFW and cannot be shown here, please try again."
+    "nsfw_reddit_post": "The post found was NSFW and cannot be shown here, please try again.",
+    "timeout": "Cancelled due to timeout"
   },
   "command_response": {
     "reddit_description": "Taken from %0 by %1",
@@ -74,6 +75,14 @@
     "pause": {
       "name": "pause",
       "description": "Pause and unpause the player."
+    },
+    "purge": {
+      "name": "purge",
+      "description": "Purges all messages from this channel.",
+      "response": {
+        "confirmation": "This will delete ALL messages from this channel, continue?",
+        "aborted": "Purge aborted"
+      }
     },
     "language": {
       "name": "language",

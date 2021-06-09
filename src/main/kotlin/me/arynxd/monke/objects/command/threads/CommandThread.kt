@@ -5,6 +5,9 @@ import me.arynxd.monke.objects.command.CommandEvent
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 
+/**
+ * State holder for a thread, provides access to post messages to this thread
+ */
 class CommandThread(val messageId: Long, val responseIds: List<Long>) {
     val hasPosts = responseIds.isNotEmpty()
 
@@ -23,7 +26,6 @@ class CommandThread(val messageId: Long, val responseIds: List<Long>) {
                 )
             }
         }
-
     }
 
     fun contains(id: Long) = responseIds.contains(id)

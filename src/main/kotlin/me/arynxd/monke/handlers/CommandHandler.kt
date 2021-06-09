@@ -16,6 +16,7 @@ import me.arynxd.monke.util.markdownSanitize
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 import kotlin.reflect.KClass
 
 const val COMMAND_PACKAGE = "me.arynxd.monke.commands"
@@ -31,6 +32,9 @@ class CommandHandler(
 ) : Handler() {
     private val reflections = Reflections(COMMAND_PACKAGE, SubTypesScanner())
     val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
+    private val executor = Executors.newSingleThreadExecutor {
+            Thread(it, "Monke-Command-Thread")
+        }
 
     fun handlePreprocessEvent(event: CommandPreprocessEvent) {
         val prefix = monke.handlers[GuildDataHandler::class].getData(event.guild.idLong).prefix
@@ -115,21 +119,23 @@ class CommandHandler(
     }
 
     private fun launchCommand(command: Command, event: CommandEvent) {
-        GlobalScope.launch {
-            val isExecutable = command.isExecutable(event)
+        executor.submit {
+            val isExecutable = runBlocking {
+                command.isExecutable(event)
+            }
 
             if (!isExecutable) {
-                return@launch
+                return@submit
             }
 
             if (command.hasFlag(CommandFlag.SUSPENDING)) {
-                try {
-                    withTimeout(7_500) { //7.5 Seconds
+                GlobalScope.launch {
+                    try {
                         command.runSuspend(event)
                     }
-                }
-                catch (exception: Exception) {
-                    handleException(event, exception)
+                    catch (exception: Exception) {
+                        handleException(event, exception)
+                    }
                 }
             }
             else {
@@ -148,19 +154,19 @@ class CommandHandler(
                 else
                     command.metaData.name
             ).inc()
+
         }
     }
 
     private fun handleException(event: CommandEvent, exception: Exception) {
         val monke = event.monke
 
-        val resp = event.replyAsync {
+        event.replyAsync {
             type(CommandReply.Type.EXCEPTION)
             title("Something went wrong whilst executing that command. Please report this to the devs!")
             footer()
+            event.thread.post(this)
         }
-
-        event.thread.post(resp)
 
         monke.handlers[ExceptionHandler::class]
             .handle(exception, "From command '${event.command.metaData.name}'")

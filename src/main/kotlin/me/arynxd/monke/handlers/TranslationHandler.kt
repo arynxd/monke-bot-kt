@@ -121,27 +121,59 @@ fun translateInternal(fn: TranslationBuilder.() -> Unit): String {
     return builder.build()
 }
 
-fun translationStep(fn: TranslationBuilder.() -> Unit): TranslationBuilder {
+private fun translationStep(fn: TranslationBuilder.() -> Unit): TranslationBuilder {
     val builder = TranslationBuilder(null, null, emptyArray(), false)
     fn(builder)
     return builder
 }
 
-fun translationStepInternal(fn: TranslationBuilder.() -> Unit): TranslationBuilder {
+private fun translationStepInternal(fn: TranslationBuilder.() -> Unit): TranslationBuilder {
     val builder = TranslationBuilder(null, null, emptyArray(), true)
     fn(builder)
     return builder
 }
 
-fun translateAll(lang: Language? = null, vararg builders: TranslationBuilder) = builders.map {
-        if (it.lang == null) {
-            it.lang = lang;
-        }
+fun translateAll(lang: Language, fn: MultiPartTranslationBuilder.() -> Unit): List<String> {
+    val builder = MultiPartTranslationBuilder(lang)
+    fn(builder)
+    return builder.buildAll()
+}
 
-        return@map it.build()
+data class MultiPartTranslationBuilder(
+    val lang: Language,
+) {
+    private val builders = mutableListOf<TranslationBuilder>()
+
+    fun part(path: String, vararg values: Any?) {
+        builders.add(
+            translationStep {
+                this.path = path
+                this.values = values as Array<Any?>
+                if (this.lang == null) {
+                    this.lang = this@MultiPartTranslationBuilder.lang
+                }
+            }
+        )
     }
 
-data class TranslationBuilder(
+    fun partInternal(path: String, vararg values: Any?) {
+        builders.add(
+            translationStepInternal {
+                this.path = path
+                this.values = values as Array<Any?>
+                if (this.lang == null) {
+                    this.lang = this@MultiPartTranslationBuilder.lang
+                }
+            }
+        )
+    }
+
+    fun buildAll(): List<String> {
+        return builders.map { it.build() }
+    }
+}
+
+class TranslationBuilder(
     var lang: Language?,
     var path: String?,
     var values: Array<Any?>,

@@ -1,7 +1,6 @@
 package me.arynxd.monke.objects.argument
 
 import me.arynxd.monke.handlers.translateAll
-import me.arynxd.monke.handlers.translationStep
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
@@ -101,10 +100,10 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
     }
 
     fun getArgumentsString(language: Language, command: Command): String {
-        val (req, opt) = translateAll(language,
-            translationStep { path = "keyword.required" },
-            translationStep { path = "keyword.optional" }
-        )
+        val (req, opt) = translateAll(language) {
+            part("keyword.required")
+            part("keyword.optional")
+        }
 
         return expected.joinToString(separator = "\n\n", prefix = "__Arguments:__\n") {
             "<${

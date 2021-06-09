@@ -3,7 +3,6 @@ package me.arynxd.monke.commands.misc.info
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.handlers.translateAll
-import me.arynxd.monke.handlers.translationStep
 import me.arynxd.monke.objects.Emoji
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
@@ -38,20 +37,19 @@ class InfoServerCommand(parent: Command) : SubCommand(
         val guild = event.argument(0, event.guild)
         val language = event.language
 
-        val translations = translateAll(language,
-                translationStep { path = "command.info.keyword.information_for_server" },
+        val translations = translateAll(language) {
+            part("command.info.keyword.information_for_server")
 
-                translationStep { path = "command.info.keyword.is_partnered"},
-                translationStep { path = "command.info.keyword.is_verified" },
-                translationStep { path = "command.info.keyword.is_public" },
-                translationStep { path = "command.info.keyword.is_verified" },
+            part("command.info.keyword.is_partnered")
+            part("command.info.keyword.is_public")
+            part("command.info.keyword.is_verified")
 
-                translationStep { path = "command.info.keyword.boost_count" },
-                translationStep { path = "command.info.keyword.member_count" },
-                translationStep { path = "command.info.keyword.created_at" },
+            part("command.info.keyword.boost_count")
+            part("command.info.keyword.member_count")
+            part("command.info.keyword.created_at")
 
-                translationStep { path = "command.info.keyword.emotes" },
-            )
+            part("command.info.keyword.emotes")
+        }
 
         val informationFor = translations[0]
 

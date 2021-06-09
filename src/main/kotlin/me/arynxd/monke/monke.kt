@@ -27,6 +27,7 @@ import kotlin.random.Random
 import kotlin.system.exitProcess
 
 fun main() {
+    Int
     Monke()
 }
 
@@ -53,7 +54,8 @@ class Monke : ListenerAdapter(), Debuggable {
                     CacheFlag.EMOTE,
                     CacheFlag.CLIENT_STATUS,
                     CacheFlag.ROLE_TAGS,
-                    CacheFlag.MEMBER_OVERRIDES
+                    CacheFlag.MEMBER_OVERRIDES,
+                    CacheFlag.ONLINE_STATUS
                 )
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .setHttpClient(handlers.okHttpClient)

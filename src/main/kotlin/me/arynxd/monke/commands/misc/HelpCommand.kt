@@ -12,6 +12,7 @@ import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
+import me.arynxd.monke.util.classes.sendPaginator
 import net.dv8tion.jda.api.entities.MessageEmbed
 
 
@@ -40,13 +41,7 @@ class HelpCommand : Command(
             return
         }
 
-        event.monke.handlers[PaginationHandler::class].addPaginator(
-            Paginator(
-                monke = event.monke,
-                pages = getHelpPages(prefix, event),
-                message = event.message
-            )
-        )
+        event.channel.sendPaginator(event, getHelpPages(prefix, event))
     }
 
     private fun getHelp(event: CommandEvent, command: Command) {

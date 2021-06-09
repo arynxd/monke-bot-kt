@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.LoadingCache
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.command.threads.CommandThread
 import me.arynxd.monke.objects.handlers.Handler
+import me.arynxd.monke.util.ignoreUnknown
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -32,15 +33,14 @@ class CommandThreadHandler(
         val thread = threads[messageId]?: return
         val toDelete = thread.responseIds.map { it.toString() }.toMutableList()
         if (toDelete.size >= 2) {
-            channel.deleteMessagesByIds(toDelete).queue(null, ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE))
+            channel.deleteMessagesByIds(toDelete).queue(null, ignoreUnknown())
         }
         else if (toDelete.size == 1) {
-            channel.deleteMessageById(toDelete.first()).queue(null, ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE))
+            channel.deleteMessageById(toDelete.first()).queue(null, ignoreUnknown())
         }
     }
 }
 
-//No idea why the compiler wants this but whatever
-private operator fun <K, V> LoadingCache<K, V>.set(messageId: K, value: V) {
+private operator fun <K : Any, V : Any> LoadingCache<K, V>.set(messageId: K, value: V) {
     this.put(messageId, value)
 }
