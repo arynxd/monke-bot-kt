@@ -39,7 +39,9 @@ class GoogleCommand : Command(
         val url = "https://www.google.com/search?q=$query&safe=active&hl=en"
         val doc = Jsoup.connect(url).get()
 
-        val links = doc.select(".yuRUbf")
+        //TODO: get a better way of doing this, maybe config or something
+        val links = doc
+            .select(".yuRUbf")
             .select("a")
 
         val names = doc
@@ -48,7 +50,11 @@ class GoogleCommand : Command(
 
         val descriptions = doc
             .select(".IsZvec")
-            .select(".aCOpRe")
+            .select(".VwiC3b")
+            .select(".yXK7lf")
+            .select(".MUxGbd")
+            .select(".yDYNvb")
+            .select(".lyLwlc")
             .select("span")
 
         if (links.isEmpty() || names.isEmpty() || descriptions.isEmpty()) {
