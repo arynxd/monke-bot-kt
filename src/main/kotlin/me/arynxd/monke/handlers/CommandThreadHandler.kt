@@ -7,8 +7,6 @@ import me.arynxd.monke.objects.command.threads.CommandThread
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.util.ignoreUnknown
 import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.exceptions.ErrorHandler
-import net.dv8tion.jda.api.requests.ErrorResponse
 import java.util.concurrent.TimeUnit
 
 class CommandThreadHandler(
@@ -24,13 +22,13 @@ class CommandThreadHandler(
     }
 
     fun getOrNew(messageId: Long): CommandThread {
-        val th = threads[messageId]?: CommandThread(messageId, listOf())
+        val th = threads[messageId] ?: CommandThread(messageId, listOf())
         threads[messageId] = th
         return th
     }
 
     fun delete(messageId: Long, channel: TextChannel) {
-        val thread = threads[messageId]?: return
+        val thread = threads[messageId] ?: return
         val toDelete = thread.responseIds.map { it.toString() }.toMutableList()
         if (toDelete.size >= 2) {
             channel.deleteMessagesByIds(toDelete).queue(null, ignoreUnknown())

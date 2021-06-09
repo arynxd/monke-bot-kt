@@ -1,9 +1,7 @@
 package me.arynxd.monke.objects.command.threads
 
 import me.arynxd.monke.handlers.CommandThreadHandler
-import me.arynxd.monke.objects.command.CommandEvent
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.TextChannel
 
 /**
  * State holder for a thread, provides access to post messages to this thread

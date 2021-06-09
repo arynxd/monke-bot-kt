@@ -2,14 +2,15 @@ package me.arynxd.monke.commands.misc
 
 import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.CommandHandler
-import me.arynxd.monke.handlers.PaginationHandler
 import me.arynxd.monke.handlers.translate
-import me.arynxd.monke.util.classes.Paginator
+import me.arynxd.monke.handlers.translateAll
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentCommand
-import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.command.Command
+import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import me.arynxd.monke.util.classes.sendPaginator
@@ -56,7 +57,7 @@ class HelpCommand : Command(
             )
         )
 
-        if (command.hasChildren()) {
+        if (command.hasChildren) {
             for (child in command.children) {
                 fields.add(
                     MessageEmbed.Field(
@@ -85,24 +86,21 @@ class HelpCommand : Command(
         val prefix = event.prefix
         val language = event.language
 
-        val description = translate {
-            lang = language
-            path = "command.help.keyword.description"
-        }
-        val usage = translate {
-            lang = language
-            path = "command.help.keyword.usage"
+        val (description, usage) = translateAll(language) {
+            part("command.help.keyword.description")
+            part("command.help.keyword.usage")
         }
 
         val commandDescription = "__${description}:__ \n${command.getDescription(language)}"
-        val args = "__${usage}:__ \n $prefix$name ${command.metaData.arguments.getArgumentsList(language, command)}\n\n " +
-                if (command.hasArguments())
-                    command.metaData.arguments.getArgumentsString(
-                        language,
-                        command
-                    )
-                else
-                    ""
+        val args =
+            "__${usage}:__ \n $prefix$name ${command.metaData.arguments.getArgumentsList(language, command)}\n\n " +
+                    if (command.hasArguments)
+                        command.metaData.arguments.getArgumentsString(
+                            language,
+                            command
+                        )
+                    else
+                        ""
 
         return "\n $commandDescription\n\n $args"
     }
@@ -110,10 +108,15 @@ class HelpCommand : Command(
     private fun getHelpPages(prefix: String, event: CommandEvent): List<MessageEmbed> {
         val result = mutableListOf<MessageEmbed>()
         val commands = event.monke.handlers[CommandHandler::class]
-                .commandMap
-                .values
-                .distinct()
-                .groupBy { it.metaData.category }
+            .commandMap
+            .values
+            .distinct()
+            .groupBy { it.metaData.category }
+
+        val page = translate {
+            lang = event.language
+            path = "command.help.keyword.page"
+        }
 
         val pageCount = CommandCategory.values().size
         val language = event.language
@@ -131,7 +134,7 @@ class HelpCommand : Command(
                         }*"
                     },
                     color = DEFAULT_EMBED_COLOUR.rgb,
-                    footerText = "Page ${category.ordinal + 1} / $pageCount"
+                    footerText = "$page ${category.ordinal + 1} / $pageCount"
                 )
             )
         }

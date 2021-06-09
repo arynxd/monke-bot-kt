@@ -6,10 +6,8 @@ import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.Monke
 import net.dv8tion.jda.api.entities.Emoji
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.MessageType
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.interactions.components.Button
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import java.awt.Color
@@ -22,30 +20,52 @@ val SUCCESS_EMOJI = Emoji.fromUnicode(me.arynxd.monke.objects.Emoji.GREEN_TICK.a
 val FAILURE_EMOJI = Emoji.fromUnicode(me.arynxd.monke.objects.Emoji.GREEN_CROSS.asReaction)
 val WASTE_BASKET_EMOJI = Emoji.fromUnicode(me.arynxd.monke.objects.Emoji.WASTE_BASKET.asReaction)
 
-suspend fun awaitConfirmation(message: Message, user: User, monke: Monke): Boolean? {
+suspend fun awaitConfirmation(message: Message, user: User, monke: Monke): Result<Boolean> {
     val userId = user.idLong
-    message.editMessage(message.embeds[0]) //TODO: change this once https://github.com/DV8FromTheWorld/JDA/issues/1654 is resolved
+    message.editMessage(message)
         .setActionRow(
             Button.of(ButtonStyle.PRIMARY, "success", SUCCESS_EMOJI),
-            Button.of(ButtonStyle.PRIMARY, "failure", FAILURE_EMOJI),
-            Button.of(ButtonStyle.DANGER, "cancel", WASTE_BASKET_EMOJI),
+            Button.of(ButtonStyle.PRIMARY, "failure", FAILURE_EMOJI)
         ).queue()
 
     return try {
         withTimeout(10_000) {
             val event = monke.jda.await<ButtonClickEvent> {
-                    it.user.idLong == userId && it.messageIdLong == message.idLong
-                }
+                it.user.idLong == userId && it.messageIdLong == message.idLong
+            }
 
             return@withTimeout when (event.componentId) {
-                "success" -> true
-                "failure" -> false
-                "cancel" -> null
-                else -> null
+                "success" -> Result(true, null)
+                "failure" -> Result(false, null)
+                else -> Result(null, "unknown")
             }
         }
     }
     catch (exception: TimeoutCancellationException) {
-        null
+        Result(null, "timeout")
     }
+}
+
+data class Result<T>(
+    private val success: T?,
+    private val err: String?
+) {
+    val isError = err != null
+    val isSuccess = success != null
+
+    val data: T
+        get() {
+            if (success == null) {
+                throw IllegalStateException("No data present")
+            }
+            return success
+        }
+
+    val error: String
+        get() {
+            if (err == null) {
+                throw IllegalStateException("No error present")
+            }
+            return err
+        }
 }

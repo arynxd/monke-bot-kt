@@ -1,11 +1,7 @@
 package me.arynxd.monke.commands.developer
 
 import me.arynxd.monke.commands.developer.plugin.*
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandFlag
-import me.arynxd.monke.objects.command.CommandMetaData
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.*
 
 //TODO: Add translation for the child commands
 @Suppress("UNUSED")

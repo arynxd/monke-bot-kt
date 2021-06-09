@@ -9,7 +9,6 @@ import me.arynxd.monke.objects.cache.GuildData
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.command.threads.CommandThread
 import me.arynxd.monke.objects.translation.Language
-import java.lang.IllegalStateException
 
 class CommandEvent(
     val monke: Monke,
@@ -26,9 +25,18 @@ class CommandEvent(
     val member = event.member
     val user = event.user
     val jda = event.jda
+
+    /** Gets refreshed with every call **/
+
+    /**
+     * This is an IMMUTABLE object, its state is not updated when replies are posted to it.
+     *
+     * Take care when sending multiple replies in 1 command cycle.
+     */
     val thread: CommandThread
         get() = monke.handlers[CommandThreadHandler::class].getOrNew(message.idLong)
 
+    /** Lazy loaded for performance **/
     val isDeveloper: Boolean
         get() = monke.handlers[ConfigHandler::class].config.developers.contains(user.id)
 
@@ -54,7 +62,8 @@ class CommandEvent(
             return default
         }
 
-        return args[indie] as? T?: throw IllegalStateException("Argument ${args[indie]} was not of type ${T::class.simpleName}")
+        return args[indie] as? T
+            ?: throw IllegalStateException("Argument ${args[indie]} was not of type ${T::class.simpleName}")
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -64,7 +73,7 @@ class CommandEvent(
         }
 
         return args.subList(start, args.size)
-            .map { it as? T?: throw IllegalStateException("Argument $it was not of type ${T::class.simpleName}") }
+            .map { it as? T ?: throw IllegalStateException("Argument $it was not of type ${T::class.simpleName}") }
             .toMutableList()
     }
 

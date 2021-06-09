@@ -6,9 +6,9 @@ import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.threads.CommandReply
-import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.getWikipediaPage
 import me.arynxd.monke.util.parseDateTime
 

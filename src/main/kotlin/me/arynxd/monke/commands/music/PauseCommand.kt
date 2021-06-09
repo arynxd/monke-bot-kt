@@ -2,7 +2,6 @@ package me.arynxd.monke.commands.music
 
 import me.arynxd.monke.handlers.MusicHandler
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
 
 @Suppress("UNUSED")

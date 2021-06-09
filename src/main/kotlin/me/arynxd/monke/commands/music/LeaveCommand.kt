@@ -4,9 +4,9 @@ import me.arynxd.monke.handlers.MusicHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.threads.CommandReply
-import me.arynxd.monke.objects.command.CommandEvent
 
 @Suppress("UNUSED")
 class LeaveCommand : Command(
@@ -34,7 +34,7 @@ class LeaveCommand : Command(
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title(
-                translate{
+                translate {
                     lang = event.language
                     path = "music.channel_left"
                     values = arrayOf(

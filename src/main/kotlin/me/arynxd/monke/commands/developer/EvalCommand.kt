@@ -10,7 +10,6 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.translation.Language
@@ -35,7 +34,7 @@ class EvalCommand : Command(
         flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.SUSPENDING),
 
         arguments = ArgumentConfiguration(
-            ArgumentString (
+            ArgumentString(
                 name = "code",
                 description = "The code to evaluate.",
                 required = true,
@@ -53,7 +52,7 @@ class EvalCommand : Command(
     private val engine: ScriptEngine by lazy {
         ScriptEngineManager().getEngineByExtension("kts")!!.apply {
             this.eval(
-                    """
+                """
                 import net.dv8tion.jda.api.*
                 import net.dv8tion.jda.api.entities.*
                 import net.dv8tion.jda.api.exceptions.*
@@ -173,13 +172,19 @@ class EvalCommand : Command(
         }
 
         reply.field(
-            title = "Saved Output",
+            title = translate {
+                lang = language
+                path = "command.eval.keyword.saved_output"
+            },
             description = outputArr,
             inline = true
         )
 
         reply.field(
-            title = "Saved Stdout",
+            title = translate {
+                lang = language
+                path = "command.eval.keyword.saved_stdout"
+            },
             description = sysOut,
             inline = true
         )
@@ -198,6 +203,27 @@ class EvalCommand : Command(
     }
 
     private suspend fun doEval(code: String, language: Language, client: OkHttpClient): Pair<String, Boolean> {
+        val uploadStackFailed = translate {
+            lang = language
+            path = "command.eval.response.upload_failed"
+            values = arrayOf(
+                translate {
+                    lang = language
+                    path = "command.eval.keyword.stacktrace"
+                }
+            )
+        }
+        val uploadResultFailed = translate {
+            lang = language
+            path = "command.eval.response.upload_failed"
+            values = arrayOf(
+                translate {
+                    lang = language
+                    path = "command.eval.keyword.result"
+                }
+            )
+        }
+
         var successful = true
         val out =
             try {
@@ -209,7 +235,7 @@ class EvalCommand : Command(
                 val st = exception.stackTraceToString()
                 successful = false
                 if (st.length > MessageEmbed.VALUE_MAX_LENGTH) {
-                    postBin(st, client) ?: "Something went wrong whilst uploading the stacktrace"
+                    postBin(st, client) ?: uploadStackFailed
                 }
                 else {
                     st
@@ -228,7 +254,7 @@ class EvalCommand : Command(
                     successful = false
                     val st = exception.stackTraceToString()
                     if (st.length > MessageEmbed.VALUE_MAX_LENGTH) {
-                        postBin(st, client) ?: "Something went wrong whilst uploading the stacktrace"
+                        postBin(st, client) ?: uploadStackFailed
                     }
                     else {
                         st
@@ -245,7 +271,7 @@ class EvalCommand : Command(
                 }
                 else {
                     if (o.length > MessageEmbed.VALUE_MAX_LENGTH) {
-                        postBin(o, client) ?: "Something went wrong whilst uploading the result"
+                        postBin(o, client) ?: uploadResultFailed
                     }
                     else {
                         o

@@ -6,8 +6,8 @@ import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.handlers.translateInternal
-import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.web.RedditPost
 import me.arynxd.monke.objects.web.WIKIPEDIA_API
@@ -149,7 +149,7 @@ suspend fun postBin(text: String, client: OkHttpClient): String? {
             return null
         }
 
-        val charStream = resp.body()?: return null
+        val charStream = resp.body() ?: return null
 
         charStream.use { body ->
             val json = DataObject.fromJson(body.charStream())

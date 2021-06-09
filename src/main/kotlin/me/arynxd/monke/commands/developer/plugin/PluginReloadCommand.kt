@@ -4,7 +4,6 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentPlugin
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.plugins.LoadedPlugin
 

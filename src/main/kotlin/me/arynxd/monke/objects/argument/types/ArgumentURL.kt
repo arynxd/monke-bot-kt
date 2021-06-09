@@ -15,7 +15,7 @@ class ArgumentURL(
     override val type: Type,
     override val condition: (URL) -> Boolean = { true }
 
-    ) : Argument<URL>() {
+) : Argument<URL>() {
 
     override suspend fun convert(input: String, event: CommandEvent): URL? {
         return try {

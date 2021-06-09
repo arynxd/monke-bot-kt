@@ -4,6 +4,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.serializer
 import me.arynxd.monke.Monke
+import me.arynxd.monke.handlers.translateInternal
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import java.net.MalformedURLException
@@ -30,7 +31,7 @@ fun String.isValidUrl(): Boolean {
     }
 }
 
-fun String?.equalsIgnoreCase(other: String?) = this?.equals(other, true)?: false
+fun String?.equalsIgnoreCase(other: String?) = this?.equals(other, true) ?: false
 
 fun Int.plurify() = if (this != 1) "s" else ""
 fun Long.plurify() = if (this != 1L) "s" else ""
@@ -44,7 +45,10 @@ suspend fun String.takeOrHaste(length: Int, monke: Monke): String {
         return this
     }
 
-    return postBin(this, monke.handlers.okHttpClient)?: "An unexpected error occurred"
+    return postBin(this, monke.handlers.okHttpClient) ?: translateInternal {
+        path = "internal_error.web_service_error"
+        values = arrayOf(HASTEBIN_SERVER)
+    }
 }
 
 fun parseDateTime(time: TemporalAccessor?): String? = time?.let {

@@ -1,6 +1,5 @@
 package me.arynxd.monke.commands.moderation
 
-import kotlinx.coroutines.delay
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
@@ -34,25 +33,28 @@ class PurgeCommand : Command(
         }
 
         val message = event.thread.awaitPost(resp)
-        delay(1000)
         val confirmation = awaitConfirmation(message, event.user, event.monke)
 
-        if (confirmation == null) {
-            event.reply {
-                type(CommandReply.Type.EXCEPTION)
-                title(
-                    translate {
-                        lang = language
-                        path = "command_error.timeout"
-                    }
-                )
-                footer()
-                event.thread.post(this)
+        if (confirmation.isError) {
+            val err = confirmation.error
+
+            if (err == "timeout") {
+                event.reply {
+                    type(CommandReply.Type.EXCEPTION)
+                    title(
+                        translate {
+                            lang = language
+                            path = "command_error.timeout"
+                        }
+                    )
+                    footer()
+                    event.thread.post(this)
+                }
             }
             return
         }
 
-        if (confirmation) {
+        if (confirmation.data) {
             purgeChannel(event.channel)
         }
         else {

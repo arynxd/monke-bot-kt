@@ -6,9 +6,9 @@ import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentLanguage
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.threads.CommandReply
-import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 
 @Suppress("UNUSED")
@@ -33,17 +33,17 @@ class LanguageCommand : Command(
         val guildLanguage = event.language
         if (!event.isArgumentPresent(0)) {
             event.replyAsync {
-                    type(CommandReply.Type.INFORMATION)
-                    title(
-                        translate {
-                            lang = guildLanguage
-                            path = "command.language.response.get_response"
-                            values = arrayOf(guildLanguage.commonName)
-                        }
-                    )
-                    footer()
-                    event.thread.post(this)
-                }
+                type(CommandReply.Type.INFORMATION)
+                title(
+                    translate {
+                        lang = guildLanguage
+                        path = "command.language.response.get_response"
+                        values = arrayOf(guildLanguage.commonName)
+                    }
+                )
+                footer()
+                event.thread.post(this)
+            }
             return
         }
 

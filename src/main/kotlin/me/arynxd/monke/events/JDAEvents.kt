@@ -17,8 +17,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.hooks.EventListener
-import net.dv8tion.jda.api.hooks.ListenerAdapter
-import java.lang.IllegalArgumentException
 import java.time.Instant
 
 data class CommandPreprocessEvent(
@@ -35,7 +33,7 @@ data class CommandPreprocessEvent(
         event.message,
         event.guild,
         event.author,
-        event.member?: throw IllegalArgumentException("member was null"),
+        event.member ?: throw IllegalArgumentException("member was null"),
         event.jda,
         event.channel
     )
@@ -45,7 +43,7 @@ data class CommandPreprocessEvent(
         event.message,
         event.guild,
         event.author,
-        event.member?: throw IllegalArgumentException("member was null"),
+        event.member ?: throw IllegalArgumentException("member was null"),
         event.jda,
         event.channel
     )
@@ -54,7 +52,7 @@ data class CommandPreprocessEvent(
 class JDAEvents(val monke: Monke) : EventListener {
     override fun onEvent(event: GenericEvent) {
         when (event) {
-            is GuildMessageReceivedEvent  -> {
+            is GuildMessageReceivedEvent -> {
                 if (event.author.isBot) {
                     return
                 }
@@ -118,7 +116,7 @@ class JDAEvents(val monke: Monke) : EventListener {
                     ).queue()
                 }
             }
-         }
+        }
     }
 }
 

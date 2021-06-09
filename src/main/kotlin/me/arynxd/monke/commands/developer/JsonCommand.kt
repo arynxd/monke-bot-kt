@@ -5,7 +5,6 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentLong
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.prettyPrintJson
 import me.arynxd.monke.util.splitStringCodeblock

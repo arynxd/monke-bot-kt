@@ -1,7 +1,6 @@
 package me.arynxd.monke.commands.moderation
 
 import dev.minn.jda.ktx.asFlow
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
@@ -47,7 +46,7 @@ class ClearCommand : Command(
             val resp = event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    translate{
+                    translate {
                         lang = language
                         path = "command_error.rate_limited"
                     }

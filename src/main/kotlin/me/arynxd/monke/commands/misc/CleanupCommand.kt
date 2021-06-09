@@ -1,5 +1,6 @@
 package me.arynxd.monke.commands.misc
 
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentInt
@@ -29,6 +30,7 @@ class CleanupCommand : Command(
 ) {
     override fun runSync(event: CommandEvent) {
         val amount = event.argument(0, 20)
+        val language = event.language
         event.channel.iterableHistory
             .takeAsync(amount)
             .thenApply { list ->
@@ -40,7 +42,12 @@ class CleanupCommand : Command(
                 if (it.isEmpty()) {
                     event.replyAsync {
                         type(CommandReply.Type.EXCEPTION)
-                        title("No messages found")
+                        title(
+                            translate {
+                                lang = language
+                                path = "command.cleanup.response.no_messages"
+                            }
+                        )
                         footer()
                         event.thread.post(this)
                     }
@@ -50,7 +57,13 @@ class CleanupCommand : Command(
                 event.channel.purgeMessagesById(it)
                 event.replyAsync {
                     type(CommandReply.Type.SUCCESS)
-                    title("Cleaned up ${it.size} messages")
+                    title(
+                        translate {
+                            lang = language
+                            path = "command.cleanup.response.success"
+                            values = arrayOf(it.size)
+                        }
+                    )
                     event.thread.post(this)
                 }
             }

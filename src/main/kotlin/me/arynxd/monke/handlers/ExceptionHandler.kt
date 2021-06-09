@@ -18,7 +18,7 @@ class ExceptionHandler(
     override val monke: Monke,
     override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
 ) : Handler() {
-    private val webhookUrl: String by whenEnabled { monke.handlers.get(ConfigHandler::class).config.logWebhook }
+    private val webhookUrl: String by whenEnabled { monke.handlers[ConfigHandler::class].config.logWebhook }
     private val avatarUrl: String by whenEnabled { monke.jda.selfUser.effectiveAvatarUrl }
     private val webhookClient: WebhookClient by lazy { WebhookClient.withUrl(webhookUrl) }
 

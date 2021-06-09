@@ -5,9 +5,9 @@ import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.threads.CommandReply
-import me.arynxd.monke.objects.command.CommandEvent
 import net.dv8tion.jda.api.entities.MessageEmbed
 
 @Suppress("UNUSED")
@@ -33,7 +33,8 @@ class UwUCommand : Command(
         event.replyAsync {
             val sentence = event.vararg<String>(0)
                 .joinToString(separator = " ")
-                .toCharArray().map {
+                .toCharArray()
+                .map {
                     when (it) {
                         'r', 'l' -> "w"
                         'o' -> "wo"

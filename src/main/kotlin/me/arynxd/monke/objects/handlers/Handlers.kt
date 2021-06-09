@@ -9,7 +9,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 import kotlin.reflect.KClass
-import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.kotlinFunction
 import kotlin.system.exitProcess
 
@@ -50,9 +49,11 @@ class Handlers(val monke: Monke) {
             }
 
             val params = constructor.parameters
-            val instance = constructor.callBy(mapOf(
-                params[0] to monke
-            ))
+            val instance = constructor.callBy(
+                mapOf(
+                    params[0] to monke
+                )
+            )
 
             if (instance !is Handler) {
                 LOGGER.warn("Non Handler class ( ${cls.simpleName} ) found in handlers package!")

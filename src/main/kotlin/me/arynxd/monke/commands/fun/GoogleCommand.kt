@@ -7,10 +7,8 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
 import org.jsoup.Jsoup
-import org.jsoup.select.Elements
 import java.net.URLEncoder
 
 @Suppress("UNUSED")
@@ -41,9 +39,17 @@ class GoogleCommand : Command(
         val url = "https://www.google.com/search?q=$query&safe=active&hl=en"
         val doc = Jsoup.connect(url).get()
 
-        val links: Elements = doc.select(".yuRUbf").select("a")
-        val names: Elements = doc.select(".yuRUbf").select("a").select("h3")
-        val descriptions: Elements = doc.select(".IsZvec").select(".aCOpRe").select("span")
+        val links = doc.select(".yuRUbf")
+            .select("a")
+
+        val names = doc
+            .select(".yuRUbf")
+            .select("a").select("h3")
+
+        val descriptions = doc
+            .select(".IsZvec")
+            .select(".aCOpRe")
+            .select("span")
 
         if (links.isEmpty() || names.isEmpty() || descriptions.isEmpty()) {
             event.replyAsync {

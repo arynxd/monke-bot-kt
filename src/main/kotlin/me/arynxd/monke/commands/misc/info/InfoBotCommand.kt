@@ -3,7 +3,6 @@ package me.arynxd.monke.commands.misc.info
 import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.handlers.translateAll
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.classes.MonkeInfo
 
@@ -31,7 +30,8 @@ class InfoBotCommand(parent: Command) : SubCommand(
             part("command.info.child.bot.keyword.total_users")
             part("command.info.child.bot.keyword.total_servers")
 
-            part( "command.info.child.bot.keyword.uptime")
+            part("command.info.child.bot.keyword.uptime")
+            part("command.info.child.bot.keyword.information")
         }
 
         val jvmVersion = translations[0]
@@ -48,7 +48,7 @@ class InfoBotCommand(parent: Command) : SubCommand(
 
         event.replyAsync {
             type(CommandReply.Type.INFORMATION)
-            title("${event.jda.selfUser.name} information")
+            title(event.jda.selfUser.name + translations[9])
 
             field(jvmVersion, MonkeInfo.getJavaVersion(), true)
             field(jdaVersion, MonkeInfo.getJDAVersion(), true)

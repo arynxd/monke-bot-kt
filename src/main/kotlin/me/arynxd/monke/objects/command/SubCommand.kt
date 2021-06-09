@@ -1,7 +1,6 @@
 package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.handlers.translate
-import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 
 abstract class SubCommand(
@@ -24,7 +23,7 @@ abstract class SubCommand(
     }
 
     override fun getDescription(language: Language): String {
-        return translate{
+        return translate {
             lang = language
             path = "command.${parent.metaData.name}.child.${metaData.name}.description"
         }

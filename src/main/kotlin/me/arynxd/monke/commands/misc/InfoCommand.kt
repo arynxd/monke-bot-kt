@@ -8,8 +8,8 @@ import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentMember
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandMetaData
 
 @Suppress("UNUSED")
 class InfoCommand : Command(

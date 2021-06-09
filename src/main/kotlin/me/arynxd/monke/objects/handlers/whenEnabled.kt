@@ -2,7 +2,7 @@ package me.arynxd.monke.objects.handlers
 
 import kotlin.reflect.KProperty
 
-class whenEnabled <T> (val supplier: () -> T) {
+class whenEnabled<T>(val supplier: () -> T) {
     private var value: T? = null
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {

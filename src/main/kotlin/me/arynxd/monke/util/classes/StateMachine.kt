@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.events.GenericEvent
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
-class StateMachine <T : GenericEvent> (
+class StateMachine<T : GenericEvent>(
     val clazz: KClass<T>,
     val predicate: (T) -> Boolean,
     val transformer: (T, Int, StateMachine<T>) -> Int

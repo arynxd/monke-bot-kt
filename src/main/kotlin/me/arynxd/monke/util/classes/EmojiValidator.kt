@@ -6,7 +6,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.util.loadResource
 import me.arynxd.monke.util.readFully
-import java.lang.IllegalStateException
 
 object EmojiValidator {
     private val setOfEmoji = mutableSetOf<String>()
@@ -15,7 +14,7 @@ object EmojiValidator {
         val emojiJson = loadResource("assets/emoji.json").readFully()
 
         if (emojiJson.isBlank()) {
-            LOGGER.info("emoji.json not found, validation cannot be performed on unicode emojis.")
+            LOGGER.warn("emoji.json not found, validation cannot be performed on unicode emojis.")
             return
         }
 
@@ -26,11 +25,11 @@ object EmojiValidator {
 
             for (obj in json.jsonObject) {
                 val jsonObj = obj.value.jsonObject
-                val emojiObj = jsonObj["emoji"]?: throw IllegalStateException("json did not have 'emoji' key")
+                val emojiObj = jsonObj["emoji"] ?: throw IllegalStateException("json did not have 'emoji' key")
                 val emoji = emojiObj.jsonPrimitive.content
                 setOfEmoji.add(emoji)
 
-                val diversity = jsonObj["diversity"]?: continue
+                val diversity = jsonObj["diversity"] ?: continue
 
                 for (diverse in diversity.jsonObject) {
                     val div = diverse.value.jsonPrimitive.content

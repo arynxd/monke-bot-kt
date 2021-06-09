@@ -1,6 +1,5 @@
 package me.arynxd.monke.objects.command.threads
 
-import dev.minn.jda.ktx.Embed
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.command.CommandEvent
@@ -120,9 +119,9 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
     fun mentions(vararg mentions: Message.MentionType) = this.mentions.addAll(mentions)
 
     fun chunks(parts: List<Any>) = parts.forEach {
-       message.reply(it.toString())
+        message.reply(it.toString())
             .mentionRepliedUser(false)
-            .override(true )
+            .override(true)
             .allowedMentions(mentions)
             .queue()
     }

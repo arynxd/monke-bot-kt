@@ -1,7 +1,6 @@
 package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.command.CommandEvent
 import net.dv8tion.jda.api.Permission
 
 data class CommandMetaData @JvmOverloads constructor(

@@ -1,17 +1,20 @@
 package me.arynxd.monke.handlers
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import me.arynxd.monke.Monke
 import me.arynxd.monke.events.CommandPreprocessEvent
 import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandFlag
-import me.arynxd.monke.objects.command.threads.CommandReply
-import me.arynxd.monke.objects.command.SubCommand
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandFlag
+import me.arynxd.monke.objects.command.SubCommand
+import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.handlers.whenEnabled
 import me.arynxd.monke.objects.translation.Language
+import me.arynxd.monke.util.equalsIgnoreCase
 import me.arynxd.monke.util.markdownSanitize
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
@@ -33,8 +36,8 @@ class CommandHandler(
     private val reflections = Reflections(COMMAND_PACKAGE, SubTypesScanner())
     val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
     private val executor = Executors.newSingleThreadExecutor {
-            Thread(it, "Monke-Command-Thread")
-        }
+        Thread(it, "Monke-Command-Thread")
+    }
 
     fun handlePreprocessEvent(event: CommandPreprocessEvent) {
         val prefix = monke.handlers[GuildDataHandler::class].getData(event.guild.idLong).prefix
@@ -42,14 +45,14 @@ class CommandHandler(
         val contentRaw = event.message.contentRaw
 
         val content = when {
-                isBotMention(event) -> contentRaw.substring(contentRaw.indexOf(char = '>') + 1, contentRaw.length)
+            isBotMention(event) -> contentRaw.substring(contentRaw.indexOf(char = '>') + 1, contentRaw.length)
 
-                contentRaw.startsWith(prefix) -> contentRaw.substring(prefix.length, contentRaw.length)
+            contentRaw.startsWith(prefix) -> contentRaw.substring(prefix.length, contentRaw.length)
 
-                contentRaw.startsWith(prefix.repeat(1)) -> return
+            contentRaw.startsWith(prefix.repeat(1)) -> return
 
-                else -> return
-            }
+            else -> return
+        }
             .markdownSanitize()
             .replace(SUBSTITUTION_REGEX, "")
 
@@ -89,14 +92,14 @@ class CommandHandler(
 
         val commandEvent = CommandEvent(monke, args.toMutableList(), command, event)
 
-        if (command.hasChildren()) {
-            if (args.isEmpty()) { //Is there no additional arguments
+        if (command.hasChildren) {
+            if (args.isEmpty()) { //Is there no additional arguments (children to proccess)
                 launchCommand(command, commandEvent)
                 return
             }
 
             val childQuery = args[0]
-            val childCommand = command.children.find { it.metaData.name.equals(childQuery, true) }
+            val childCommand = command.children.find { it.metaData.name.equalsIgnoreCase(childQuery) }
 
             if (childCommand == null) {
                 launchCommand(command, commandEvent)

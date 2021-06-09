@@ -190,31 +190,25 @@ abstract class Command(
         return true
     }
 
-    fun hasFlag(flag: CommandFlag): Boolean {
-        return metaData.flags.contains(flag)
-    }
+    fun hasFlag(flag: CommandFlag) = metaData.flags.contains(flag)
 
-    fun hasArguments(): Boolean {
-        return metaData.arguments.expected.isNotEmpty()
-    }
+    val hasArguments = metaData.arguments.expected.isNotEmpty()
 
-    fun hasChildren(): Boolean {
-        return children.isNotEmpty()
-    }
+    val hasChildren = children.isNotEmpty()
 
     open fun getDescription(language: Language) = translate {
         lang = language
         path = "command.${metaData.name}.description"
     }
 
-    open fun getName(language: Language)= translate {
+    open fun getName(language: Language) = translate {
         lang = language
         path = "command.${metaData.name}.name"
     }
 
     fun getAliases(language: Language) = translate {
         lang = language
-        path =  "command.${metaData.name}.aliases"
+        path = "command.${metaData.name}.aliases"
     }.split("/")
 
     open suspend fun runSuspend(event: CommandEvent) {

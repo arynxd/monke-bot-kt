@@ -11,8 +11,6 @@ import me.arynxd.monke.util.queue
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
-import net.dv8tion.jda.api.exceptions.ErrorHandler
-import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.internal.utils.Checks
 
 class Paginator(

@@ -6,9 +6,9 @@ import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentUser
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.threads.CommandReply
-import me.arynxd.monke.objects.command.CommandEvent
 
 @Suppress("UNUSED")
 class AvatarCommand : Command(
@@ -36,7 +36,7 @@ class AvatarCommand : Command(
         event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title(
-                translate{
+                translate {
                     lang = language
                     path = "command.avatar.response.avatar_for_user"
                     values = arrayOf(user.asTag)

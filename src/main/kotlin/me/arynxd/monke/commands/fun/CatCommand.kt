@@ -2,7 +2,6 @@ package me.arynxd.monke.commands.`fun`
 
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.checkAndSendPost
 import me.arynxd.monke.util.getPosts

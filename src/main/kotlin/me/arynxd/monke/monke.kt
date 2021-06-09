@@ -128,7 +128,7 @@ class Monke : ListenerAdapter(), Debuggable {
 
         val status = listOf(
             Activity.watching("${MonkeInfo.getGuildCount(jda)} server" + MonkeInfo.getGuildCount(jda).plurify()),
-            Activity.watching("${MonkeInfo.getUserCount(jda)} user" +MonkeInfo. getUserCount(jda).plurify()),
+            Activity.watching("${MonkeInfo.getUserCount(jda)} user" + MonkeInfo.getUserCount(jda).plurify()),
             Activity.listening("your commands"),
             Activity.playing("forknife!!!!"),
             Activity.competing("among monkes"),

@@ -33,7 +33,8 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
     }
 
     suspend fun validateArguments(event: CommandEvent): Triple<List<Any>, List<Argument<*>>, List<Argument<*>>> {
-        val args = event.args.map { it.toString() } //Using toString to avoid un-needed casting (args should already be strings)
+        val args =
+            event.args.map { it.toString() } //Using toString to avoid un-needed casting (args should already be strings)
         event.args.clear()
 
         val invalidArguments = mutableListOf<Argument<*>>()

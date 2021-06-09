@@ -70,15 +70,18 @@
     },
     "leave": {
       "name": "leave",
-      "description": "Leaves the voice channel, if it's in one."
+      "description": "Leaves the voice channel, if it's in one.",
+      "aliases": ""
     },
     "pause": {
       "name": "pause",
-      "description": "Pause and unpause the player."
+      "description": "Pause and unpause the player.",
+      "aliases": ""
     },
     "purge": {
       "name": "purge",
       "description": "Purges all messages from this channel.",
+      "aliases": "",
       "response": {
         "confirmation": "This will delete ALL messages from this channel, continue?",
         "aborted": "Purge aborted"
@@ -116,7 +119,13 @@
         "code": "Code",
         "error": "Error",
         "no_error": "Evaluated without error.",
-        "result": "Result"
+        "result": "Result",
+        "saved_stdout": "Saved Stdout",
+        "saved_output": "Saved Output",
+        "stacktrace": "Stacktrace"
+      },
+      "response": {
+        "upload_failed": "Something went wrong whilst uploading the %0"
       }
     },
     "json": {
@@ -223,7 +232,8 @@
         }
       },
       "response": {
-        "lower_>_upper": "Number 1 must be lower than Number 2."
+        "lower_>_upper": "Number 1 must be lower than Number 2.",
+        "success": "I choose %0!"
       }
     },
     "uwu": {
@@ -250,7 +260,8 @@
       "keyword": {
         "help_for": "Help for",
         "description": "Description",
-        "usage": "Usage"
+        "usage": "Usage",
+        "page": "Page"
       }
     },
     "info": {
@@ -267,6 +278,7 @@
         "user": {
           "name": "user",
           "description": "Shows information about a user.",
+          "aliases": "",
           "argument": {
             "member": {
               "name": "member",
@@ -277,6 +289,7 @@
         "server": {
           "name": "server",
           "description": "Shows information about a server.",
+          "aliases": "",
           "argument": {
             "server": {
               "name": "server",
@@ -300,7 +313,8 @@
             "cpu_usage": "CPU Usage",
             "total_users": "Total Users",
             "total_servers": "Total Servers",
-            "uptime": "Uptime"
+            "uptime": "Uptime",
+            "information": "information"
           }
         }
       },
@@ -325,7 +339,13 @@
     "ping": {
       "name": "ping",
       "description": "Shows the bot's ping to discord.",
-      "aliases": "pong"
+      "aliases": "pong",
+      "keyword": {
+        "ping": "Ping",
+        "message": "Message",
+        "gateway": "Gateway",
+        "rest": "Rest"
+      }
     },
     "prefix": {
       "name": "prefix",
@@ -406,19 +426,21 @@
       "name": "cleanup",
       "description": "Cleans up the bot's message",
       "aliases": "",
-
       "argument": {
         "amount": {
           "name": "amount",
           "description": "The amount of messages to check. Must be less than 25"
         }
+      },
+      "response": {
+        "success": "Cleaned up %0 messages",
+        "no_messages": "No messages found"
       }
     },
     "plugin": {
       "name": "plugin",
       "description": "Controls the currently running plugins.",
       "aliases": "",
-
       "child": {
         "disable": {
           "name": "disable",

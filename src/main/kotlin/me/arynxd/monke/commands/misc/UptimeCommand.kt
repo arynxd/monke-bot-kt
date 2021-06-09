@@ -3,9 +3,9 @@ package me.arynxd.monke.commands.misc
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.threads.CommandReply
-import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.classes.MonkeInfo
 
 @Suppress("UNUSED")

@@ -6,9 +6,9 @@ import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentLong
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
+import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.threads.CommandReply
-import me.arynxd.monke.objects.command.CommandEvent
 import kotlin.random.Random
 
 @Suppress("UNUSED")
@@ -59,7 +59,15 @@ class RandomNumberCommand : Command(
 
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)
-            title("I choose ${Random.nextLong(lowerBound, upperBound)}!")
+            title(
+                translate {
+                    lang = event.language
+                    path = "command.rng.response.success"
+                    values = arrayOf(
+                        Random.nextLong(lowerBound, upperBound)
+                    )
+                }
+            )
             footer()
             event.thread.post(this)
         }
