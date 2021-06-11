@@ -29,7 +29,8 @@ class UwUCommand : Command(
                     if (it.isBlank() || it.length > MessageEmbed.TEXT_MAX_LENGTH)
                         ArgumentResult(
                             null,
-                            "Text must not be blank and must be less than ${MessageEmbed.TEXT_MAX_LENGTH} chars"
+                            //"Text must not be blank and must be less than ${MessageEmbed.TEXT_MAX_LENGTH} chars"
+                        "internal_error.nop"
                         )
                     else
                         ArgumentResult(it, null)

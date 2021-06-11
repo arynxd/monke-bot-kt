@@ -39,7 +39,10 @@ class StealCommand : Command(
                 type = Type.REGULAR,
                 condition = {
                     if (!it.matches(EMOJI_REGEX))
-                        ArgumentResult(null, "Emoji name must be A-Z or _ and 2 - 32 characters long")
+                        ArgumentResult(null,
+                            //"Emoji name must be A-Z or _ and 2 - 32 characters long"
+                        "internal_error.nop" //TODO add translation here
+                        )
                     else
                         ArgumentResult(it, null)
                 }

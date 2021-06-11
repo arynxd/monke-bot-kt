@@ -94,6 +94,11 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
             inline
         )
 
+    fun setField(idx: Int, title: Any?, description: Any?, inline: Boolean) {
+        val fields = embed.fields
+        fields[idx] = MessageEmbed.Field(title.toString(), description.toString(), inline)
+    }
+
     fun fields(fields: Collection<MessageEmbed.Field>) = fields.forEach { field(it.name, it.value, it.isInline) }
 
     fun blankField(inline: Boolean) = embed.addBlankField(inline)

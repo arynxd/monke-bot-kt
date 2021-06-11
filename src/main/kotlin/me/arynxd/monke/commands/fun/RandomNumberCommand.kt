@@ -28,7 +28,7 @@ class RandomNumberCommand : Command(
                 type = Type.REGULAR,
                 condition = {
                     if (it < 0)
-                        ArgumentResult(null, "Number must be more than 0")
+                        ArgumentResult(null, "internal_error.nop") //TODO add translation here
                     else
                         ArgumentResult(it, null)
                 }
@@ -40,7 +40,7 @@ class RandomNumberCommand : Command(
                 type = Type.REGULAR,
                 condition = {
                     if (it < 0)
-                        ArgumentResult(null, "Number must be more than 0")
+                        ArgumentResult(null, "internal_error.nop") //TODO add translation here
                     else
                         ArgumentResult(it, null)
                 }

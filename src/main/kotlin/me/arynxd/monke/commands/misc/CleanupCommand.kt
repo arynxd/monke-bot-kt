@@ -26,7 +26,7 @@ class CleanupCommand : Command(
                 type = Type.REGULAR,
                 condition = {
                     if (it !in 1..30)
-                        ArgumentResult(null, "Amount must be between 1 and 30")
+                        ArgumentResult(null, "internal_error.nop") //TODO add translation here
                     else
                         ArgumentResult(it, null)
                 }

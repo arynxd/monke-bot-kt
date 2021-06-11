@@ -10,7 +10,8 @@
     "web_service_error": "%0 didn't provide any valid data in their response.",
     "language_key_not_found": "Key %0 does not exist for language %1,",
     "language_not_found": "Language %0 not found.",
-    "invalid_language": "Language specified in the config file was invalid, falling back to defaults."
+    "invalid_language": "Language specified in the config file was invalid, falling back to defaults.",
+    "nop": "No translation found."
   },
   "plugin": {
     "folder_not_found": "Plugin - plugins folder did not exist, aborting plugin loading",

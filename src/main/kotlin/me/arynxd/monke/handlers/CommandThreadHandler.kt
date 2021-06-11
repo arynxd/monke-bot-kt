@@ -22,9 +22,9 @@ class CommandThreadHandler(
     }
 
     fun getOrNew(messageId: Long): CommandThread {
-        val th = threads[messageId] ?: CommandThread(messageId, listOf())
-        threads[messageId] = th
-        return th
+        val thr = threads[messageId] ?: CommandThread(messageId, listOf())
+        threads[messageId] = thr
+        return thr
     }
 
     fun delete(messageId: Long, channel: TextChannel) {

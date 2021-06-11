@@ -32,7 +32,7 @@ class ClearCommand : Command(
                 type = Type.REGULAR,
                 condition = {
                     if (it !in 1..50)
-                        ArgumentResult(null, "Amount must be between 1 and 50")
+                        ArgumentResult(null, "internal_error.nop") //TODO add translation here
                     else
                         ArgumentResult(it, null)
 
@@ -69,7 +69,7 @@ class ClearCommand : Command(
 
         val messages = event.channel.iterableHistory.asFlow()
             .take(amountToTake)
-            .filter { it.idLong != event.message.idLong && event.thread.contains(it.idLong) }
+            .filter { it.idLong != event.message.idLong && !event.thread.contains(it.idLong) }
             .toList()
 
         event.channel.purgeMessages(messages)
@@ -90,5 +90,4 @@ class ClearCommand : Command(
             event.thread.post(this)
         }
     }
-
 }

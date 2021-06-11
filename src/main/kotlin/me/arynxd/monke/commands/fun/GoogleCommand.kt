@@ -30,7 +30,7 @@ class GoogleCommand : Command(
                 type = Type.VARARG,
                 condition = {
                     if (it.isBlank())
-                        ArgumentResult(null, "Search query cannot be blank")
+                        ArgumentResult(null, "internal_error.nop")//TODO add translation here
                     else
                         ArgumentResult(it, null)
                 }

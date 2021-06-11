@@ -2,8 +2,10 @@ package me.arynxd.monke.commands.developer
 
 import dev.minn.jda.ktx.await
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import me.arynxd.monke.handlers.TaskHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.handlers.translateInternal
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
@@ -21,6 +23,7 @@ import net.dv8tion.jda.api.requests.RestAction
 import okhttp3.OkHttpClient
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
+import java.util.concurrent.TimeUnit
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
@@ -44,7 +47,7 @@ class EvalCommand : Command(
     )
 ) {
     private val saveFunc = """
-        fun Any.save() {
+        fun Any?.save() {
             output.data.add(this)
         }
         """.trimIndent()
@@ -108,8 +111,26 @@ class EvalCommand : Command(
         val okHttpClient = monke.handlers.okHttpClient
 
         System.setOut(newSysOut)
+        var reply = buildReply(event, script, true, "---", "---", "---")
 
-        val result = doEval(saveFunc + script, language, okHttpClient)
+        val restActionHandler: (Throwable) -> Unit = {
+            event.monke.handlers[TaskHandler::class].addOneShot(delay = 2, unit = TimeUnit.SECONDS) {
+                val title = it.message.toString()
+                reply.type(CommandReply.Type.EXCEPTION)
+                reply.setField(0, translate {
+                    lang = language
+                    path = "command.eval.keyword.result"
+                }, title, true)
+                event.thread.post(reply)
+            }
+        }
+
+        event.thread.post(reply)
+
+        val defaultFailure = RestAction.getDefaultFailure()
+        RestAction.setDefaultFailure(restActionHandler)
+
+        val result = doEval(saveFunc + script, event)
 
         val sysOut = String(newOutStream.toByteArray()).takeOrHaste(100, monke).let {
             if (it.isBlank()) {
@@ -131,25 +152,47 @@ class EvalCommand : Command(
             }
         }
 
+        val output = result.first
+        val isSuccessful = result.second
+
+        reply = buildReply(
+            event = event,
+            script = script,
+            success = isSuccessful,
+            output = output,
+            saved = outputArr,
+            sysOut = sysOut
+        )
+
         withContext(Dispatchers.IO) {
             newOutStream.close()
             newSysOut.close()
         }
 
-        val output = result.first
-        val isSuccessful = result.second
+        event.thread.post(reply)
+        event.monke.handlers[TaskHandler::class].addOneShot(delay = 2500, unit = TimeUnit.MILLISECONDS) {
+            RestAction.setDefaultFailure(defaultFailure)
+        }
+    }
 
-        val reply = CommandReply(event)
-        reply.title(
+    private suspend fun buildReply(
+        event: CommandEvent,
+        script: String,
+        success: Boolean,
+        output: String,
+        sysOut: String,
+        saved: String
+    ) = event.reply {
+        val language = event.language
+        title(
             translate {
                 lang = language
                 path = "command.eval.keyword.evaluated_result"
             }
         )
-
-        if (isSuccessful) {
-            reply.type(CommandReply.Type.SUCCESS)
-            reply.field(
+        if (success) {
+            type(CommandReply.Type.SUCCESS)
+            field(
                 title = translate {
                     lang = language
                     path = "command.eval.keyword.result"
@@ -160,8 +203,8 @@ class EvalCommand : Command(
 
         }
         else {
-            reply.type(CommandReply.Type.EXCEPTION)
-            reply.field(
+            type(CommandReply.Type.EXCEPTION)
+            field(
                 title = translate {
                     lang = language
                     path = "command.eval.keyword.error"
@@ -171,16 +214,16 @@ class EvalCommand : Command(
             )
         }
 
-        reply.field(
+        field(
             title = translate {
                 lang = language
                 path = "command.eval.keyword.saved_output"
             },
-            description = outputArr,
+            description = saved,
             inline = true
         )
 
-        reply.field(
+        field(
             title = translate {
                 lang = language
                 path = "command.eval.keyword.saved_stdout"
@@ -188,8 +231,7 @@ class EvalCommand : Command(
             description = sysOut,
             inline = true
         )
-
-        reply.field(
+        field(
             title = translate {
                 lang = language
                 path = "command.eval.keyword.code"
@@ -197,12 +239,11 @@ class EvalCommand : Command(
             description = "```kt\n${script.takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, monke)}```",
             inline = false
         )
-
-        reply.footer()
-        event.thread.post(reply)
+        footer()
     }
 
-    private suspend fun doEval(code: String, language: Language, client: OkHttpClient): Pair<String, Boolean> {
+    private suspend fun doEval(code: String, event: CommandEvent): Pair<String, Boolean> {
+        val language = event.language
         val uploadStackFailed = translate {
             lang = language
             path = "command.eval.response.upload_failed"
@@ -232,14 +273,9 @@ class EvalCommand : Command(
                 }
             }
             catch (exception: Exception) {
-                val st = exception.stackTraceToString()
                 successful = false
-                if (st.length > MessageEmbed.VALUE_MAX_LENGTH) {
-                    postBin(st, client) ?: uploadStackFailed
-                }
-                else {
-                    st
-                }
+                val haste = exception.stackTraceToString().takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, event.monke)
+                "${exception.message}\n$haste"
             }
 
         val result = when (out) {
@@ -252,13 +288,8 @@ class EvalCommand : Command(
                 }
                 catch (exception: ErrorResponseException) {
                     successful = false
-                    val st = exception.stackTraceToString()
-                    if (st.length > MessageEmbed.VALUE_MAX_LENGTH) {
-                        postBin(st, client) ?: uploadStackFailed
-                    }
-                    else {
-                        st
-                    }
+                    val haste = exception.stackTraceToString().takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, event.monke)
+                    "${exception.message}\n$haste"
                 }
 
             else -> {
@@ -270,12 +301,7 @@ class EvalCommand : Command(
                     }
                 }
                 else {
-                    if (o.length > MessageEmbed.VALUE_MAX_LENGTH) {
-                        postBin(o, client) ?: uploadResultFailed
-                    }
-                    else {
-                        o
-                    }
+                    o.takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, event.monke)
                 }
             }
         }
@@ -285,6 +311,6 @@ class EvalCommand : Command(
 
     //Wrapper class for a data list because script engine can't handle a regular array????
     data class EvalOutput(
-        val data: MutableList<Any>
+        val data: MutableList<Any?>
     )
 }
