@@ -29,7 +29,7 @@ class TranslationHandler(
 
     companion object {
         val languages = initLanguages()
-        val keyRegex: Regex = Regex("\\.")
+        val keyRegex = Regex("\\.")
         lateinit var internalLanguage: Language
 
         private fun initLanguages(): Map<Language, TranslatedLanguage> {
@@ -116,7 +116,7 @@ fun translate(fn: TranslationBuilder.() -> Unit): String {
 }
 
 fun translateInternal(fn: TranslationBuilder.() -> Unit): String {
-    val builder = TranslationBuilder(null, null, emptyArray(), true)
+    val builder = TranslationBuilder(TranslationHandler.internalLanguage, null, emptyArray(), true)
     fn(builder)
     return builder.build()
 }
@@ -128,7 +128,7 @@ private fun translationStep(fn: TranslationBuilder.() -> Unit): TranslationBuild
 }
 
 private fun translationStepInternal(fn: TranslationBuilder.() -> Unit): TranslationBuilder {
-    val builder = TranslationBuilder(null, null, emptyArray(), true)
+    val builder = TranslationBuilder(TranslationHandler.internalLanguage, null, emptyArray(), true)
     fn(builder)
     return builder
 }

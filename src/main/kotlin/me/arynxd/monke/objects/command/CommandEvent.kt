@@ -9,6 +9,7 @@ import me.arynxd.monke.objects.cache.GuildData
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.command.threads.CommandThread
 import me.arynxd.monke.objects.translation.Language
+import me.arynxd.monke.util.subList
 
 class CommandEvent(
     val monke: Monke,
@@ -36,6 +37,12 @@ class CommandEvent(
     val thread: CommandThread
         get() = monke.handlers[CommandThreadHandler::class].getOrNew(message.idLong)
 
+    /**
+     * This is a one use object, hence it is refreshed upon every call to it
+     */
+    val reply: CommandReply
+        get() = CommandReply(this)
+
     /** Lazy loaded for performance **/
     val isDeveloper: Boolean
         get() = monke.handlers[ConfigHandler::class].config.developers.contains(user.id)
@@ -49,7 +56,6 @@ class CommandEvent(
     val language: Language
         get() = dataCache.language
 
-    @Suppress("UNCHECKED_CAST")
     inline fun <reified T> argument(indie: Int, default: T? = null): T {
         if (indie < 0) {
             throw NoSuchElementException("Argument $indie does not exist")
@@ -66,25 +72,24 @@ class CommandEvent(
             ?: throw IllegalStateException("Argument ${args[indie]} was not of type ${T::class.simpleName}")
     }
 
-    @Suppress("UNCHECKED_CAST")
     inline fun <reified T> vararg(start: Int): MutableList<T> {
         if (start > args.size || start < 0) {
             throw NoSuchElementException("Variable argument $start does not exist")
         }
 
-        return args.subList(start, args.size)
+        return args.subList(start)
             .map { it as? T ?: throw IllegalStateException("Argument $it was not of type ${T::class.simpleName}") }
             .toMutableList()
     }
 
     suspend fun reply(reply: suspend CommandReply.() -> Unit): CommandReply {
-        val repl = CommandReply(this)
+        val repl = this.reply
         reply(repl)
         return repl
     }
 
     fun replyAsync(reply: CommandReply.() -> Unit): CommandReply {
-        val repl = CommandReply(this)
+        val repl = this.reply
         reply(repl)
         return repl
     }

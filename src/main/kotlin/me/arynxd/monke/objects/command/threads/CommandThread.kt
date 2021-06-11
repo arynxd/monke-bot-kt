@@ -7,7 +7,8 @@ import net.dv8tion.jda.api.entities.Message
  * State holder for a thread, provides access to post messages to this thread
  */
 class CommandThread(val messageId: Long, val responseIds: List<Long>) {
-    val hasPosts = responseIds.isNotEmpty()
+    val hasPosts: Boolean
+        get() = responseIds.isNotEmpty()
 
     fun post(reply: CommandReply) {
         if (responseIds.isEmpty()) {
