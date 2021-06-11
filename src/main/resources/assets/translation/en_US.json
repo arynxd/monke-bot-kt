@@ -82,6 +82,60 @@
       "configuration": "Configuration",
       "music": "Music"
     },
+    "argument": {
+      "language": {
+        "error": {
+          "not_found": "Language '%0' was not found"
+        }
+      },
+      "command": {
+        "error": {
+          "not_found": "Command '%0' was not found, see %1 for help."
+        }
+      },
+      "emoji": {
+        "error": {
+         "invalid": "Emoji '%0' is invalid"
+        }
+      },
+      "guild": {
+        "error": {
+          "not_found": "Could not find a server with name '%0'"
+        }
+      },
+      "member": {
+        "error": {
+          "id_not_found": "Member with ID %0 was not found in this server",
+          "name_not_found": "No members with name '%0' could be found in this server."
+        }
+      },
+      "user": {
+        "error": {
+          "id_not_found": "User with ID %0 was not found in this server",
+          "name_not_found": "No users with name '%0' could be found in this server."
+        }
+      },
+      "plugin": {
+        "error": {
+          "not_found": "No plugin with name '%0' could be found"
+        }
+      },
+      "number": {
+        "error": {
+          "nan": "'%0' is not a valid number"
+        }
+      },
+      "boolean": {
+        "error": {
+          "invalid": "'%0' could not be interpreted as a yes / no"
+        }
+      },
+      "url": {
+        "error": {
+          "invalid": "'%0' is not a valid URL"
+        }
+      }
+    },
     "play": {
       "name": "play",
       "description": "Plays a song.",

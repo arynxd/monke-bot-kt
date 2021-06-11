@@ -17,7 +17,7 @@ class ArgumentPlugin(
     override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<LoadedPlugin> {
         val plugin = event.monke.plugins.getByName(input)
         return if (plugin == null) {
-            ArgumentResult(null, "Plugin not found")
+            ArgumentResult(null, "command.argument.plugin.error.not_found", arrayOf(input))
         }
         else {
             ArgumentResult(plugin, null)

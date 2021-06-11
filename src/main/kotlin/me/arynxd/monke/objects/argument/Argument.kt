@@ -60,7 +60,8 @@ enum class Type {
 
 data class ArgumentResult<T>(
     private val success: T?,
-    private val err: String? //TODO: treat this as a translation string later
+    private val err: String?,
+    val values: Array<Any?> = emptyArray()
 ) {
     val isError = err != null
     val isSuccess = success != null
@@ -80,6 +81,30 @@ data class ArgumentResult<T>(
             }
             return err
         }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ArgumentResult<*>
+
+        if (success != other.success) return false
+        if (err != other.err) return false
+        if (!values.contentEquals(other.values)) return false
+        if (isError != other.isError) return false
+        if (isSuccess != other.isSuccess) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = success?.hashCode() ?: 0
+        result = 31 * result + (err?.hashCode() ?: 0)
+        result = 31 * result + values.contentHashCode()
+        result = 31 * result + isError.hashCode()
+        result = 31 * result + isSuccess.hashCode()
+        return result
+    }
 }
 
 

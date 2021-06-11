@@ -23,7 +23,7 @@ class ArgumentURL(
             return ArgumentResult(withContext(Dispatchers.IO) { URL(input) }, null)
         }
         catch (exception: MalformedURLException) {
-            ArgumentResult(null, "Invalid URL or URL not found")
+            ArgumentResult(null, "command.argument.url.error.invalid", arrayOf(input))
         }
     }
 }

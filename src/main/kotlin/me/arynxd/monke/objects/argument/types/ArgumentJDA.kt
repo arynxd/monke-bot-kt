@@ -36,7 +36,7 @@ class ArgumentGuild(
         if (byName != null) {
             return ArgumentResult(byName, null)
         }
-        return ArgumentResult(null, "Guild not found")
+        return ArgumentResult(null, "command.argument.guild.error.not_found", arrayOf(input))
     }
 }
 
@@ -67,7 +67,7 @@ class ArgumentMember(
                 ArgumentResult(event.guild.retrieveMemberById(memberId).await(), null)
             }
             catch (exception: ErrorResponseException) {
-                return ArgumentResult(null, "Member with ID $memberId was not found in this server")
+                return ArgumentResult(null, "command.argument.member.error.id_not_found", arrayOf(memberId))
             }
         }
 
@@ -77,7 +77,7 @@ class ArgumentMember(
             return ArgumentResult(memberNames[0], null)
         }
 
-        return ArgumentResult(null, "No members found")
+        return ArgumentResult(null, "command.argument.member.error.name_not_found", arrayOf(input))
     }
 }
 
@@ -107,7 +107,7 @@ class ArgumentUser(
                 ArgumentResult(event.jda.retrieveUserById(memberId).await(), null)
             }
             catch (exception: ErrorResponseException) {
-                return ArgumentResult(null, "Member with ID $memberId was not found in this server")
+                return ArgumentResult(null, "command.argument.user.error.id_not_found", arrayOf(memberId))
             }
         }
 
@@ -117,7 +117,7 @@ class ArgumentUser(
             return ArgumentResult(memberNames[0].user, null)
         }
 
-        return ArgumentResult(null, "No members found")
+        return ArgumentResult(null, "command.argument.user.error.name_not_found", arrayOf(input))
     }
 }
 
