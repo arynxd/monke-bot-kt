@@ -15,6 +15,7 @@ import kotlin.system.exitProcess
 const val HANDLER_PACKAGE = "me.arynxd.monke.handlers"
 
 val LOGGER: Logger = LoggerFactory.getLogger(Monke::class.java)
+
 /**
  * This class is exempt from translations as the TranslationHandler has to be loaded for translation to work
  */

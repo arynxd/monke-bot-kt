@@ -124,7 +124,13 @@ class CommandHandler(
     private fun launchCommand(command: Command, event: CommandEvent) {
         executor.submit {
             val isExecutable = runBlocking {
-                command.isExecutable(event)
+                try {
+                    command.isExecutable(event)
+                }
+                catch (ex: Exception) {
+                    handleException(event, ex)
+                    false
+                }
             }
 
             if (!isExecutable) {
@@ -157,7 +163,6 @@ class CommandHandler(
                 else
                     command.metaData.name
             ).inc()
-
         }
     }
 

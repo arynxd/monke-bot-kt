@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
+import me.arynxd.monke.objects.argument.ArgumentResult
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
@@ -27,7 +28,12 @@ class GoogleCommand : Command(
                 description = "The search query.",
                 required = true,
                 type = Type.VARARG,
-                condition = { it.isNotBlank() }
+                condition = {
+                    if (it.isBlank())
+                        ArgumentResult(null, "Search query cannot be blank")
+                    else
+                        ArgumentResult(it, null)
+                }
             )
         )
     )

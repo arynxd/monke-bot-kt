@@ -2,6 +2,7 @@ package me.arynxd.monke.commands.`fun`
 
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
+import me.arynxd.monke.objects.argument.ArgumentResult
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentLong
 import me.arynxd.monke.objects.command.Command
@@ -22,17 +23,27 @@ class RandomNumberCommand : Command(
         arguments = ArgumentConfiguration(
             ArgumentLong(
                 name = "number-one",
-                description = "The first number in the range. Bigger than 0.",
+                description = "The first number in the range.",
                 required = true,
                 type = Type.REGULAR,
-                condition = { it > 0 }
+                condition = {
+                    if (it < 0)
+                        ArgumentResult(null, "Number must be more than 0")
+                    else
+                        ArgumentResult(it, null)
+                }
             ),
             ArgumentLong(
                 name = "number-two",
-                description = "The second number in the range. Bigger than 0.",
+                description = "The second number in the range.",
                 required = true,
                 type = Type.REGULAR,
-                condition = { it > 0 }
+                condition = {
+                    if (it < 0)
+                        ArgumentResult(null, "Number must be more than 0")
+                    else
+                        ArgumentResult(it, null)
+                }
             )
         )
     )

@@ -1,6 +1,7 @@
 package me.arynxd.monke.objects.argument.types
 
 import me.arynxd.monke.objects.argument.Argument
+import me.arynxd.monke.objects.argument.ArgumentResult
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.command.CommandEvent
 
@@ -9,9 +10,17 @@ class ArgumentLong(
     override val description: String,
     override val required: Boolean,
     override val type: Type,
-    override val condition: (Long) -> Boolean = { true }
+    override val condition: (Long) -> ArgumentResult<Long> = { ArgumentResult(it, null) }
 ) : Argument<Long>() {
-    override suspend fun convert(input: String, event: CommandEvent) = input.toLongOrNull()
+    override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<Long> {
+        val long = input.toLongOrNull()
+        return if (long == null) {
+            ArgumentResult(null, "Not a number")
+        }
+        else {
+            ArgumentResult(long, null)
+        }
+    }
 }
 
 class ArgumentInt(
@@ -19,9 +28,17 @@ class ArgumentInt(
     override val description: String,
     override val required: Boolean,
     override val type: Type,
-    override val condition: (Int) -> Boolean = { true }
+    override val condition: (Int) -> ArgumentResult<Int> = { ArgumentResult(it, null) }
 ) : Argument<Int>() {
-    override suspend fun convert(input: String, event: CommandEvent) = input.toIntOrNull()
+    override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<Int> {
+        val int = input.toIntOrNull()
+        return if (int == null) {
+            ArgumentResult(null, "Not a number")
+        }
+        else {
+            ArgumentResult(int, null)
+        }
+    }
 }
 
 class ArgumentBoolean(
@@ -29,11 +46,11 @@ class ArgumentBoolean(
     override val description: String,
     override val required: Boolean,
     override val type: Type,
-    override val condition: (Boolean) -> Boolean = { true }
+    override val condition: (Boolean) -> ArgumentResult<Boolean> = { ArgumentResult(it, null) }
 ) : Argument<Boolean>() {
 
-    override suspend fun convert(input: String, event: CommandEvent): Boolean? {
-        return when (input) {
+    override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<Boolean> {
+        val res = when (input) {
             "no" -> false
             "false" -> false
             "n" -> false
@@ -45,9 +62,9 @@ class ArgumentBoolean(
             "true" -> true
             "1" -> true
             "t" -> true
-
             else -> null
-        }
+        } ?: return ArgumentResult(null, "Not true or false")
+        return ArgumentResult(res, null)
     }
 }
 
@@ -56,7 +73,7 @@ class ArgumentString(
     override val description: String,
     override val required: Boolean,
     override val type: Type,
-    override val condition: (String) -> Boolean = { true }
+    override val condition: (String) -> ArgumentResult<String> = { ArgumentResult(it, null) }
 ) : Argument<String>() {
-    override suspend fun convert(input: String, event: CommandEvent) = input
+    override suspend fun convert(input: String, event: CommandEvent) = ArgumentResult(input, null)
 }

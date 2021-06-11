@@ -2,6 +2,7 @@ package me.arynxd.monke.objects.argument.types
 
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.objects.argument.Argument
+import me.arynxd.monke.objects.argument.ArgumentResult
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.equalsIgnoreCase
@@ -15,27 +16,27 @@ class ArgumentGuild(
     override val description: String,
     override val required: Boolean,
     override val type: Type,
-    override val condition: (Guild) -> Boolean = { true }
+    override val condition: (Guild) -> ArgumentResult<Guild> = { ArgumentResult(it, null) }
 
 ) : Argument<Guild>() {
-    override suspend fun convert(input: String, event: CommandEvent): Guild? {
+    override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<Guild> {
         if (input.equalsIgnoreCase("this")) {
-            return event.guild
+            return ArgumentResult(event.guild, null)
         }
 
-        val byName = event.monke.jda.guildCache.find { it.name.equals(input, true) }
+        val byName = event.jda.guildCache.find { it.name.equals(input, true) }
 
-        val toLong = input.toLongOrNull() ?: return byName
-        val byId = event.monke.jda.guildCache.find { it.idLong == toLong }
+        val toLong = input.toLongOrNull()
+        val byId = event.jda.guildCache.find { it.idLong == toLong }
 
         if (byId != null) {
-            return byId
+            return ArgumentResult(byId, null)
         }
 
         if (byName != null) {
-            return byName
+            return ArgumentResult(byName, null)
         }
-        return null
+        return ArgumentResult(null, "Guild not found")
     }
 }
 
@@ -44,11 +45,11 @@ class ArgumentMember(
     override val description: String,
     override val required: Boolean,
     override val type: Type,
-    override val condition: (Member) -> Boolean = { true }
+    override val condition: (Member) -> ArgumentResult<Member> = { ArgumentResult(it, null) }
 
 ) : Argument<Member>() {
 
-    override suspend fun convert(input: String, event: CommandEvent): Member? {
+    override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<Member> {
         val memberMentions = event.message.mentionedMembers.toMutableList()
 
         if (isBotMention(event)) {
@@ -56,27 +57,27 @@ class ArgumentMember(
         }
 
         if (memberMentions.isNotEmpty()) { //Direct mention
-            return memberMentions[0]
+            return ArgumentResult(memberMentions[0], null)
         }
 
         val memberId = input.toLongOrNull()
 
         if (memberId != null) { //ID
             return try {
-                event.guild.retrieveMemberById(memberId).await()
+                ArgumentResult(event.guild.retrieveMemberById(memberId).await(), null)
             }
             catch (exception: ErrorResponseException) {
-                return null
+                return ArgumentResult(null, "Member with ID $memberId was not found in this server")
             }
         }
 
         val memberNames = event.guild.retrieveMembersByPrefix(input, 10).await()
 
         if (memberNames.isNotEmpty()) { //Name
-            return memberNames[0]
+            return ArgumentResult(memberNames[0], null)
         }
 
-        return null
+        return ArgumentResult(null, "No members found")
     }
 }
 
@@ -85,38 +86,38 @@ class ArgumentUser(
     override val description: String,
     override val required: Boolean,
     override val type: Type,
-    override val condition: (User) -> Boolean = { true }
+    override val condition: (User) -> ArgumentResult<User> = { ArgumentResult(it, null) }
 ) : Argument<User>() {
 
-    override suspend fun convert(input: String, event: CommandEvent): User? {
-        val memberMentions = event.message.mentionedUsers.toMutableList()
+    override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<User> {
+        val memberMentions = event.message.mentionedMembers.toMutableList()
 
         if (isBotMention(event)) {
             memberMentions.removeAt(0)
         }
 
         if (memberMentions.isNotEmpty()) { //Direct mention
-            return memberMentions[0]
+            return ArgumentResult(memberMentions[0].user, null)
         }
 
         val memberId = input.toLongOrNull()
 
         if (memberId != null) { //ID
             return try {
-                event.monke.jda.retrieveUserById(memberId).await()
+                ArgumentResult(event.jda.retrieveUserById(memberId).await(), null)
             }
             catch (exception: ErrorResponseException) {
-                return null
+                return ArgumentResult(null, "Member with ID $memberId was not found in this server")
             }
         }
 
         val memberNames = event.guild.retrieveMembersByPrefix(input, 10).await()
 
         if (memberNames.isNotEmpty()) { //Name
-            return memberNames[0].user
+            return ArgumentResult(memberNames[0].user, null)
         }
 
-        return null
+        return ArgumentResult(null, "No members found")
     }
 }
 

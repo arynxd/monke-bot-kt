@@ -1,6 +1,7 @@
 package me.arynxd.monke.commands.`fun`
 
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
+import me.arynxd.monke.objects.argument.ArgumentResult
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
@@ -24,7 +25,15 @@ class UwUCommand : Command(
                 description = "The text to UwUfy.",
                 required = true,
                 type = Type.VARARG,
-                condition = { it.isNotBlank() && it.length < MessageEmbed.TEXT_MAX_LENGTH }
+                condition = {
+                    if (it.isBlank() || it.length > MessageEmbed.TEXT_MAX_LENGTH)
+                        ArgumentResult(
+                            null,
+                            "Text must not be blank and must be less than ${MessageEmbed.TEXT_MAX_LENGTH} chars"
+                        )
+                    else
+                        ArgumentResult(it, null)
+                }
             )
         )
     )

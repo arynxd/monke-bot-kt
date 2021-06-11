@@ -1,18 +1,15 @@
 package me.arynxd.monke.objects.plugins
 
-import dev.minn.jda.ktx.SLF4J
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.ExceptionHandler
-import me.arynxd.monke.handlers.translateAll
 import me.arynxd.monke.handlers.translateAllInternal
 import me.arynxd.monke.handlers.translateInternal
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.util.readFully
 import me.arynxd.plugin_api.IPlugin
-import org.slf4j.Logger
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
@@ -111,7 +108,9 @@ class Plugins(val monke: Monke) {
         }
         catch (exception: Exception) {
             LOGGER.error(
-                translateInternal { path = "plugin.uncaught_exception_boot"; values = arrayOf(fileName, config.version) },
+                translateInternal {
+                    path = "plugin.uncaught_exception_boot"; values = arrayOf(fileName, config.version)
+                },
                 exception
             )
             plugin.onDisable()

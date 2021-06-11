@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.toList
 import me.arynxd.monke.handlers.RateLimitHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
+import me.arynxd.monke.objects.argument.ArgumentResult
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentInt
 import me.arynxd.monke.objects.command.*
@@ -26,10 +27,16 @@ class ClearCommand : Command(
         arguments = ArgumentConfiguration(
             ArgumentInt(
                 name = "amount",
-                description = "The amount to clear. 1 - 50",
+                description = "The amount to clear.",
                 required = true,
                 type = Type.REGULAR,
-                condition = { it in 1..50 },
+                condition = {
+                    if (it !in 1..50)
+                        ArgumentResult(null, "Amount must be between 1 and 50")
+                    else
+                        ArgumentResult(it, null)
+
+                },
             )
         ),
         memberPermissions = listOf(Permission.MESSAGE_MANAGE),

@@ -118,6 +118,12 @@ fun translate(fn: TranslationBuilder.() -> Unit): String {
     return builder.build()
 }
 
+fun translate(lang: Language, fn: TranslationBuilder.() -> Unit): String {
+    val builder = TranslationBuilder(lang, null, emptyArray(), false)
+    fn(builder)
+    return builder.build()
+}
+
 fun translateInternal(fn: TranslationBuilder.() -> Unit): String {
     val builder = TranslationBuilder(TranslationHandler.internalLanguage, null, emptyArray(), true)
     fn(builder)

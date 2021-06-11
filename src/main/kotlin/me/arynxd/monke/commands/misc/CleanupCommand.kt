@@ -2,6 +2,7 @@ package me.arynxd.monke.commands.misc
 
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
+import me.arynxd.monke.objects.argument.ArgumentResult
 import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentInt
 import me.arynxd.monke.objects.command.Command
@@ -20,10 +21,15 @@ class CleanupCommand : Command(
         arguments = ArgumentConfiguration(
             ArgumentInt(
                 name = "amount",
-                description = "The amount of messages to check. Must be less than 25",
+                description = "The amount of messages to check.",
                 required = false,
                 type = Type.REGULAR,
-                condition = { it < 30 }
+                condition = {
+                    if (it !in 1..30)
+                        ArgumentResult(null, "Amount must be between 1 and 30")
+                    else
+                        ArgumentResult(it, null)
+                }
             )
         )
     )

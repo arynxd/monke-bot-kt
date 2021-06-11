@@ -32,17 +32,17 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
         return true
     }
 
-    suspend fun validateArguments(event: CommandEvent): Triple<List<Any>, List<Argument<*>>, List<Argument<*>>> {
+    suspend fun validateArguments(event: CommandEvent): ArgumentConversion {
         val args =
             event.args.map { it.toString() } //Using toString to avoid un-needed casting (args should already be strings)
         event.args.clear()
 
-        val invalidArguments = mutableListOf<Argument<*>>()
+        val invalidArguments = mutableListOf<WrappedArgumentResult>()
         val validArguments = mutableListOf<Any>()
         val varargIndex = expected.indexOfLast { it.type == Type.VARARG }
 
         if (args.size < expected.count { it.required }) { //Missing required args
-            return Triple(
+            return ArgumentConversion(
                 emptyList(),
                 emptyList(),
                 expected.asList().subList(args.size, expected.size).filter { it.required } //Collect missing args
@@ -50,7 +50,7 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
         }
 
         if (args.size < varargIndex) { // Missing args before a vararg (extra checks)
-            return Triple(
+            return ArgumentConversion(
                 emptyList(),
                 emptyList(),
                 expected.asList().subList(args.size, expected.size).filter { it.required } //Collect missing args
@@ -60,11 +60,11 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
         if (varargIndex == -1) {
             args.zip(expected).forEach {
                 val result = it.second.verify(it.first, event)
-                if (result == null) {
-                    invalidArguments.add(it.second)
+                if (result.isSuccess) {
+                    validArguments.add(result.data!!)
                 }
                 else {
-                    validArguments.add(result)
+                    invalidArguments.add(WrappedArgumentResult(it.second, result))
                 }
             }
         }
@@ -72,32 +72,32 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
         if (varargIndex != -1) {
             args.subList(0, varargIndex).zip(expected).forEach {
                 val result = it.second.verify(it.first, event)
-                if (result == null) {
-                    invalidArguments.add(it.second)
+                if (result.isSuccess) {
+                    validArguments.add(result.data!!)
                 }
                 else {
-                    validArguments.add(result)
+                    invalidArguments.add(WrappedArgumentResult(it.second, result))
                 }
             }
 
             for (arg in args.subList(varargIndex, args.size)) {
                 val result = expected[varargIndex].verify(arg, event)
 
-                if (result == null) {
-                    invalidArguments.add(expected[varargIndex])
+                if (result.isSuccess) {
+                    validArguments.add(result.data!!)
                 }
                 else {
-                    validArguments.add(result)
+                    invalidArguments.add(WrappedArgumentResult(expected[varargIndex], result))
                 }
             }
         }
 
         if (invalidArguments.isNotEmpty()) {
-            return Triple(emptyList(), invalidArguments, emptyList())
+            return ArgumentConversion(emptyList(), invalidArguments, emptyList())
         }
 
         event.args.addAll(validArguments)
-        return Triple(validArguments, emptyList(), emptyList())
+        return ArgumentConversion(validArguments, emptyList(), emptyList())
     }
 
     fun getArgumentsString(language: Language, command: Command): String {
@@ -119,4 +119,19 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
     fun getArgumentsList(language: Language, command: Command): String {
         return expected.joinToString(separator = " ") { "<${it.getName(language, command)}>" }
     }
+}
+
+data class WrappedArgumentResult(
+    val arg: Argument<*>,
+    val result: ArgumentResult<*>
+)
+
+data class ArgumentConversion(
+    val success: List<Any>,
+    val failure: List<WrappedArgumentResult>,
+    val missing: List<Argument<*>>
+) {
+    val isSuccess = success.isNotEmpty()
+    val isFailure = failure.isNotEmpty()
+    val isMissing = missing.isNotEmpty()
 }

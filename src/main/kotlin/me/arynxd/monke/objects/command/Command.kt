@@ -10,12 +10,11 @@ abstract class Command(
     val metaData: CommandMetaData,
     val children: MutableList<SubCommand> = mutableListOf()
 ) {
-    suspend fun isExecutable(commandEvent: CommandEvent): Boolean {
-        val language = commandEvent.language
-        val thread = commandEvent.thread
+    suspend fun isExecutable(event: CommandEvent): Boolean {
+        val language = event.language
 
         if (hasFlag(CommandFlag.DISABLED) || metaData.isDisabled) {
-            commandEvent.reply {
+            event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     translate {
@@ -24,13 +23,13 @@ abstract class Command(
                     }
                 )
                 footer()
-                thread.post(this)
+                event.thread.post(this)
             }
             return false
         }
 
-        if (hasFlag(CommandFlag.DEVELOPER_ONLY) && !commandEvent.isDeveloper) {
-            commandEvent.reply {
+        if (hasFlag(CommandFlag.DEVELOPER_ONLY) && !event.isDeveloper) {
+            event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     translate {
@@ -39,13 +38,13 @@ abstract class Command(
                     }
                 )
                 footer()
-                thread.post(this)
+                event.thread.post(this)
             }
             return false
         }
 
         if (!metaData.arguments.isConfigurationValid()) {
-            commandEvent.reply {
+            event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     translate {
@@ -54,15 +53,15 @@ abstract class Command(
                     }
                 )
                 footer()
-                thread.post(this)
+                event.thread.post(this)
             }
             return false
         }
 
-        if (!commandEvent.member.hasPermission(commandEvent.channel, metaData.memberPermissions)) {
+        if (!event.member.hasPermission(event.channel, metaData.memberPermissions)) {
             val perms = metaData.memberPermissions.joinToString(separator = "\n") { it.getName() }
 
-            commandEvent.reply {
+            event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     translate {
@@ -72,15 +71,15 @@ abstract class Command(
                     }
                 )
                 footer()
-                thread.post(this)
+                event.thread.post(this)
             }
             return false
         }
 
-        if (!commandEvent.selfMember.hasPermission(commandEvent.channel, metaData.botPermissions)) {
+        if (!event.selfMember.hasPermission(event.channel, metaData.botPermissions)) {
             val perms = metaData.botPermissions.joinToString(separator = "\n") { it.getName() }
 
-            commandEvent.reply {
+            event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     translate {
@@ -90,21 +89,21 @@ abstract class Command(
                     }
                 )
                 footer()
-                thread.post(this)
+                event.thread.post(this)
             }
             return false
         }
 
         val cooldown = "%.2f".format(
-            commandEvent.monke.handlers[CooldownHandler::class]
-                .getRemaining(commandEvent.user, commandEvent.command) / 1000F
+            event.monke.handlers[CooldownHandler::class]
+                .getRemaining(event.user, event.command) / 1000F
         )
 
-        val isOnCooldown = commandEvent.monke.handlers[CooldownHandler::class]
-            .isOnCooldown(commandEvent.user, commandEvent.command)
+        val isOnCooldown = event.monke.handlers[CooldownHandler::class]
+            .isOnCooldown(event.user, event.command)
 
         if (isOnCooldown) {
-            commandEvent.reply {
+            event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
                     translate {
@@ -114,26 +113,26 @@ abstract class Command(
                     }
                 )
                 footer()
-                thread.post(this)
+                event.thread.post(this)
             }
             return false
         }
 
-        val argResult = metaData.arguments.validateArguments(commandEvent)
+        val argResult = metaData.arguments.validateArguments(event)
 
-        if (argResult.third.isNotEmpty()) {
-            val requiredCount = argResult.third.size
+        if (argResult.isMissing) {
+            val requiredCount = argResult.missing.size
             val missing =
-                argResult.third.joinToString(separator = "") {
-                    "*${it.getName(language, commandEvent.command)}* -- ${
+                argResult.missing.joinToString(separator = "") {
+                    "*${it.getName(language, event.command)}* -- ${
                         it.getDescription(
                             language,
-                            commandEvent.command
+                            event.command
                         )
                     }\n"
                 }
 
-            commandEvent.reply {
+            event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 description(
                     translate {
@@ -147,24 +146,24 @@ abstract class Command(
                     }
                 )
                 footer()
-                thread.post(this)
+                event.thread.post(this)
             }
             return false
         }
 
-        if (argResult.second.isNotEmpty()) {
-            val invalidCount = argResult.second.size
+        if (argResult.isFailure) {
+            val invalidCount = argResult.failure.size
             val invalid =
-                argResult.second.joinToString(separator = "") {
-                    "*${it.getName(language, commandEvent.command)}* -- ${
-                        it.getDescription(
+                argResult.failure.joinToString(separator = "") {
+                    "*${it.arg.getName(language, event.command)}* -- ${
+                        it.arg.getDescription(
                             language,
-                            commandEvent.command
+                            event.command
                         )
-                    }\n"
+                    } -- ${it.result.error}\n"
                 }
 
-            commandEvent.reply {
+            event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 description(
                     translate {
@@ -177,14 +176,14 @@ abstract class Command(
                     }
                 )
                 footer()
-                thread.post(this)
+                event.thread.post(this)
             }
 
             return false
         }
 
-        if (!metaData.finalCheck.invoke(commandEvent)) {
-            metaData.finalCheckFail.invoke(commandEvent)
+        if (!metaData.finalCheck(event)) {
+            metaData.finalCheckFail(event)
             return false
         }
         return true
