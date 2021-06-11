@@ -37,7 +37,7 @@ dependencies {
 
     //Discord
     implementation 'net.dv8tion:JDA:4.2.1_274'
-    implementation 'com.github.minndevelopment:jda-ktx:842e9b3'
+    implementation 'com.github.minndevelopment:jda-ktx:985db81'
     implementation 'com.sedmelluq:lavaplayer:1.3.75'
     implementation 'club.minnced:discord-webhooks:0.5.6'
 

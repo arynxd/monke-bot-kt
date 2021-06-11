@@ -7,7 +7,7 @@ data class TranslatedLanguage(val data: DataObject)
 
 enum class Language(val code: String, val aliases: List<String>, val commonName: String) {
     EN_US("en_US", listOf("english"), "English"),
-    DEFAULT("en_US", listOf("english"), "English");
+    DEFAULT(EN_US.code, EN_US.aliases, EN_US.commonName);
 //    DE("de", listOf("deutsch", "german"), "Deutsch");
 
     companion object {

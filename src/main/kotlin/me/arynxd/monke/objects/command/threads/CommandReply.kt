@@ -2,6 +2,7 @@ package me.arynxd.monke.objects.command.threads
 
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.Monke
+import me.arynxd.monke.handlers.translateInternal
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import me.arynxd.monke.util.ERROR_EMBED_COLOUR
@@ -32,10 +33,6 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
 
     fun replace(messageIds: List<Long>, callback: ((Message) -> Unit) = {}) {
         checkType()
-
-        if (messageIds.isEmpty()) {
-            throw IllegalArgumentException("IDs were empty")
-        }
 
         channel.editMessageById(messageIds[0], embed.build())
             .mentionRepliedUser(false)
@@ -205,7 +202,11 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
 
     private fun checkType() {
         if (type == Type.UNKNOWN) {
-            throw IllegalStateException("Type is not set")
+            throw IllegalStateException(
+                translateInternal {
+                    path = "command_reply.type_not_set"
+                }
+            )
         }
     }
 

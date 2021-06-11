@@ -1,13 +1,18 @@
 package me.arynxd.monke.objects.plugins
 
+import dev.minn.jda.ktx.SLF4J
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.ExceptionHandler
+import me.arynxd.monke.handlers.translateAll
+import me.arynxd.monke.handlers.translateAllInternal
+import me.arynxd.monke.handlers.translateInternal
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.util.readFully
 import me.arynxd.plugin_api.IPlugin
+import org.slf4j.Logger
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
@@ -22,20 +27,26 @@ class Plugins(val monke: Monke) {
 
     fun loadPlugins() {
         if (!pluginsFolder.exists()) {
-            LOGGER.info("Plugin - plugins folder did not exist, aborting plugin loading")
+            LOGGER.info(
+                translateInternal { path = "plugin.folder_not_found" }
+            )
             pluginsFolder.mkdir()
             return
         }
 
         if (!pluginsFolder.isDirectory) {
-            LOGGER.info("Plugin - plugins folder was not a folder, aborting plugin loading")
+            LOGGER.info(
+                translateInternal { path = "plugin.folder_not_folder" }
+            )
             return
         }
 
         val files = pluginsFolder.listFiles()!!.filter { it.name.endsWith(".jar") }
 
         if (files.isEmpty()) {
-            LOGGER.info("Plugin - plugins folder had no jar files inside")
+            LOGGER.info(
+                translateInternal { path = "plugin.folder_empty" }
+            )
             return
         }
 
@@ -43,7 +54,10 @@ class Plugins(val monke: Monke) {
             val jarPath = file.path
             val fileName = file.name.substring(0, file.name.length - ".jar".length)
 
-            LOGGER.info("Plugin - loading plugin $fileName.jar")
+            translateInternal { path = "plugin.loading_jar"; values = arrayOf(fileName) }
+            LOGGER.info(
+                translateInternal { path = "plugin.loading_jar"; values = arrayOf(fileName) }
+            )
             val jarFile = JarFile(jarPath)
 
             jarFile.use { jar ->
@@ -53,24 +67,32 @@ class Plugins(val monke: Monke) {
                 val mainClass = pluginInfo.second
 
                 if (config == null) {
-                    LOGGER.warn("Plugin - could not load config for plugin '$fileName.jar' check the resources folder and try again.")
+                    LOGGER.warn(
+                        translateInternal { path = "plugin.config_not_found"; values = arrayOf(fileName) }
+                    )
                     return@use
                 }
 
                 if (mainClass == null) {
-                    LOGGER.warn("Plugin - could not load main class for plugin '$fileName.jar' check the config and try again.")
+                    LOGGER.warn(
+                        translateInternal { path = "plugin.class_not_found"; values = arrayOf(fileName) }
+                    )
                     return@use
                 }
 
                 if (!IPlugin::class.java.isAssignableFrom(mainClass)) {
-                    LOGGER.warn("Plugin - main class for plugin '$fileName.jar' does not implement IPlugin or a subtype of it.")
+                    LOGGER.warn(
+                        translateInternal { path = "plugin.invalid_class"; values = arrayOf(fileName, "IPlugin") }
+                    )
                     return@use
                 }
 
                 val constructor = mainClass.constructors.find { it.parameters.isEmpty() }
 
                 if (constructor == null) {
-                    LOGGER.warn("Plugin - no empty constructors found for plugin '$fileName.jar'")
+                    LOGGER.warn(
+                        translateInternal { path = "plugin.constructor_not_found"; values = arrayOf(fileName) }
+                    )
                     return@use
                 }
 
@@ -89,36 +111,55 @@ class Plugins(val monke: Monke) {
         }
         catch (exception: Exception) {
             LOGGER.error(
-                "Plugin - plugin '$fileName.jar' had an uncaught error at startup. Is it up to date? Current version: (${config.version})",
+                translateInternal { path = "plugin.uncaught_exception_boot"; values = arrayOf(fileName, config.version) },
                 exception
             )
             plugin.onDisable()
             monke.handlers[ExceptionHandler::class]
-                .handle(exception, "A plugin had an uncaught exception")
+                .handle(exception, translateInternal { path = "plugin.uncaught_exception" })
             return
         }
 
         if (plugins.containsKey(config.name)) {
-            LOGGER.warn("Duplicate plugin '${config.name}', skipping.")
+            LOGGER.warn(
+                translateInternal { path = "plugin.duplicate_plugin"; values = arrayOf(config.name) }
+            )
             return
         }
 
         plugins[config.name] = LoadedPlugin(plugin, config)
-        LOGGER.info("Plugin - loaded plugin $fileName.jar (${config.name} ${config.version})")
+        LOGGER.info(
+            translateInternal {
+                path = "plugin.plugin_loaded"
+                values = arrayOf(fileName, config.name, config.version)
+            }
+        )
     }
 
     fun reload() {
-        LOGGER.info("Plugin - reloading all plugins")
+        LOGGER.info(
+            translateInternal { path = "plugin.reloading" }
+        )
         disablePlugins()
-        plugins.clear() //Drop all references to the plugin classes to avoid leaks
+        plugins.clear() //Drop all references to the plugin classes to avoid leaks:tm:
         loadPlugins()
     }
 
     fun disablePlugins() {
         plugins.forEach {
-            LOGGER.info("Plugin - disabling plugin ${it.key}")
-            it.value.plugin.onDisable()
-            LOGGER.info("Plugin - disabled plugin ${it.key}")
+            val (disabling, disabled, err) = translateAllInternal {
+                partInternal("plugin.disabling_plugin", it.key)
+                partInternal("plugin.disabled_plugin", it.key)
+                partInternal("plugin.uncaught_exception_shutdown", it.key)
+            }
+            LOGGER.info(disabling)
+            try {
+                it.value.plugin.onDisable()
+            }
+            catch (ex: Exception) {
+                LOGGER.error(err, ex)
+            }
+            LOGGER.info(disabled)
         }
     }
 
@@ -160,8 +201,12 @@ class Plugins(val monke: Monke) {
     }
 
     fun getPluginList(): String {
+        val (enabled, disabled) = translateAllInternal {
+            partInternal("keyword.enabled")
+            partInternal("keyword.disabled")
+        }
         return plugins.values.joinToString {
-            "**${it.config.name} (${it.config.version})** -> ${if (it.isEnabled) "Enabled" else "Disabled"}\n"
+            "**${it.config.name} (${it.config.version})** -> ${if (it.isEnabled) enabled else disabled}\n"
         }
     }
 }

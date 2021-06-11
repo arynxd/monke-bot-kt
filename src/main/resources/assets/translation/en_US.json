@@ -9,7 +9,33 @@
     "invalid_build": "The selected configuration was invalid, this could be due to missing intents or a mistake by the developer!",
     "web_service_error": "%0 didn't provide any valid data in their response.",
     "language_key_not_found": "Key %0 does not exist for language %1,",
-    "language_not_found": "Language %0 not found."
+    "language_not_found": "Language %0 not found.",
+    "invalid_language": "Language specified in the config file was invalid, falling back to defaults."
+  },
+  "plugin": {
+    "folder_not_found": "Plugin - plugins folder did not exist, aborting plugin loading",
+    "folder_not_folder": "Plugin - plugins folder was not a folder, aborting plugin loading",
+    "folder_empty": "Plugin - plugins folder had no jar files inside",
+
+    "loading_jar": "Plugin - loading plugin %0.jar",
+
+    "config_not_found": "Plugin - could not load config for plugin '%0.jar' check the resources folder and try again.",
+    "class_not_found": "Plugin - could not load main class for plugin '%0.jar' check the config and try again.",
+    "constructor_not_found": "Plugin - no empty constructors found for plugin '%0.jar'",
+
+    "invalid_class": "Plugin - main class for plugin '%0.jar' does not implement %1 or a subtype of it.",
+    "uncaught_exception_boot": "Plugin - plugin '%0.jar' had an uncaught error at startup. Is it up to date? Current version: (%1)",
+    "duplicate_plugin": "Duplicate plugin '%0', skipping.",
+    "plugin_loaded": "Plugin - loaded plugin %0 (%1 %2)",
+    "reloading": "Plugin - reloading all plugins",
+    "disabling_plugin": "Plugin - disabling plugin %0",
+    "disabled_plugin": "Plugin - disabled plugin %0",
+    "uncaught_exception_shutdown": "Plugin - plugin '%0' had an uncaught error whilst shutting down.",
+
+    "uncaught_exception": "A plugin had an uncaught exception"
+  },
+  "command_reply": {
+    "type_not_set": "CommandReply type was not set before sending, did you forget to call type()?"
   },
   "music": {
     "channel_left": "I left %0.",
@@ -24,7 +50,9 @@
     "required": "required",
     "none": "None",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "enabled": "Enabled",
+    "disabled": "Disabled"
   },
   "cancel_reason": {
     "timeout": "%0 timed out.",

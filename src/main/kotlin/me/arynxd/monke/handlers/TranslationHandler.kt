@@ -20,8 +20,11 @@ class TranslationHandler(
     override fun onEnable() {
         val lang = Language.getLanguageOrNull(monke.handlers[ConfigHandler::class].config.preferredLanguage)
         if (lang == null) {
-            LOGGER.warn("Language specified in the config file was invalid, falling back to defaults.")
             internalLanguage = Language.DEFAULT
+            //This is just going to be in default, english, but for consistency it gets put through translation
+            LOGGER.warn(
+                translateInternal { path = "internal_error.invalid_language" }
+            )
             return
         }
         internalLanguage = lang
@@ -139,15 +142,23 @@ fun translateAll(lang: Language, fn: MultiPartTranslationBuilder.() -> Unit): Li
     return builder.buildAll()
 }
 
+fun translateAllInternal(fn: MultiPartTranslationBuilder.() -> Unit): List<String> {
+    val builder = MultiPartTranslationBuilder(TranslationHandler.internalLanguage)
+    fn(builder)
+    return builder.buildAll()
+}
+
 data class MultiPartTranslationBuilder(
     val lang: Language,
 ) {
     private val builders = mutableListOf<TranslationBuilder>()
 
     fun part(path: String, vararg values: Any?) {
+
         builders.add(
             translationStep {
                 this.path = path
+                //I cant remove this unchecked cast warning >:(
                 this.values = values as Array<Any?>
                 if (this.lang == null) {
                     this.lang = this@MultiPartTranslationBuilder.lang
@@ -160,6 +171,7 @@ data class MultiPartTranslationBuilder(
         builders.add(
             translationStepInternal {
                 this.path = path
+                //I cant remove this unchecked cast warning >:(
                 this.values = values as Array<Any?>
                 if (this.lang == null) {
                     this.lang = this@MultiPartTranslationBuilder.lang

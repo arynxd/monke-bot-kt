@@ -15,7 +15,9 @@ import kotlin.system.exitProcess
 const val HANDLER_PACKAGE = "me.arynxd.monke.handlers"
 
 val LOGGER: Logger = LoggerFactory.getLogger(Monke::class.java)
-
+/**
+ * This class is exempt from translations as the TranslationHandler has to be loaded for translation to work
+ */
 class Handlers(val monke: Monke) {
     private val reflections = Reflections(HANDLER_PACKAGE, SubTypesScanner())
 
@@ -42,7 +44,6 @@ class Handlers(val monke: Monke) {
                 .map { it.kotlinFunction }
                 .firstOrNull { it != null }
 
-            // These cannot be translated because the TranslationHandler has not been loaded yet
             if (constructor == null) {
                 LOGGER.warn("Non Handler class ( ${cls.simpleName} ) found in handlers package!")
                 continue
@@ -74,7 +75,6 @@ class Handlers(val monke: Monke) {
         while (queue.isNotEmpty()) {
             val handler = queue.remove()
             if (i > 50) {
-                // This cannot be translated because the TranslationHandler may not be loaded yet
                 LOGGER.error("Suspected infinite loop while loading the handlers, closing.")
                 exitProcess(1)
             }
