@@ -1,9 +1,9 @@
 package me.arynxd.monke.commands.misc
 
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentResult
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
@@ -23,7 +23,7 @@ class PrefixCommand : Command(
                 name = "prefix",
                 description = "The new prefix. 5 characters or less.",
                 required = false,
-                type = Type.REGULAR,
+                type = Argument.Type.REGULAR,
                 condition = {
                     if (it.length >= 5)
                         ArgumentResult(null, "Prefix must be less than 6 characters")

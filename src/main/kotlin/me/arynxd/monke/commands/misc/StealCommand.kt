@@ -2,9 +2,9 @@ package me.arynxd.monke.commands.misc
 
 import me.arynxd.monke.handlers.RateLimitHandler
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentResult
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.argument.types.ArgumentURL
 import me.arynxd.monke.objects.command.Command
@@ -36,13 +36,10 @@ class StealCommand : Command(
                 name = "name",
                 description = "The new emoji name.",
                 required = true,
-                type = Type.REGULAR,
+                type = Argument.Type.REGULAR,
                 condition = {
                     if (!it.matches(EMOJI_REGEX))
-                        ArgumentResult(null,
-                            //"Emoji name must be A-Z or _ and 2 - 32 characters long"
-                        "internal_error.nop" //TODO add translation here
-                        )
+                        ArgumentResult(null, "command.steal.argument.emoji.invalid")
                     else
                         ArgumentResult(it, null)
                 }
@@ -51,7 +48,7 @@ class StealCommand : Command(
                 name = "emoji",
                 description = "The emoji. Must be a valid image URL.",
                 required = true,
-                type = Type.REGULAR,
+                type = Argument.Type.REGULAR,
             )
         )
     )

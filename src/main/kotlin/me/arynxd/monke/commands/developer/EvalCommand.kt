@@ -2,25 +2,21 @@ package me.arynxd.monke.commands.developer
 
 import dev.minn.jda.ktx.await
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.handlers.TaskHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.handlers.translateInternal
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.handlers.LOGGER
-import me.arynxd.monke.objects.translation.Language
-import me.arynxd.monke.util.postBin
 import me.arynxd.monke.util.takeOrHaste
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.RestAction
-import okhttp3.OkHttpClient
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import java.util.concurrent.TimeUnit
@@ -41,7 +37,7 @@ class EvalCommand : Command(
                 name = "code",
                 description = "The code to evaluate.",
                 required = true,
-                type = Type.VARARG
+                type = Argument.Type.VARARG
             )
         )
     )
@@ -108,7 +104,6 @@ class EvalCommand : Command(
             .replace(codeBlockRegex, "")
 
         val language = event.language
-        val okHttpClient = monke.handlers.okHttpClient
 
         System.setOut(newSysOut)
         var reply = buildReply(event, script, true, "---", "---", "---")
@@ -244,26 +239,6 @@ class EvalCommand : Command(
 
     private suspend fun doEval(code: String, event: CommandEvent): Pair<String, Boolean> {
         val language = event.language
-        val uploadStackFailed = translate {
-            lang = language
-            path = "command.eval.response.upload_failed"
-            values = arrayOf(
-                translate {
-                    lang = language
-                    path = "command.eval.keyword.stacktrace"
-                }
-            )
-        }
-        val uploadResultFailed = translate {
-            lang = language
-            path = "command.eval.response.upload_failed"
-            values = arrayOf(
-                translate {
-                    lang = language
-                    path = "command.eval.keyword.result"
-                }
-            )
-        }
 
         var successful = true
         val out =
@@ -274,7 +249,9 @@ class EvalCommand : Command(
             }
             catch (exception: Exception) {
                 successful = false
-                val haste = exception.stackTraceToString().takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, event.monke)
+                val haste = exception
+                    .stackTraceToString()
+                    .takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, event.monke)
                 "${exception.message}\n$haste"
             }
 
@@ -288,7 +265,9 @@ class EvalCommand : Command(
                 }
                 catch (exception: ErrorResponseException) {
                     successful = false
-                    val haste = exception.stackTraceToString().takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, event.monke)
+                    val haste = exception
+                        .stackTraceToString()
+                        .takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, event.monke)
                     "${exception.message}\n$haste"
                 }
 

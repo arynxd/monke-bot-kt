@@ -7,12 +7,12 @@ import java.nio.Buffer
 import java.nio.ByteBuffer
 
 class AudioPlayerSendHandler(private val audioPlayer: AudioPlayer) : AudioSendHandler {
-    private val buffer: ByteBuffer = ByteBuffer.allocate(1024)
-    private val frame: MutableAudioFrame = MutableAudioFrame().apply {
+    private val buffer = ByteBuffer.allocate(1024)
+    private val frame = MutableAudioFrame().apply {
         setBuffer(buffer)
     }
 
-    override fun canProvide(): Boolean = audioPlayer.provide(frame)
+    override fun canProvide() = audioPlayer.provide(frame)
 
     override fun provide20MsAudio(): ByteBuffer {
         (buffer as Buffer).flip()

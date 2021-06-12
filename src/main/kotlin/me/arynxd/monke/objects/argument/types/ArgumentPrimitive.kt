@@ -2,7 +2,6 @@ package me.arynxd.monke.objects.argument.types
 
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentResult
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.command.CommandEvent
 
 class ArgumentLong(
@@ -75,5 +74,12 @@ class ArgumentString(
     override val type: Type,
     override val condition: (String) -> ArgumentResult<String> = { ArgumentResult(it, null) }
 ) : Argument<String>() {
-    override suspend fun convert(input: String, event: CommandEvent) = ArgumentResult(input, null)
+    override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<String> {
+        return if (input.isBlank()) {
+                ArgumentResult(null, "command.argument.string.error.empty")
+            }
+            else {
+                ArgumentResult(input, null)
+            }
+    }
 }

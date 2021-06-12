@@ -93,7 +93,7 @@ class CommandHandler(
         val commandEvent = CommandEvent(monke, args.toMutableList(), command, event)
 
         if (command.hasChildren) {
-            if (args.isEmpty()) { //Is there no additional arguments (children to proccess)
+            if (args.isEmpty()) { //Is there no additional arguments (children to process)
                 launchCommand(command, commandEvent)
                 return
             }
@@ -106,7 +106,7 @@ class CommandHandler(
                 return
             }
 
-            args.removeAt(0)//Remove later incase the main command runs and needs this arg
+            args.removeAt(0)//Remove later in case the main command runs and needs this arg
 
             launchCommand(childCommand, CommandEvent(monke, args.toMutableList(), childCommand, event))
             return

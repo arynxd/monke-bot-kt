@@ -5,8 +5,8 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import me.arynxd.monke.handlers.MusicHandler
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
@@ -25,7 +25,7 @@ class PlayCommand : Command(
                 name = "song",
                 description = "The track to play.",
                 required = true,
-                type = Type.VARARG
+                type = Argument.Type.VARARG
             )
         ),
         finalCheck = { it.member.voiceState?.channel != null },

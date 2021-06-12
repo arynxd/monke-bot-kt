@@ -4,8 +4,8 @@ import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.CommandHandler
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.handlers.translateAll
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentCommand
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
@@ -30,7 +30,7 @@ class HelpCommand : Command(
                 name = "command",
                 description = "The command to show help for.",
                 required = false,
-                type = Type.REGULAR,
+                type = Argument.Type.REGULAR,
             )
         )
     )

@@ -199,7 +199,7 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
             channel.deleteMessagesByIds(toDelete.subList(1, toDelete.size)).queue()
         }
         else if (toDelete.size == 2) {
-            channel.deleteMessageById(toDelete.first()).queue()
+            channel.deleteMessageById(toDelete.last()).queue()
         }
     }
 

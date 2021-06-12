@@ -27,7 +27,6 @@ import kotlin.random.Random
 import kotlin.system.exitProcess
 
 fun main() {
-    Int
     Monke()
 }
 

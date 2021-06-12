@@ -135,6 +135,16 @@
         "error": {
           "invalid": "'%0' is not a valid URL"
         }
+      },
+      "range": {
+        "error": {
+          "out_of_bounds": "Amount must be between %0 and %1"
+        }
+      },
+      "string": {
+        "error": {
+          "empty": "Cannot be empty"
+        }
       }
     },
     "play": {
@@ -453,7 +463,8 @@
         },
         "emoji": {
           "name": "emoji",
-          "description": "The emoji URL. Must be a valid image URL."
+          "description": "The emoji URL. Must be a valid image URL.",
+          "invalid": "Emoji name must be A-Z or _ and 2 - 32 characters long"
         }
       },
       "response": {
@@ -494,7 +505,7 @@
       "argument": {
         "amount": {
           "name": "amount",
-          "description": "The amount to clear. 1 - 50"
+          "description": "The amount to clear."
         }
       },
       "response": {
@@ -508,7 +519,7 @@
       "argument": {
         "amount": {
           "name": "amount",
-          "description": "The amount of messages to check. Must be less than 25"
+          "description": "The amount of messages to check."
         }
       },
       "response": {

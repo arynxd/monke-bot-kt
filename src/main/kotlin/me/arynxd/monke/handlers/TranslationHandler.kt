@@ -101,8 +101,7 @@ private fun doTranslate(language: Language, key: String, vararg values: Any?): S
                     )
                 )
             )
-
-
+    
     if (values.isNotEmpty()) {
         for (i in values.indices) {
             result = result.replace("%$i", values[i].toString(), true)
@@ -160,7 +159,6 @@ data class MultiPartTranslationBuilder(
     private val builders = mutableListOf<TranslationBuilder>()
 
     fun part(path: String, vararg values: Any?) {
-
         builders.add(
             translationStep {
                 this.path = path

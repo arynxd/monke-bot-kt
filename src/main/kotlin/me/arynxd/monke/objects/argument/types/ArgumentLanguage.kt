@@ -2,7 +2,6 @@ package me.arynxd.monke.objects.argument.types
 
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentResult
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language
 

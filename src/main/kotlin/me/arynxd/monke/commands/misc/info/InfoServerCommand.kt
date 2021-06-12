@@ -4,8 +4,8 @@ import dev.minn.jda.ktx.await
 import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.handlers.translateAll
 import me.arynxd.monke.objects.Emoji
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentGuild
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
@@ -27,7 +27,7 @@ class InfoServerCommand(parent: Command) : SubCommand(
                 name = "server",
                 description = "The server to show information for or nothing for the current server.",
                 required = false,
-                type = Type.REGULAR,
+                type = Argument.Type.REGULAR,
             )
         )
     )

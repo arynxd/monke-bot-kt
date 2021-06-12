@@ -50,8 +50,7 @@ enum class Emoji(val emote: String, val unicode: String? = null, val isAnimated:
     NINE(":nine:", "\u0039\uFE0F"),
 
     ENABLED("851423342535901194"),
-    DISABLED("851424226908176394")
-    ;
+    DISABLED("851424226908176394");
 
     val asChat: String
         get() {

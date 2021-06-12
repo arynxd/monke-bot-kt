@@ -51,11 +51,11 @@ abstract class Argument<T> {
             path = "command.$commandName.argument.$name.name"
         }
     }
-}
 
-enum class Type {
-    VARARG,
-    REGULAR
+    enum class Type {
+        VARARG,
+        REGULAR
+    }
 }
 
 data class ArgumentResult<T>(

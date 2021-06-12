@@ -1,7 +1,7 @@
 package me.arynxd.monke.commands.developer.plugin
 
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentPlugin
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
@@ -19,7 +19,7 @@ class PluginEnableCommand(parent: Command) : SubCommand(
                 name = "plugin",
                 description = "The plugin to enable.",
                 required = true,
-                type = Type.REGULAR
+                type = Argument.Type.REGULAR
             )
         )
     )

@@ -1,8 +1,8 @@
 package me.arynxd.monke.commands.configuration
 
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentLanguage
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
@@ -23,7 +23,7 @@ class LanguageCommand : Command(
                 name = "language",
                 description = "The new language.",
                 required = false,
-                type = Type.REGULAR,
+                type = Argument.Type.REGULAR,
             )
         )
     )

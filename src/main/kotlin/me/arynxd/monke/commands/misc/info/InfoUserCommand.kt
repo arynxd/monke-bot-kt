@@ -1,8 +1,8 @@
 package me.arynxd.monke.commands.misc.info
 
 import me.arynxd.monke.handlers.translateAll
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentMember
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
@@ -21,7 +21,7 @@ class InfoUserCommand(parent: Command) : SubCommand(
                 name = "member",
                 description = "The member to show information for.",
                 required = false,
-                type = Type.REGULAR,
+                type = Argument.Type.REGULAR,
             )
         )
     )

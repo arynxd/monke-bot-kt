@@ -1,10 +1,9 @@
 package me.arynxd.monke.commands.`fun`
 
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentResult
-import me.arynxd.monke.objects.argument.Type
-import me.arynxd.monke.objects.argument.types.ArgumentLong
+import me.arynxd.monke.objects.argument.types.ArgumentRange
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
@@ -21,29 +20,21 @@ class RandomNumberCommand : Command(
         aliases = listOf("number"),
 
         arguments = ArgumentConfiguration(
-            ArgumentLong(
+            ArgumentRange(
                 name = "number-one",
                 description = "The first number in the range.",
                 required = true,
-                type = Type.REGULAR,
-                condition = {
-                    if (it < 0)
-                        ArgumentResult(null, "internal_error.nop") //TODO add translation here
-                    else
-                        ArgumentResult(it, null)
-                }
+                type = Argument.Type.REGULAR,
+                upperBound = Long.MAX_VALUE,
+                lowerBound = 0
             ),
-            ArgumentLong(
+            ArgumentRange(
                 name = "number-two",
                 description = "The second number in the range.",
                 required = true,
-                type = Type.REGULAR,
-                condition = {
-                    if (it < 0)
-                        ArgumentResult(null, "internal_error.nop") //TODO add translation here
-                    else
-                        ArgumentResult(it, null)
-                }
+                type = Argument.Type.REGULAR,
+                upperBound = Long.MAX_VALUE,
+                lowerBound = 0
             )
         )
     )

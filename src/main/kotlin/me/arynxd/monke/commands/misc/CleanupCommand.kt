@@ -1,14 +1,14 @@
 package me.arynxd.monke.commands.misc
 
+import dev.minn.jda.ktx.asFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentResult
-import me.arynxd.monke.objects.argument.Type
-import me.arynxd.monke.objects.argument.types.ArgumentInt
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandMetaData
+import me.arynxd.monke.objects.argument.types.ArgumentRange
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
 
 @Suppress("UNUSED")
@@ -17,61 +17,55 @@ class CleanupCommand : Command(
         name = "cleanup",
         description = "Cleans up the bot's message",
         category = CommandCategory.MISC,
+        flags = listOf(CommandFlag.SUSPENDING),
 
         arguments = ArgumentConfiguration(
-            ArgumentInt(
+            ArgumentRange(
                 name = "amount",
                 description = "The amount of messages to check.",
-                required = false,
-                type = Type.REGULAR,
-                condition = {
-                    if (it !in 1..30)
-                        ArgumentResult(null, "internal_error.nop") //TODO add translation here
-                    else
-                        ArgumentResult(it, null)
-                }
+                required = true,
+                type = Argument.Type.REGULAR,
+                upperBound = 30,
+                lowerBound = 1,
             )
         )
     )
 ) {
-    override fun runSync(event: CommandEvent) {
-        val amount = event.argument(0, 20)
+    override suspend fun runSuspend(event: CommandEvent) {
+        val amount = event.argument(0, 20L)
         val language = event.language
-        event.channel.iterableHistory
-            .takeAsync(amount)
-            .thenApply { list ->
-                list
-                    .filter { it.author.idLong == event.selfMember.idLong }
-                    .map { it.id }
-            }
-            .thenAccept {
-                if (it.isEmpty()) {
-                    event.replyAsync {
-                        type(CommandReply.Type.EXCEPTION)
-                        title(
-                            translate {
-                                lang = language
-                                path = "command.cleanup.response.no_messages"
-                            }
-                        )
-                        footer()
-                        event.thread.post(this)
-                    }
-                    return@thenAccept
-                }
 
-                event.channel.purgeMessagesById(it)
-                event.replyAsync {
-                    type(CommandReply.Type.SUCCESS)
-                    title(
-                        translate {
-                            lang = language
-                            path = "command.cleanup.response.success"
-                            values = arrayOf(it.size)
-                        }
-                    )
-                    event.thread.post(this)
-                }
+        val messages = event.channel.iterableHistory.asFlow()
+            .take(amount.toInt())
+            .filter { it.author.idLong == event.selfMember.idLong }
+            .toList()
+
+        if (messages.isEmpty()) {
+            event.replyAsync {
+                type(CommandReply.Type.EXCEPTION)
+                title(
+                    translate {
+                        lang = language
+                        path = "command.cleanup.response.no_messages"
+                    }
+                )
+                footer()
+                event.thread.post(this)
             }
+            return
+        }
+
+        event.channel.purgeMessagesById(messages.map { it.toString() })
+        event.replyAsync {
+            type(CommandReply.Type.SUCCESS)
+            title(
+                translate {
+                    lang = language
+                    path = "command.cleanup.response.success"
+                    values = arrayOf(messages.size)
+                }
+            )
+            event.thread.post(this)
+        }
     }
 }

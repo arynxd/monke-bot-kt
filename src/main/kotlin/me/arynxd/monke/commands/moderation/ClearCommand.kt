@@ -6,10 +6,9 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import me.arynxd.monke.handlers.RateLimitHandler
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentResult
-import me.arynxd.monke.objects.argument.Type
-import me.arynxd.monke.objects.argument.types.ArgumentInt
+import me.arynxd.monke.objects.argument.types.ArgumentRange
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.ratelimit.RateLimitedAction
@@ -25,18 +24,13 @@ class ClearCommand : Command(
         flags = listOf(CommandFlag.SUSPENDING),
         cooldown = 10_000L,
         arguments = ArgumentConfiguration(
-            ArgumentInt(
+            ArgumentRange(
                 name = "amount",
                 description = "The amount to clear.",
                 required = true,
-                type = Type.REGULAR,
-                condition = {
-                    if (it !in 1..50)
-                        ArgumentResult(null, "internal_error.nop") //TODO add translation here
-                    else
-                        ArgumentResult(it, null)
-
-                },
+                type = Argument.Type.REGULAR,
+                upperBound = 50,
+                lowerBound = 1,
             )
         ),
         memberPermissions = listOf(Permission.MESSAGE_MANAGE),
@@ -64,11 +58,11 @@ class ClearCommand : Command(
             return
         }
 
-        val amount = event.argument<Int>(0)
+        val amount = event.argument<Long>(0)
         val amountToTake = if (thread.hasPosts) amount + 2 else amount + 1
 
         val messages = event.channel.iterableHistory.asFlow()
-            .take(amountToTake)
+            .take(amountToTake.toInt())
             .filter { it.idLong != event.message.idLong && !event.thread.contains(it.idLong) }
             .toList()
 

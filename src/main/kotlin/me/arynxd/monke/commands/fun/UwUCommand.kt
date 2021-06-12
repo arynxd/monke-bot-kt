@@ -1,8 +1,7 @@
 package me.arynxd.monke.commands.`fun`
 
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentResult
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
@@ -24,17 +23,7 @@ class UwUCommand : Command(
                 name = "text",
                 description = "The text to UwUfy.",
                 required = true,
-                type = Type.VARARG,
-                condition = {
-                    if (it.isBlank() || it.length > MessageEmbed.TEXT_MAX_LENGTH)
-                        ArgumentResult(
-                            null,
-                            //"Text must not be blank and must be less than ${MessageEmbed.TEXT_MAX_LENGTH} chars"
-                        "internal_error.nop"
-                        )
-                    else
-                        ArgumentResult(it, null)
-                }
+                type = Argument.Type.VARARG,
             )
         )
     )
@@ -42,6 +31,7 @@ class UwUCommand : Command(
     override fun runSync(event: CommandEvent) {
         event.replyAsync {
             val sentence = event.vararg<String>(0)
+                .take(MessageEmbed.TEXT_MAX_LENGTH)
                 .joinToString(separator = " ")
                 .toCharArray()
                 .map {

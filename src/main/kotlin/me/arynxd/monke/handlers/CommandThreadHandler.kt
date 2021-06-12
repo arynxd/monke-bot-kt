@@ -39,6 +39,6 @@ class CommandThreadHandler(
     }
 }
 
-private operator fun <K : Any, V : Any> LoadingCache<K, V>.set(messageId: K, value: V) {
-    this.put(messageId, value)
+private operator fun <K : Any, V : Any> LoadingCache<K, V>.set(key: K, value: V) {
+    this.put(key, value)
 }

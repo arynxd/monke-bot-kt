@@ -3,7 +3,6 @@ package me.arynxd.monke.objects.argument.types
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentResult
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.equalsIgnoreCase
 import net.dv8tion.jda.api.entities.Guild
@@ -36,6 +35,7 @@ class ArgumentGuild(
         if (byName != null) {
             return ArgumentResult(byName, null)
         }
+
         return ArgumentResult(null, "command.argument.guild.error.not_found", arrayOf(input))
     }
 }

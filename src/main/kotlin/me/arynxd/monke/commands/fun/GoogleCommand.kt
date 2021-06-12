@@ -3,9 +3,8 @@ package me.arynxd.monke.commands.`fun`
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentResult
-import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
@@ -27,13 +26,7 @@ class GoogleCommand : Command(
                 name = "query",
                 description = "The search query.",
                 required = true,
-                type = Type.VARARG,
-                condition = {
-                    if (it.isBlank())
-                        ArgumentResult(null, "internal_error.nop")//TODO add translation here
-                    else
-                        ArgumentResult(it, null)
-                }
+                type = Argument.Type.VARARG,
             )
         )
     )
