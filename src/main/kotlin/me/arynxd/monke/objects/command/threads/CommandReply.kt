@@ -19,9 +19,9 @@ import java.time.Instant
 /**
  * Provides a simple API to respond to a user, used in threading
  */
-class CommandReply(val message: Message, val channel: TextChannel, val user: User, val monke: Monke) {
+class CommandReply(val messageId: Long, val channel: TextChannel, val user: User?, val monke: Monke) {
     constructor(event: CommandEvent) : this(
-        message = event.message,
+        messageId = event.message.idLong,
         channel = event.channel,
         user = event.user,
         monke = event.monke
@@ -60,7 +60,8 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
     fun send(callback: ((Message) -> Unit) = {}) {
         checkType()
 
-        message.reply(embed.build())
+        channel.sendMessage(embed.build())
+            .referenceById(messageId)
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
             .queue(callback)
@@ -69,7 +70,8 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
     suspend fun await(): Message {
         checkType()
 
-        return message.reply(embed.build())
+        return channel.sendMessage(embed.build())
+            .referenceById(messageId)
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
             .await()
@@ -109,8 +111,8 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
 
     fun timestamp(time: Instant = Instant.now()) = embed.setTimestamp(time)
 
-    fun footer(text: String = user.asTag, url: String = user.effectiveAvatarUrl) =
-        embed.setFooter(text.take(MessageEmbed.TEXT_MAX_LENGTH), url)
+    fun footer(text: String? = user?.asTag, url: String? = user?.effectiveAvatarUrl) =
+        embed.setFooter(text?.take(MessageEmbed.TEXT_MAX_LENGTH), url)
 
     fun thumbnail(url: String?) = embed.setThumbnail(url)
 
@@ -121,7 +123,8 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
     fun mentions(vararg mentions: Message.MentionType) = this.mentions.addAll(mentions)
 
     fun chunks(parts: List<Any>) = parts.forEach {
-        message.reply(it.toString())
+        channel.sendMessage(it.toString())
+            .referenceById(messageId)
             .mentionRepliedUser(false)
             .override(true)
             .allowedMentions(mentions)
@@ -168,10 +171,11 @@ class CommandReply(val message: Message, val channel: TextChannel, val user: Use
 
     private fun doReply(parts: List<Any>, callback: (Message) -> Unit) {
         for (part in parts) {
-            message.reply(part.toString())
+            channel.sendMessage(part.toString())
+                .referenceById(messageId)
                 .mentionRepliedUser(false)
-                .allowedMentions(mentions)
                 .override(true)
+                .allowedMentions(mentions)
                 .queue {
                     callback(it)
                 }

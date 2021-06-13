@@ -9,44 +9,46 @@ import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.music.GuildMusicManager
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent
+import java.util.concurrent.ConcurrentHashMap
 
 class MusicHandler(
     override val monke: Monke
 ) : Handler() {
     val playerManager = DefaultAudioPlayerManager()
-    private val musicManagers = HashMap<Long, GuildMusicManager>()
-    private val lock = Mutex()
+    private val musicManagers = ConcurrentHashMap<Long, GuildMusicManager>()
 
     override fun onEnable() {
         AudioSourceManagers.registerLocalSource(playerManager)
         AudioSourceManagers.registerRemoteSources(playerManager)
     }
 
-    suspend fun getGuildMusicManager(
+    fun getGuildMusicManager(
         guild: Guild,
         channel: TextChannel,
-        voiceChannel: VoiceChannel
+        voiceChannel: VoiceChannel,
+        user: User,
+        sourceId: Long
     ): GuildMusicManager {
-
         val guildId = guild.idLong
-        return lock.withLock {
-            val musicManager =
-                musicManagers[guildId] ?: GuildMusicManager(
-                    channel = channel,
-                    voiceChannel = voiceChannel,
-                    guild = guild,
-                    manager = playerManager
-                ).also {
-                    musicManagers[guildId] = it
-                }
+        val musicManager =
+            musicManagers[guildId] ?: GuildMusicManager(
+                channel = channel,
+                voiceChannel = voiceChannel,
+                guild = guild,
+                manager = playerManager,
+                monke = monke,
+                user = user,
+                sourceId = sourceId
+            ).also {
+                musicManagers[guildId] = it
+            }
 
-            guild.audioManager.sendingHandler = musicManager.getSendHandler()
-
-            return@withLock musicManager
-        }
+        guild.audioManager.sendingHandler = musicManager.sendHandler
+        return musicManager
     }
 
     fun leaveChannel(channel: VoiceChannel) {
@@ -79,10 +81,13 @@ class MusicHandler(
             val musicManager = musicManagers[id] ?: return
 
             musicManagers[id] = GuildMusicManager(
-                channel = musicManager.channel,
+                channel = musicManager.textChannel,
                 voiceChannel = event.channelJoined,
                 guild = event.guild,
-                manager = playerManager
+                manager = playerManager,
+                user = musicManager.user,
+                sourceId = musicManager.sourceId,
+                monke = monke
             )
         }
     }

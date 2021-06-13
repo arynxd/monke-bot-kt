@@ -23,6 +23,7 @@ class CommandEvent(
     val selfMember = guild.selfMember
     val guildIdLong = guild.idLong
     val message = event.message
+    val messageIdLong = message.idLong
     val member = event.member
     val user = event.user
     val jda = event.jda

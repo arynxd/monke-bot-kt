@@ -25,7 +25,7 @@ class Handlers(val monke: Monke) {
     val handlers = loadHandlers()
     val okHttpClient = OkHttpClient()
 
-    operator fun <T : Any> get(clazz: KClass<T>): T {
+    operator fun <T : Handler> get(clazz: KClass<T>): T {
         if (!handlers.containsKey(clazz)) {
             throw HandlerException("Handler '${clazz.simpleName}' was not found.")
         }

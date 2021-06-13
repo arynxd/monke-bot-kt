@@ -14,7 +14,9 @@ import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.handlers.whenEnabled
 import me.arynxd.monke.objects.translation.Language
+import me.arynxd.monke.util.MIN_PERMISSIONS
 import me.arynxd.monke.util.equalsIgnoreCase
+import me.arynxd.monke.util.hasMinimumPermissions
 import me.arynxd.monke.util.markdownSanitize
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
@@ -40,9 +42,24 @@ class CommandHandler(
     }
 
     fun handlePreprocessEvent(event: CommandPreprocessEvent) {
-        val prefix = monke.handlers[GuildDataHandler::class].getData(event.guild.idLong).prefix
-
+        val message = event.message
+        val channel = event.channel
+        val user = event.user
         val contentRaw = event.message.contentRaw
+
+        val dataCache = monke.handlers[GuildDataHandler::class].getData(event.guild.idLong)
+        val language = dataCache.language
+        val prefix = dataCache.prefix
+
+        val thread = event.monke.handlers[CommandThreadHandler::class].getOrNew(message.idLong)
+
+        if (!event.channel.hasMinimumPermissions()) {
+            message.reply(
+                "Oops! I'm missing some permissions I need to function (${MIN_PERMISSIONS.joinToString { it.name }})"
+            ).queue()
+            return
+        }
+
 
         val content = when {
             isBotMention(event) -> contentRaw.substring(contentRaw.indexOf(char = '>') + 1, contentRaw.length)
@@ -68,13 +85,7 @@ class CommandHandler(
         val command = commandMap[query]
 
         if (command == null) {
-            val message = event.message
-            val language = monke.handlers[GuildDataHandler::class].getData(event.guild.idLong).language
-            val thread = event.monke.handlers[CommandThreadHandler::class].getOrNew(message.idLong)
-            val channel = event.channel
-            val user = event.user
-
-            val reply = CommandReply(message, channel, user, monke)
+            val reply = CommandReply(message.idLong, channel, user, monke)
             reply.type(CommandReply.Type.EXCEPTION)
             reply.description(
                 translate {

@@ -43,12 +43,12 @@ class PlayCommand : Command(
         val channel = event.channel
         val voiceChannel = event.member.voiceState!!.channel!!
         val musicHandler = event.monke.handlers[MusicHandler::class]
-        val musicManager = musicHandler.getGuildMusicManager(event.guild, channel, voiceChannel)
+        val musicManager = musicHandler.getGuildMusicManager(event.guild, channel, voiceChannel, event.user, event.messageIdLong)
 
-        if (musicManager.channel != channel) {
+        if (musicManager.textChannel != channel) {
             event.reply {
                 type(CommandReply.Type.EXCEPTION)
-                title("I'm locked to ${musicManager.channel.asMention} for this session.")
+                title("I'm locked to ${musicManager.textChannel.asMention} for this session.")
                 footer()
                 event.thread.post(this)
             }
@@ -72,7 +72,7 @@ class PlayCommand : Command(
             else "ytsearch:$it"
         }.markdownSanitize()
 
-        musicHandler.playerManager.loadItemOrdered(musicManager, query, object : AudioLoadResultHandler {
+        musicHandler.playerManager.loadItemOrdered(musicHandler.playerManager, query, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) {
                 musicManager.play(track, voiceChannel)
                 val message =
@@ -91,7 +91,7 @@ class PlayCommand : Command(
             }
 
             override fun playlistLoaded(playlist: AudioPlaylist) {
-                val firstTrack: AudioTrack = playlist.selectedTrack ?: playlist.tracks[0]
+                val firstTrack = playlist.selectedTrack ?: playlist.tracks[0]
 
                 val message =
                     if (musicManager.hasNext())
@@ -106,6 +106,7 @@ class PlayCommand : Command(
                     footer()
                     event.thread.post(this)
                 }
+                musicManager.play(firstTrack, voiceChannel)
             }
 
             override fun noMatches() {

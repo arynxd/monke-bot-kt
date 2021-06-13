@@ -24,10 +24,12 @@ class PauseCommand : Command(
     )
 ) {
     override suspend fun runSuspend(event: CommandEvent) {
-        val musicManager = event.monke.handlers.get(MusicHandler::class).getGuildMusicManager(
+        val musicManager = event.monke.handlers[MusicHandler::class].getGuildMusicManager(
             guild = event.guild,
             channel = event.channel,
-            voiceChannel = event.member.voiceState!!.channel!!
+            voiceChannel = event.member.voiceState!!.channel!!,
+            user = event.user,
+            sourceId = event.messageIdLong
         )
 
         if (musicManager.player.isPaused) {
