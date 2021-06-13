@@ -57,16 +57,14 @@ class HelpCommand : Command(
             )
         )
 
-        if (command.hasChildren) {
-            for (child in command.children) {
-                fields.add(
-                    MessageEmbed.Field(
-                        "**$prefix${child.parent.getName(language)} ${child.getName(language)}**",
-                        getDescription(child, event, "${child.parent.getName(language)} ${child.getName(language)}"),
-                        true
-                    )
+        for (child in command.children) {
+            fields.add(
+                MessageEmbed.Field(
+                    "**$prefix${child.parent.getName(language)} ${child.getName(language)}**",
+                    getDescription(child, event, "${child.parent.getName(language)} ${child.getName(language)}"),
+                    true
                 )
-            }
+            )
         }
 
         event.replyAsync {

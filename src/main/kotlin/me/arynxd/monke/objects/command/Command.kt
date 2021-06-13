@@ -194,7 +194,8 @@ abstract class Command(
 
     val hasArguments = metaData.arguments.expected.isNotEmpty()
 
-    val hasChildren = children.isNotEmpty()
+    val hasChildren: Boolean
+        get() = children.isNotEmpty()
 
     open fun getDescription(language: Language) = translate {
         lang = language

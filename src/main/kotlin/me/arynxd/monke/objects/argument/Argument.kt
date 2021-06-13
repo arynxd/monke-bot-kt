@@ -25,12 +25,8 @@ abstract class Argument<T> {
     abstract suspend fun convert(input: String, event: CommandEvent): ArgumentResult<T>
 
     fun getDescription(language: Language, command: Command): String {
-        val commandName = if (command is SubCommand) {
-            command.parent.getName(language)
-        }
-        else {
-            command.getName(language)
-        }
+        val commandName = if (command is SubCommand) "${command.parent.metaData.name}.child.${command.metaData.name}"
+                          else command.metaData.name//Untranslated because name is a constant key
 
         return translate {
             lang = language
@@ -39,12 +35,8 @@ abstract class Argument<T> {
     }
 
     fun getName(language: Language, command: Command): String {
-        val commandName = if (command is SubCommand) {
-            command.parent.getName(language)
-        }
-        else {
-            command.getName(language)
-        }
+        val commandName = if (command is SubCommand) "${command.parent.metaData.name}.child.${command.metaData.name}"
+                          else command.metaData.name //Untranslated because name is a constant key
 
         return translate {
             lang = language

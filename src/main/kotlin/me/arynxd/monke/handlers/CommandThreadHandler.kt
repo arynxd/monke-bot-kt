@@ -5,7 +5,8 @@ import com.github.benmanes.caffeine.cache.LoadingCache
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.command.threads.CommandThread
 import me.arynxd.monke.objects.handlers.Handler
-import me.arynxd.monke.util.ignoreUnknown
+import me.arynxd.monke.util.IGNORE_UNKNOWN
+import me.arynxd.monke.util.set
 import net.dv8tion.jda.api.entities.TextChannel
 import java.util.concurrent.TimeUnit
 
@@ -31,14 +32,10 @@ class CommandThreadHandler(
         val thread = threads[messageId] ?: return
         val toDelete = thread.responseIds.map { it.toString() }.toMutableList()
         if (toDelete.size >= 2) {
-            channel.deleteMessagesByIds(toDelete).queue(null, ignoreUnknown())
+            channel.deleteMessagesByIds(toDelete).queue(null, IGNORE_UNKNOWN)
         }
         else if (toDelete.size == 1) {
-            channel.deleteMessageById(toDelete.first()).queue(null, ignoreUnknown())
+            channel.deleteMessageById(toDelete.first()).queue(null, IGNORE_UNKNOWN)
         }
     }
-}
-
-private operator fun <K : Any, V : Any> LoadingCache<K, V>.set(key: K, value: V) {
-    this.put(key, value)
 }

@@ -10,53 +10,45 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 object MonkeInfo {
-    fun getUserCount(jda: JDA): Long {
-        return jda.guildCache.sumBy { it.memberCount }.toLong()
-    }
+    private val cpuFormatter = DecimalFormat("#.##")
 
-    fun getJDAVersion(): String {
-        return JDAInfo.VERSION
-    }
+    val JDA_VERSION: String = JDAInfo.VERSION
+    val JAVA_VERSION: String = System.getProperty("java.version")
 
-    fun getJavaVersion(): String {
-        return System.getProperty("java.version")
-    }
+    val maxMemory: Long
+        get() = Runtime.getRuntime().maxMemory()
 
-    fun getMaxMemory(): Long {
-        return Runtime.getRuntime().maxMemory()
-    }
+    val freeMemory: Long
+        get() = Runtime.getRuntime().freeMemory()
 
-    fun getFreeMemory(): Long {
-        return Runtime.getRuntime().freeMemory()
-    }
+    val totalMemory: Long
+        get() = Runtime.getRuntime().totalMemory()
 
-    fun getTotalMemory(): Long {
-        return Runtime.getRuntime().totalMemory()
-    }
+    val threadCount: Int
+        get() = ManagementFactory.getThreadMXBean().threadCount
 
-    fun getThreadCount(): Int {
-        return ManagementFactory.getThreadMXBean().threadCount
-    }
+    val memoryFormatted: String
+        get() = (totalMemory - freeMemory shr 20).toString() + "MB / " + (maxMemory shr 20) + "MB"
+
+    val cpuUsageFormatted: String
+        get() = cpuFormatter.format(ManagementFactory.getOperatingSystemMXBean().systemLoadAverage)
+
+    val uptimeString: String
+        get() {
+            val millis = ManagementFactory.getRuntimeMXBean().uptime
+            return parseUptime(
+                Duration.between(
+                    LocalDateTime.now().minus(millis, ChronoUnit.MILLIS),
+                    LocalDateTime.now()
+                )
+            )
+        }
 
     fun getGuildCount(jda: JDA): Long {
         return jda.guildCache.size()
     }
 
-    fun getMemoryFormatted(): String {
-        return (getTotalMemory() - getFreeMemory() shr 20).toString() + "MB / " + (getMaxMemory() shr 20) + "MB"
-    }
-
-    fun getCPUUsage(): String {
-        return DecimalFormat("#.##").format(ManagementFactory.getOperatingSystemMXBean().systemLoadAverage)
-    }
-
-    fun getUptimeString(): String {
-        val millis = ManagementFactory.getRuntimeMXBean().uptime
-        return parseUptime(
-            Duration.between(
-                LocalDateTime.now().minus(millis, ChronoUnit.MILLIS),
-                LocalDateTime.now()
-            )
-        )
+    fun getUserCount(jda: JDA): Long {
+        return jda.guildCache.sumBy { it.memberCount }.toLong()
     }
 }

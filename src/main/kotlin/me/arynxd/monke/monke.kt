@@ -143,6 +143,9 @@ class Monke : ListenerAdapter(), Debuggable {
     override fun toDebugString(): String {
         return """
             Handlers: ${this.handlers.size()}
+            Uptime:   ${MonkeInfo.uptimeString}
+            CPU:      ${MonkeInfo.cpuUsageFormatted}
+            Threads:  ${MonkeInfo.threadCount}
         """.trimIndent()
     }
 }

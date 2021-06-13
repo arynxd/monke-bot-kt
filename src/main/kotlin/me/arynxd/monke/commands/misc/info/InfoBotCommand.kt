@@ -50,17 +50,17 @@ class InfoBotCommand(parent: Command) : SubCommand(
             type(CommandReply.Type.INFORMATION)
             title(event.jda.selfUser.name + translations[9])
 
-            field(jvmVersion, MonkeInfo.getJavaVersion(), true)
-            field(jdaVersion, MonkeInfo.getJDAVersion(), true)
+            field(jvmVersion, MonkeInfo.JAVA_VERSION, true)
+            field(jdaVersion, MonkeInfo.JDA_VERSION, true)
             field(monkeVersion, MONKE_VERSION, true)
 
-            field(threadCount, MonkeInfo.getThreadCount(), true)
-            field(memoryUsage, MonkeInfo.getMemoryFormatted(), true)
-            field(cpuUsage, "${MonkeInfo.getCPUUsage()}%", true)
+            field(threadCount, MonkeInfo.threadCount, true)
+            field(memoryUsage, MonkeInfo.memoryFormatted, true)
+            field(cpuUsage, "${MonkeInfo.cpuUsageFormatted}%", true)
 
             field(totalUsers, MonkeInfo.getUserCount(jda), true)
             field(totalServers, MonkeInfo.getGuildCount(jda), true)
-            field(uptime, MonkeInfo.getUptimeString(), true)
+            field(uptime, MonkeInfo.uptimeString, true)
 
             footer()
             event.thread.post(this)

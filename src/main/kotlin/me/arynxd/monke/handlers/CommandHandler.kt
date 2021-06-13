@@ -110,7 +110,7 @@ class CommandHandler(
             }
 
             val childQuery = args[0]
-            val childCommand = command.children.find { it.metaData.name.equalsIgnoreCase(childQuery) }
+            val childCommand = command.children.onEach { print(it.getName(language) + " -> " + childQuery) }.find { it.getName(language).equalsIgnoreCase(childQuery) }
 
             if (childCommand == null) {
                 launchCommand(command, commandEvent)

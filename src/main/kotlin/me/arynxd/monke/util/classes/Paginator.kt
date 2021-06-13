@@ -5,8 +5,8 @@ import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.PaginationHandler
 import me.arynxd.monke.objects.Emoji
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.util.IGNORE_UNKNOWN
 import me.arynxd.monke.util.addReactions
-import me.arynxd.monke.util.ignoreUnknown
 import me.arynxd.monke.util.queue
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -72,7 +72,7 @@ class Paginator(
 
             Emoji.WASTE_BASKET.asReaction -> getChannel()
                 .deleteMessageById(sentMessage)
-                .queue(null, ignoreUnknown())
+                .queue(null, IGNORE_UNKNOWN)
 
             else -> event.reaction.removeReaction(user).queue()
         }
@@ -103,25 +103,32 @@ class Paginator(
     }
 
     fun delete() {
-        getChannel().deleteMessageById(sentMessage).queue(null, ignoreUnknown())
+        getChannel().deleteMessageById(sentMessage).queue(null, IGNORE_UNKNOWN)
     }
 }
 
-fun MessageChannel.sendPaginator(event: CommandEvent, vararg embeds: MessageEmbed) {
+fun MessageChannel.sendPaginator(monke: Monke, userId: Long, messageId: Long, vararg embeds: MessageEmbed) {
     val paginator = Paginator(
-        monke = event.monke,
-        authorId = event.user.idLong,
-        channelId = event.channel.idLong,
-        messageId = event.message.idLong,
+        monke = monke,
+        authorId = userId,
+        channelId = this.idLong,
+        messageId = messageId,
         pages = embeds.toList()
     )
 
-    event.monke.handlers[PaginationHandler::class]
+    monke.handlers[PaginationHandler::class]
         .addPaginator(paginator)
 }
 
+fun MessageChannel.sendPaginator(event: CommandEvent, vararg embeds: MessageEmbed) {
+    sendPaginator(event.monke, event.user.idLong, event.messageIdLong, *embeds)
+}
+fun MessageChannel.sendPaginator(monke: Monke, userId: Long, messageId: Long, embeds: Collection<MessageEmbed>) {
+    sendPaginator(monke, userId, messageId, *embeds.toTypedArray())
+}
+
 fun MessageChannel.sendPaginator(event: CommandEvent, embeds: Collection<MessageEmbed>) {
-    this.sendPaginator(event, *embeds.toTypedArray())
+    sendPaginator(event, *embeds.toTypedArray())
 }
 
 

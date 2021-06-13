@@ -28,13 +28,15 @@ class PingCommand : Command(
             }
             val description =
                 "**$rest $ping**: ${event.jda.restPing.await()}ms\n\n" +
-                        "**$gateway $ping**: ${event.jda.gatewayPing}ms"
+                "**$gateway $ping**: ${event.jda.gatewayPing}ms"
 
             description(description)
             footer()
+
             var time = System.currentTimeMillis()
             val msg = event.thread.awaitPost(this)
             time = System.currentTimeMillis() - time
+
             description(description + "\n\n **$message**: ${time}ms")
             msg.editMessage(build()).queue()
         }

@@ -29,7 +29,7 @@ class InfoCommand : Command(
     )
 ) {
     init {
-        super.children.addAll(
+        children.addAll(
             listOf(
                 InfoUserCommand(this),
                 InfoServerCommand(this),

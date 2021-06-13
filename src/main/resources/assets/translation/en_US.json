@@ -249,15 +249,15 @@
         },
         "member-test": {
           "name": "member-test",
-          "description": "Test the member arg type. Must not be a bot."
+          "description": "Test the member arg type."
         },
         "long-test": {
           "name": "long-test",
-          "description": "Test the long arg type. Must be less than 0."
+          "description": "Test the long arg type."
         },
         "int-test": {
           "name": "int-test",
-          "description": "Test the int type. Must be greater than 0."
+          "description": "Test the int type."
         },
         "emoji": {
           "name": "emoji",
@@ -313,11 +313,11 @@
       "argument": {
         "number-one": {
           "name": "number-one",
-          "description": "The first number in the range. Bigger than 0."
+          "description": "The first number in the range."
         },
         "number-two": {
           "name": "number-two",
-          "description": "The second number in the range. Bigger than 0."
+          "description": "The second number in the range."
         }
       },
       "response": {
@@ -459,7 +459,7 @@
       "argument": {
         "name": {
           "name": "name",
-          "description": "The new emoji name, ( must be A-Z or _ and 2 - 32 characters long )."
+          "description": "The new emoji name."
         },
         "emoji": {
           "name": "emoji",

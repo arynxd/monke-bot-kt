@@ -61,19 +61,24 @@ class InfoServerCommand(parent: Command) : SubCommand(
         val createdAt = translations[6]
         val emotes = translations[7]
 
+        val description = """
+            **$isPartnered**:  ${hasFeature(guild, "PARTNERED")}
+            **$isVerified**:   ${hasFeature(guild, "VERIFIED")}
+            **$isPublic**:     ${hasFeature(guild, "PUBLIC")}
+            
+            
+            **$boostCount**:   ${guild.boostCount}
+            **$emotes**:       ${getEmoteString(guild, language)}
+            
+            
+            **$memberCount**:  ${guild.memberCount} / ${guild.maxMembers}
+            **$createdAt**:    ${parseDateTime(guild.timeCreated)}
+        """.trimIndent()
+
         event.reply {
+            title("$informationFor ${guild.name}")
             type(CommandReply.Type.INFORMATION)
-            title("$informationFor **${guild.name}**")
-
-            field(isPartnered, hasFeature(guild, "PARTNERED"), true)
-            field(isVerified, hasFeature(guild, "VERIFIED"), true)
-            field(isPublic, hasFeature(guild, "PUBLIC"), true)
-
-            field(boostCount, guild.boostCount.toString(), true)
-            field(memberCount, "${guild.memberCount} / ${guild.maxMembers}", true)
-            field(createdAt, parseDateTime(guild.timeCreated), true)
-
-            field(emotes, getEmoteString(guild, language), false)
+            description(description)
             thumbnail(guild.iconUrl)
             footer()
             event.thread.post(this)

@@ -25,7 +25,7 @@ class UptimeCommand : Command(
         }
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)
-            title("$uptime: ${MonkeInfo.getUptimeString()}")
+            title("$uptime: ${MonkeInfo.uptimeString}")
             footer()
             event.thread.post(this)
         }
