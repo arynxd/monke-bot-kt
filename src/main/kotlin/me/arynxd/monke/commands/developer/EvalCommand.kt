@@ -5,8 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.handlers.TaskHandler
-import me.arynxd.monke.handlers.translate
-import me.arynxd.monke.handlers.translateInternal
+import me.arynxd.monke.handlers.translation.translate
+import me.arynxd.monke.handlers.translation.translateInternal
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.types.ArgumentString

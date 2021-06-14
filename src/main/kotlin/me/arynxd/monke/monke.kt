@@ -2,6 +2,7 @@ package me.arynxd.monke
 
 import me.arynxd.monke.events.JDAEvents
 import me.arynxd.monke.handlers.*
+import me.arynxd.monke.handlers.translation.translateInternal
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.plugins.Plugins

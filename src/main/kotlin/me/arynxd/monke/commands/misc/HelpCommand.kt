@@ -2,8 +2,8 @@ package me.arynxd.monke.commands.misc
 
 import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.CommandHandler
-import me.arynxd.monke.handlers.translate
-import me.arynxd.monke.handlers.translateAll
+import me.arynxd.monke.handlers.translation.translate
+import me.arynxd.monke.handlers.translation.translateAll
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.types.ArgumentCommand

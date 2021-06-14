@@ -1,7 +1,7 @@
 package me.arynxd.monke.commands.misc.info
 
 import me.arynxd.monke.MONKE_VERSION
-import me.arynxd.monke.handlers.translateAll
+import me.arynxd.monke.handlers.translation.translateAll
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.classes.MonkeInfo

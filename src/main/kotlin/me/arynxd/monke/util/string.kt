@@ -4,7 +4,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.serializer
 import me.arynxd.monke.Monke
-import me.arynxd.monke.handlers.translateInternal
+import me.arynxd.monke.handlers.translation.translateInternal
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import java.net.MalformedURLException

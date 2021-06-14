@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import me.arynxd.monke.handlers.RateLimitHandler
-import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.types.ArgumentRange

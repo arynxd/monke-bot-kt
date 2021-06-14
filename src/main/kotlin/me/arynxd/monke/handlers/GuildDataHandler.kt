@@ -31,7 +31,7 @@ class GuildDataHandler(
     }
 
     override fun onEnable() {
-        monke.jda.guilds.forEach {
+        monke.jda.guildCache.forEach {
             initGuild(it.idLong)
         }
     }

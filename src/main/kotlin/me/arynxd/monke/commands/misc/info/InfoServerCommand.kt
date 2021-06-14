@@ -1,8 +1,8 @@
 package me.arynxd.monke.commands.misc.info
 
 import dev.minn.jda.ktx.await
-import me.arynxd.monke.handlers.translate
-import me.arynxd.monke.handlers.translateAll
+import me.arynxd.monke.handlers.translation.translate
+import me.arynxd.monke.handlers.translation.translateAll
 import me.arynxd.monke.objects.Emoji
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration

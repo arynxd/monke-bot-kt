@@ -1,6 +1,6 @@
 package me.arynxd.monke.commands.developer
 
-import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
 import kotlin.system.exitProcess

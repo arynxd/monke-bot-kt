@@ -5,8 +5,8 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.ExceptionHandler
-import me.arynxd.monke.handlers.translateAllInternal
-import me.arynxd.monke.handlers.translateInternal
+import me.arynxd.monke.handlers.translation.translateAllInternal
+import me.arynxd.monke.handlers.translation.translateInternal
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.util.readFully
 import me.arynxd.plugin_api.IPlugin

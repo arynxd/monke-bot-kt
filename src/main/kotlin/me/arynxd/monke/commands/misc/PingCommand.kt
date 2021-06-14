@@ -1,7 +1,7 @@
 package me.arynxd.monke.commands.misc
 
 import dev.minn.jda.ktx.await
-import me.arynxd.monke.handlers.translateAll
+import me.arynxd.monke.handlers.translation.translateAll
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
 

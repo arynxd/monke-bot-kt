@@ -1,7 +1,7 @@
 package me.arynxd.monke.commands.music
 
 import me.arynxd.monke.handlers.MusicHandler
-import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent

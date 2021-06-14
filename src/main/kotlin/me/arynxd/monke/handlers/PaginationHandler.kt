@@ -5,6 +5,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import me.arynxd.monke.Monke
+import me.arynxd.monke.handlers.translation.TranslationHandler
+import me.arynxd.monke.handlers.translation.translateInternal
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.util.classes.Paginator
 import kotlin.reflect.KClass

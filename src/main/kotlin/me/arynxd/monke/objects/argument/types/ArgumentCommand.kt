@@ -1,7 +1,7 @@
 package me.arynxd.monke.objects.argument.types
 
 import me.arynxd.monke.handlers.CommandHandler
-import me.arynxd.monke.handlers.translate
+import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentResult
 import me.arynxd.monke.objects.command.Command

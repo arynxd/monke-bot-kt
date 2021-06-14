@@ -1,6 +1,6 @@
 package me.arynxd.monke.commands.misc.info
 
-import me.arynxd.monke.handlers.translateAll
+import me.arynxd.monke.handlers.translation.translateAll
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.types.ArgumentMember

@@ -1,6 +1,6 @@
 package me.arynxd.monke.objects.argument
 
-import me.arynxd.monke.handlers.translateAll
+import me.arynxd.monke.handlers.translation.translateAll
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.translation.Language

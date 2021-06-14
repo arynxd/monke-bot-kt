@@ -4,8 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.Monke
-import me.arynxd.monke.handlers.translate
-import me.arynxd.monke.handlers.translateInternal
+import me.arynxd.monke.handlers.translation.translate
+import me.arynxd.monke.handlers.translation.translateInternal
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.handlers.LOGGER
