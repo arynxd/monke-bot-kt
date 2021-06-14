@@ -45,6 +45,7 @@ class EvalCommand : Command(
     private val saveFunc = """
         fun Any?.save() {
             output.data.add(this)
+            output.saveHook?.invoke(this)?: throw IllegalStateException("Save hook was null, this should never happen")
         }
         """.trimIndent()
 
@@ -58,16 +59,21 @@ class EvalCommand : Command(
                 import net.dv8tion.jda.api.utils.*
                 import net.dv8tion.jda.api.requests.restaction.*
                 import net.dv8tion.jda.api.requests.*
+                
                 import kotlin.collections.*
                 import kotlinx.coroutines.*
+                
                 import java.util.*
                 import java.util.concurrent.*
                 import java.util.stream.*
                 import java.io.*
                 import java.time.* 
+                
                 import me.arynxd.monke.handlers.*
                 import me.arynxd.monke.objects.command.*
                 import me.arynxd.monke.objects.command.threads.CommandReply.Type
+                import me.arynxd.monke.handlers.translation.translate
+                
                 import dev.minn.jda.ktx.Embed
                 import dev.minn.jda.ktx.await
                 """.trimIndent()
@@ -80,12 +86,46 @@ class EvalCommand : Command(
     private val codeBlockRegex = Regex("```[A-Za-z]*")
 
     override suspend fun runSuspend(event: CommandEvent) {
-        val outputObj = EvalOutput(mutableListOf())
         val monke = event.monke
 
         val oldConsole = System.out
         val newOutStream = ByteArrayOutputStream()
         val newSysOut = PrintStream(newOutStream)
+
+        val script = event.vararg<String>(0)
+            .joinToString(separator = " ")
+            .replace(codeBlockRegex, "")
+
+        val language = event.language
+
+        System.setOut(newSysOut)
+        val outputObj = EvalOutput(mutableListOf(), null)
+        var reply = buildReply(event, script, true, "---", "---", "---")
+
+        val restActionHandler: (Throwable) -> Unit = {
+            event.monke.handlers[TaskHandler::class].addOneShot(2, TimeUnit.SECONDS) {
+                val value = it.message.toString()
+                reply.type(CommandReply.Type.EXCEPTION)
+                reply.setField(0, translate {
+                    lang = language
+                    path = "command.eval.keyword.result"
+                }, value, true)
+                event.thread.post(reply)
+            }
+        }
+
+        val saveHandler: (Any?) -> Unit = {
+            val outputArr = outputObj.data.joinToString(separator = ", ")
+            val title = translate {
+                lang = language
+                path = "command.eval.keyword.saved_output"
+            }
+
+            reply.setField(1, title, outputArr, true)
+            event.thread.post(reply)
+        }
+
+        outputObj.saveHook = saveHandler
 
         engine.put("output", outputObj)
         engine.put("jda", event.jda)
@@ -98,27 +138,7 @@ class EvalCommand : Command(
         engine.put("user", event.user)
         engine.put("bot", event.jda.selfUser)
         engine.put("monke", monke)
-
-        val script = event.vararg<String>(0)
-            .joinToString(separator = " ")
-            .replace(codeBlockRegex, "")
-
-        val language = event.language
-
-        System.setOut(newSysOut)
-        var reply = buildReply(event, script, true, "---", "---", "---")
-
-        val restActionHandler: (Throwable) -> Unit = {
-            event.monke.handlers[TaskHandler::class].addOneShot(delay = 2, unit = TimeUnit.SECONDS) {
-                val title = it.message.toString()
-                reply.type(CommandReply.Type.EXCEPTION)
-                reply.setField(0, translate {
-                    lang = language
-                    path = "command.eval.keyword.result"
-                }, title, true)
-                event.thread.post(reply)
-            }
-        }
+        engine.put("language", language)
 
         event.thread.post(reply)
 
@@ -165,7 +185,7 @@ class EvalCommand : Command(
         }
 
         event.thread.post(reply)
-        event.monke.handlers[TaskHandler::class].addOneShot(delay = 2500, unit = TimeUnit.MILLISECONDS) {
+        event.monke.handlers[TaskHandler::class].addOneShot(2500, TimeUnit.MILLISECONDS) {
             RestAction.setDefaultFailure(defaultFailure)
         }
     }
@@ -288,8 +308,9 @@ class EvalCommand : Command(
         return Pair(result, successful)
     }
 
-    //Wrapper class for a data list because script engine can't handle a regular array????
+    //Wrapper class for a data list because script engine can't handle a regular array or functional variables????
     data class EvalOutput(
-        val data: MutableList<Any?>
+        val data: MutableList<Any?>,
+        var saveHook: ((Any?) -> Unit)? // dont worry this is fine :)
     )
 }

@@ -24,7 +24,7 @@ class TaskHandler(
 
     fun addRepeatingTask(block: () -> Unit) = addRepeatingTask(getName(), 0, TimeUnit.MILLISECONDS, block)
 
-    fun <T> addOneShot(name: String = getName(), delay: Long, unit: TimeUnit, block: () -> T): Future<T> {
+    fun <T> addOneShot(delay: Long, unit: TimeUnit, name: String = getName(), block: () -> T): Future<T> {
         val job = scheduler.schedule(block, delay, unit)
         tasks[name] = job
         return job
