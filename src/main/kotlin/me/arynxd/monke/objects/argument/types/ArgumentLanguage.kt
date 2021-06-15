@@ -16,10 +16,10 @@ class ArgumentLanguage(
     override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<Language> {
         val lang = Language.getLanguageOrNull(input)
         return if (lang == null) {
-            ArgumentResult(null, "command.argument.language.error.not_found", arrayOf(input))
+            ArgumentResult.ofFailure("command.argument.language.error.not_found", input)
         }
         else {
-            ArgumentResult(lang, null)
+            ArgumentResult.ofSuccess(lang)
         }
     }
 }

@@ -14,10 +14,10 @@ class ArgumentLong(
     override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<Long> {
         val long = input.toLongOrNull()
         return if (long == null) {
-            ArgumentResult(null, "command.argument.number.error.nan", arrayOf(input))
+            ArgumentResult.ofFailure("command.argument.number.error.nan", input)
         }
         else {
-            ArgumentResult(long, null)
+            ArgumentResult.ofSuccess(long)
         }
     }
 }
@@ -32,10 +32,10 @@ class ArgumentInt(
     override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<Int> {
         val int = input.toIntOrNull()
         return if (int == null) {
-            ArgumentResult(null, "command.argument.number.error.nan", arrayOf(input))
+            ArgumentResult.ofFailure("command.argument.number.error.nan", input)
         }
         else {
-            ArgumentResult(int, null)
+            ArgumentResult.ofSuccess(int)
         }
     }
 }
@@ -62,8 +62,8 @@ class ArgumentBoolean(
             "1" -> true
             "t" -> true
             else -> null
-        } ?: return ArgumentResult(null, "command.argument.boolean.error.invalid", arrayOf(input))
-        return ArgumentResult(res, null)
+        } ?: return ArgumentResult.ofFailure("command.argument.boolean.error.invalid", input)
+        return ArgumentResult.ofSuccess(res)
     }
 }
 

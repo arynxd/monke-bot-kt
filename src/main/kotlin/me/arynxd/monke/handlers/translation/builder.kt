@@ -12,8 +12,10 @@ data class MultiPartTranslationBuilder(
         builders.add(
             translationStep {
                 this.path = path
-                //I cant remove this unchecked cast warning >:(
-                this.values = values as Array<Any?>
+                @Suppress("UNCHECKED_CAST")
+                val v = values as Array<Any?>
+                this.values = v
+
                 if (this.lang == null) {
                     this.lang = this@MultiPartTranslationBuilder.lang
                 }
@@ -25,8 +27,10 @@ data class MultiPartTranslationBuilder(
         builders.add(
             translationStepInternal {
                 this.path = path
-                //I cant remove this unchecked cast warning >:(
-                this.values = values as Array<Any?>
+                @Suppress("UNCHECKED_CAST")
+                val v = values as Array<Any?>
+                this.values = v
+
                 if (this.lang == null) {
                     this.lang = this@MultiPartTranslationBuilder.lang
                 }

@@ -77,6 +77,7 @@ class Handlers(val monke: Monke) {
             val handler = queue.remove()
             if (i > 50) {
                 LOGGER.error("Suspected infinite loop while loading the handlers, closing.")
+                LOGGER.error("Queue state: $queue")
                 exitProcess(1)
             }
             if (enabled.containsAll(handler.dependencies)) {

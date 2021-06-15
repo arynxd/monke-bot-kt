@@ -29,14 +29,14 @@ class ArgumentGuild(
         val byId = event.jda.guildCache.find { it.idLong == toLong }
 
         if (byId != null) {
-            return ArgumentResult(byId, null)
+            return ArgumentResult.ofSuccess(byId)
         }
 
         if (byName != null) {
-            return ArgumentResult(byName, null)
+            return ArgumentResult.ofSuccess(byName)
         }
 
-        return ArgumentResult(null, "command.argument.guild.error.not_found", arrayOf(input))
+        return ArgumentResult.ofFailure("command.argument.guild.error.not_found", input)
     }
 }
 
@@ -64,20 +64,20 @@ class ArgumentMember(
 
         if (memberId != null) { //ID
             return try {
-                ArgumentResult(event.guild.retrieveMemberById(memberId).await(), null)
+                ArgumentResult.ofSuccess(event.guild.retrieveMemberById(memberId).await())
             }
             catch (exception: ErrorResponseException) {
-                return ArgumentResult(null, "command.argument.member.error.id_not_found", arrayOf(memberId))
+                return ArgumentResult.ofFailure("command.argument.member.error.id_not_found", memberId)
             }
         }
 
         val memberNames = event.guild.retrieveMembersByPrefix(input, 10).await()
 
         if (memberNames.isNotEmpty()) { //Name
-            return ArgumentResult(memberNames[0], null)
+            return ArgumentResult.ofSuccess(memberNames[0])
         }
 
-        return ArgumentResult(null, "command.argument.member.error.name_not_found", arrayOf(input))
+        return ArgumentResult.ofFailure("command.argument.member.error.name_not_found", input)
     }
 }
 
@@ -97,17 +97,17 @@ class ArgumentUser(
         }
 
         if (memberMentions.isNotEmpty()) { //Direct mention
-            return ArgumentResult(memberMentions[0].user, null)
+            return ArgumentResult.ofSuccess(memberMentions[0].user)
         }
 
         val memberId = input.toLongOrNull()
 
         if (memberId != null) { //ID
             return try {
-                ArgumentResult(event.jda.retrieveUserById(memberId).await(), null)
+                ArgumentResult.ofSuccess(event.jda.retrieveUserById(memberId).await())
             }
             catch (exception: ErrorResponseException) {
-                return ArgumentResult(null, "command.argument.user.error.id_not_found", arrayOf(memberId))
+                return ArgumentResult.ofFailure("command.argument.user.error.id_not_found", memberId)
             }
         }
 
@@ -117,7 +117,7 @@ class ArgumentUser(
             return ArgumentResult(memberNames[0].user, null)
         }
 
-        return ArgumentResult(null, "command.argument.user.error.name_not_found", arrayOf(input))
+        return ArgumentResult.ofFailure("command.argument.user.error.name_not_found", input)
     }
 }
 

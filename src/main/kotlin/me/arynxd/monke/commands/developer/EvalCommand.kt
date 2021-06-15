@@ -22,6 +22,7 @@ import java.io.PrintStream
 import java.util.concurrent.TimeUnit
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
+import kotlin.script.experimental.jsr223.KotlinJsr223DefaultScriptEngineFactory
 
 
 @Suppress("UNUSED")
@@ -53,29 +54,28 @@ class EvalCommand : Command(
         ScriptEngineManager().getEngineByExtension("kts")!!.apply {
             this.eval(
                 """
-                import net.dv8tion.jda.api.*
-                import net.dv8tion.jda.api.entities.*
-                import net.dv8tion.jda.api.exceptions.*
-                import net.dv8tion.jda.api.utils.*
-                import net.dv8tion.jda.api.requests.restaction.*
-                import net.dv8tion.jda.api.requests.*
+                import net.dv8tion.jda.api.*;
+                import net.dv8tion.jda.api.entities.*;
+                import net.dv8tion.jda.api.exceptions.*;
+                import net.dv8tion.jda.api.utils.*;
+                import net.dv8tion.jda.api.requests.restaction.*;
+                import net.dv8tion.jda.api.requests.*;
                 
-                import kotlin.collections.*
-                import kotlinx.coroutines.*
+                import kotlin.collections.*;
+                import kotlinx.coroutines.*;
                 
-                import java.util.*
-                import java.util.concurrent.*
-                import java.util.stream.*
-                import java.io.*
-                import java.time.* 
+                import java.util.*;
+                import java.util.concurrent.*;
+                import java.util.stream.*;
+                import java.io.*;
+                import java.time.* ;
                 
-                import me.arynxd.monke.handlers.*
-                import me.arynxd.monke.objects.command.*
-                import me.arynxd.monke.objects.command.threads.CommandReply.Type
-                import me.arynxd.monke.handlers.translation.translate
+                import me.arynxd.monke.handlers.*;
+
+                import me.arynxd.monke.objects.command.threads.CommandReply;
                 
-                import dev.minn.jda.ktx.Embed
-                import dev.minn.jda.ktx.await
+                import dev.minn.jda.ktx.Embed;
+                import dev.minn.jda.ktx.await;
                 """.trimIndent()
             )
 

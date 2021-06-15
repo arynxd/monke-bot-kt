@@ -23,10 +23,10 @@ class ArgumentCommand(
             path = "command.help.name"
         }
         return if (cmd == null) {
-            ArgumentResult(null, "command.argument.command.error.not_found", arrayOf(input, help))
+            ArgumentResult.ofFailure("command.argument.command.error.not_found", input, help)
         }
         else {
-            ArgumentResult(cmd, null)
+            ArgumentResult.ofSuccess(cmd)
         }
     }
 }

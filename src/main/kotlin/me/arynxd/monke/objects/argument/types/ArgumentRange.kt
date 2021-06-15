@@ -16,12 +16,12 @@ class ArgumentRange (
 ) : Argument<Long>() {
     override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<Long> {
         val toInt = input.toLongOrNull()
-            ?: return ArgumentResult(null, "command.argument.number.error.nan", arrayOf(input))
+            ?: return ArgumentResult.ofFailure("command.argument.number.error.nan", input)
 
         if (toInt > upperBound || toInt < lowerBound) {
-            return ArgumentResult(null, "command.argument.range.error.out_of_bounds", arrayOf(lowerBound, upperBound))
+            return ArgumentResult.ofFailure("command.argument.range.error.out_of_bounds", lowerBound, upperBound)
         }
 
-        return ArgumentResult(toInt, null)
+        return ArgumentResult.ofSuccess(toInt)
     }
 }

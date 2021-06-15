@@ -5,6 +5,7 @@ import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentResult
+import me.arynxd.monke.objects.argument.types.ArgumentImageURL
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.argument.types.ArgumentURL
 import me.arynxd.monke.objects.command.Command
@@ -44,7 +45,7 @@ class StealCommand : Command(
                         ArgumentResult(it, null)
                 }
             ),
-            ArgumentURL(
+            ArgumentImageURL(
                 name = "emoji",
                 description = "The emoji. Must be a valid image URL.",
                 required = true,

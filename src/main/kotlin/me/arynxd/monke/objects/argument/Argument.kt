@@ -97,6 +97,11 @@ data class ArgumentResult<T>(
         result = 31 * result + isSuccess.hashCode()
         return result
     }
+
+    companion object {
+        fun <T> ofSuccess(data: T) = ArgumentResult(data, null)
+        fun <T> ofFailure(err: String, vararg values: Any?) = ArgumentResult<T>(null, err, values.toList().toTypedArray())
+    }
 }
 
 

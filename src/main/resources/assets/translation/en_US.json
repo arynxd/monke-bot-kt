@@ -133,7 +133,8 @@
       },
       "url": {
         "error": {
-          "invalid": "'%0' is not a valid URL"
+          "invalid": "'%0' is not a valid URL",
+          "too_long": "'%0' provided too much data"
         }
       },
       "range": {

@@ -14,6 +14,6 @@ class ArgumentEmoji(
 
 ) : Argument<String>() {
     override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<String> =
-        if (EmojiValidator.unicodeExists(input)) ArgumentResult(input, null)
-        else ArgumentResult(null, "command.argument.emoji.error.invalid", arrayOf(input))
+        if (EmojiValidator.unicodeExists(input)) ArgumentResult.ofSuccess(input)
+        else ArgumentResult.ofFailure("command.argument.emoji.error.invalid", input)
 }
