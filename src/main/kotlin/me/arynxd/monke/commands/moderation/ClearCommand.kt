@@ -1,5 +1,6 @@
 package me.arynxd.monke.commands.moderation
 
+import club.minnced.jda.reactor.toFlux
 import dev.minn.jda.ktx.asFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
@@ -61,27 +62,35 @@ class ClearCommand : Command(
         val amount = event.argument<Long>(0)
         val amountToTake = if (thread.hasPosts) amount + 2 else amount + 1
 
-        val messages = event.channel.iterableHistory.asFlow()
-            .take(amountToTake.toInt())
+        event.channel.iterableHistory.toFlux()
             .filter { it.idLong != event.message.idLong && !event.thread.contains(it.idLong) }
-            .toList()
-
-        event.channel.purgeMessages(messages)
-        event.replyAsync {
-            type(CommandReply.Type.SUCCESS)
-            title(
-                translate {
-                    lang = language
-                    path = "command.clear.response.cleared"
-                    values = arrayOf(
-                        amount,
-                        amount.plurify()
+            .collectList()
+            .doOnNext {
+                event.channel.purgeMessages(it)
+                event.replyAsync {
+                    type(CommandReply.Type.SUCCESS)
+                    title(
+                        translate {
+                            lang = language
+                            path = "command.clear.response.cleared"
+                            values = arrayOf(
+                                amount,
+                                amount.plurify()
+                            )
+                        }
                     )
+                    footer()
+                    limiter.take(RateLimitedAction.BULK_DELETE)
+                    event.thread.post(this)
                 }
-            )
-            footer()
-            limiter.take(RateLimitedAction.BULK_DELETE)
-            event.thread.post(this)
-        }
+            }
+            .doOnError {
+                event.replyAsync {
+                    type(CommandReply.Type.EXCEPTION)
+                    title("Something went wrong when collecting the messages")
+                    event.thread.post(this)
+                }
+            }
+            .subscribe()
     }
 }
