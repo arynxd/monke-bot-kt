@@ -22,7 +22,6 @@ class ClearCommand : Command(
         name = "clear",
         description = "Clears messages from this channel.",
         category = CommandCategory.MODERATION,
-        flags = listOf(CommandFlag.SUSPENDING),
         cooldown = 10_000L,
         arguments = ArgumentConfiguration(
             ArgumentRange(
@@ -39,7 +38,7 @@ class ClearCommand : Command(
     )
 ) {
 
-    override suspend fun runSuspend(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val limiter = event.monke.handlers[RateLimitHandler::class].getRateLimiter(event.guildIdLong)
         val language = event.language
         val thread = event.thread
@@ -64,6 +63,7 @@ class ClearCommand : Command(
 
         event.channel.iterableHistory.toFlux()
             .filter { it.idLong != event.message.idLong && !event.thread.contains(it.idLong) }
+            .take(amountToTake)
             .collectList()
             .doOnNext {
                 event.channel.purgeMessages(it)

@@ -22,6 +22,8 @@ import java.io.PrintStream
 import java.util.concurrent.TimeUnit
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
+import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.script.experimental.jsr223.KotlinJsr223DefaultScriptEngineFactory
 
 
@@ -43,12 +45,6 @@ class EvalCommand : Command(
         )
     )
 ) {
-    private val saveFunc = """
-        fun Any?.save() {
-            output.data.add(this)
-            output.saveHook?.invoke(this)?: throw IllegalStateException("Save hook was null, this should never happen")
-        }
-        """.trimIndent()
 
     private val engine: ScriptEngine by lazy {
         ScriptEngineManager().getEngineByExtension("kts")!!.apply {
@@ -95,6 +91,18 @@ class EvalCommand : Command(
         val script = event.vararg<String>(0)
             .joinToString(separator = " ")
             .replace(codeBlockRegex, "")
+
+        val appendedScript = """
+            fun Any?.save() {
+                output.data.add(this)
+                output.saveHook?.invoke(this)?: throw IllegalStateException("Save hook was null, this should never happen")
+            }
+            
+            runBlocking {
+                $script;
+            }
+        """.trimIndent()
+
 
         val language = event.language
 
@@ -145,7 +153,7 @@ class EvalCommand : Command(
         val defaultFailure = RestAction.getDefaultFailure()
         RestAction.setDefaultFailure(restActionHandler)
 
-        val result = doEval(saveFunc + script, event)
+        val result = doEval(appendedScript, event)
 
         val sysOut = String(newOutStream.toByteArray()).takeOrHaste(100, monke).let {
             if (it.isBlank()) {
@@ -264,7 +272,9 @@ class EvalCommand : Command(
         val out =
             try {
                 withTimeout(5_000) {
-                    return@withTimeout engine.eval(code)
+                    return@withTimeout withContext(Dispatchers.IO) {
+                        engine.eval(code)
+                    }
                 }
             }
             catch (exception: Exception) {
