@@ -13,6 +13,7 @@ import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.handlers.LOGGER
+import me.arynxd.monke.util.set
 import me.arynxd.monke.util.takeOrHaste
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -79,7 +80,7 @@ class EvalCommand : Command(
         }
     }
 
-    private val codeBlockRegex = Regex("```[A-Za-z]*")
+    private val codeBlockRegex = Regex("`{0,3}")
 
     override suspend fun runSuspend(event: CommandEvent) {
         val monke = event.monke
@@ -94,8 +95,8 @@ class EvalCommand : Command(
 
         val appendedScript = """
             fun Any?.save() {
-                output.data.add(this)
-                output.saveHook?.invoke(this)?: throw IllegalStateException("Save hook was null, this should never happen")
+                outputObj.data.add(this)
+                outputObj.saveHook?.invoke(this)?: throw IllegalStateException("Save hook was null, this should never happen")
             }
             
             runBlocking {
@@ -135,18 +136,18 @@ class EvalCommand : Command(
 
         outputObj.saveHook = saveHandler
 
-        engine.put("output", outputObj)
-        engine.put("jda", event.jda)
-        engine.put("api", event.jda)
-        engine.put("channel", event.channel)
-        engine.put("guild", event.guild)
-        engine.put("member", event.member)
-        engine.put("ctx", event)
-        engine.put("message", event.message)
-        engine.put("user", event.user)
-        engine.put("bot", event.jda.selfUser)
-        engine.put("monke", monke)
-        engine.put("language", language)
+        engine["outputObj"] = outputObj
+        engine["jda"] = event.jda
+        engine["api"] = event.jda
+        engine["channel"] = event.channel
+        engine["guild"] = event.guild
+        engine["member"] = event.member
+        engine["ctx"] = event
+        engine["message"] = event.message
+        engine["user"] = event.user
+        engine["selfUser"] = event.jda.selfUser
+        engine["monke"] = monke
+        engine["language"] = language
 
         event.thread.post(reply)
 
@@ -155,7 +156,7 @@ class EvalCommand : Command(
 
         val result = doEval(appendedScript, event)
 
-        val sysOut = String(newOutStream.toByteArray()).takeOrHaste(100, monke).let {
+        val sysOut = String(newOutStream.toByteArray()).takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, monke).let {
             if (it.isBlank()) {
                 return@let "Nothing printed"
             }
@@ -166,7 +167,7 @@ class EvalCommand : Command(
 
         System.setOut(oldConsole)
 
-        val outputArr = outputObj.data.joinToString(separator = ", ").takeOrHaste(100, monke).let {
+        val outputArr = outputObj.data.joinToString(separator = ", ").takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, monke).let {
             if (it.isBlank()) {
                 return@let "Nothing saved"
             }

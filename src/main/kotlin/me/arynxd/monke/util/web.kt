@@ -1,7 +1,5 @@
 package me.arynxd.monke.util
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import me.arynxd.monke.MONKE_VERSION
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.translation.translate
@@ -13,60 +11,88 @@ import me.arynxd.monke.objects.web.RedditPost
 import me.arynxd.monke.objects.web.WIKIPEDIA_API
 import me.arynxd.monke.objects.web.WikipediaPage
 import net.dv8tion.jda.api.utils.data.DataObject
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.*
+import org.jsoup.UncheckedIOException
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import ru.gildor.coroutines.okhttp.await
+import java.io.Closeable
+import java.io.IOException
 
 const val HASTEBIN_SERVER = "https://hastebin.monkebot.ml/"
 
-suspend fun getPosts(subreddit: String, monke: Monke): List<RedditPost> {
-    val request: Request = Request.Builder()
+fun Call.asMonoEnqueued(): Mono<Response> = Mono.create { sink ->
+    this.enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) = sink.error(e)
+        override fun onResponse(call: Call, response: Response) = sink.success(response)
+    })
+}
+
+fun <T : Closeable, S: Closeable> T.useWith(other: S, fn: (T, S) -> Unit) {
+    this.use { me ->
+        other.use { o ->
+            fn(me, o)
+        }
+    }
+}
+
+fun getPosts(subreddit: String, monke: Monke): Flux<RedditPost> {
+    val request = Request.Builder()
         .url("https://www.reddit.com/r/$subreddit/.json")
         .addHeader("User-Agent", "Monkebot/${MONKE_VERSION} (Discord bot)")
         .build()
 
-    monke.handlers.okHttpClient.newCall(request).await().use {
-        val body = it.body()
-        val posts = mutableListOf<RedditPost>()
+    return monke.handlers.okHttpClient.newCall(request).asMonoEnqueued()
+    .flux()
+    .flatMap { resp ->
+        val body = resp.body()
 
-        if (!it.isSuccessful || body == null) {
-            LOGGER.error(
-                translateInternal {
-                    path = "internal_error.web_service_error"
-                    values = arrayOf("Reddit")
-                }
-            )
-            return emptyList()
+        val err = translateInternal {
+            path = "internal_error.web_service_error"
+            values = arrayOf("Reddit")
         }
 
-        val redditJson = DataObject.fromJson(withContext(Dispatchers.IO) { body.string() })
+        val ioEx = UncheckedIOException(err)
 
-        if (!redditJson.hasKey("data")) {
-            return emptyList()
-        }
-
-        if (!redditJson.getObject("data").hasKey("children")) {
-            return emptyList()
-        }
-
-        val jsonArray = redditJson
-            .getObject("data")
-            .getArray("children")
-
-        for (i in 0 until jsonArray.length()) {
-            val meme = jsonArray.getObject(i)
-            if (!meme.hasKey("data")) {
-                continue
+        Flux.create { sink ->
+            if (body == null) {
+                LOGGER.error(err)
+                sink.error(ioEx)
+                return@create
             }
 
-            posts.add(RedditPost(meme.getObject("data")))
+            resp.useWith(body) { res, bdy ->
+                if (!res.isSuccessful) {
+                    return@useWith
+                }
+
+                val redditJson = DataObject.fromJson(bdy.string())
+
+                if (!redditJson.hasKey("data")) {
+                    sink.error(ioEx)
+                    return@useWith
+                }
+
+                if (!redditJson.getObject("data").hasKey("children")) {
+                    sink.error(ioEx)
+                    return@useWith
+                }
+
+                val jsonArray = redditJson
+                    .getObject("data")
+                    .getArray("children")
+
+                for (i in 0 until jsonArray.length()) {
+                    val post = jsonArray.getObject(i)
+                    if (!post.hasKey("data")) {
+                        continue
+                    }
+
+                    sink.next(RedditPost(post.getObject("data")))
+                }
+            }
         }
-
-        return posts
     }
-
 }
 
 fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
@@ -114,26 +140,32 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
     }
 }
 
-suspend fun getWikipediaPage(event: CommandEvent, subject: String): WikipediaPage? {
-    val request: Request = Request.Builder()
+fun getWikipediaPage(event: CommandEvent, subject: String): Mono<WikipediaPage> {
+    val request = Request.Builder()
         .url(WIKIPEDIA_API + subject)
         .build()
 
-    event.monke.handlers.okHttpClient.newCall(request).await().use { response ->
-        val body = response.body()
+    val err = translateInternal {
+        path = "internal_error.web_service_error"
+        values = arrayOf("Wikipedia")
+    }
 
-        if (!response.isSuccessful || body == null) {
-            LOGGER.error(
-                translateInternal {
-                    path = "internal_error.web_service_error"
-                    values = arrayOf("Wikipedia")
+    val ioEx = UncheckedIOException(err)
+
+    return Mono.create { sink ->
+        event.monke.handlers.okHttpClient.newCall(request).asMonoEnqueued()
+            .map { resp ->
+                val body = resp.body()
+
+                if (body == null) {
+                    sink.error(ioEx)
                 }
-            )
-            return null
-        }
-        val page = WikipediaPage(DataObject.fromJson(withContext(Dispatchers.IO) { body.string() }))
-
-        return page.takeIf { it.getType() == WikipediaPage.PageType.STANDARD } //Returns null if the page isn't standard
+                else {
+                    resp.useWith(body) { _, bdy ->
+                        WikipediaPage(DataObject.fromJson(bdy.string()))
+                    }
+                }
+            }
     }
 }
 
@@ -144,6 +176,14 @@ suspend fun postBin(text: String, client: OkHttpClient): String? {
         .header("User-Agent", "Mozilla/5.0 Monke")
         .build()
 
+    client.newCall(request).asMonoEnqueued()
+        .map { resp ->
+            resp.use { res ->
+                if (!res.isSuccessful) {
+
+                }
+            }
+        }
     client.newCall(request).await().use { resp ->
         if (!resp.isSuccessful) {
             return null

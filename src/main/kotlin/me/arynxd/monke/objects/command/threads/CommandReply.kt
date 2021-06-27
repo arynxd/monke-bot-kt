@@ -139,31 +139,29 @@ class CommandReply(val messageId: Long, val channel: TextChannel, val user: User
         var idCount = 0
 
         if (messageIds.size > parts.size) {
-            doEdit(messageIds.subList(0, parts.size), parts) {
+            doEdit(messageIds.subList(0, parts.size), parts) { //Edit our existing messages
                 idCount++
+                gatheredIds.add(it.idLong)
                 if (idCount >= target) {
-                    gatheredIds.add(it.idLong)
                     callback(gatheredIds)
                     doDelete(gatheredIds)
                 }
             }
-            doDelete(messageIds.subList(parts.size, messageIds.size))
+            doDelete(messageIds.subList(parts.size, messageIds.size)) //Delete the rest
         }
         else {
-            doEdit(messageIds, parts) {
+            doEdit(messageIds, parts) { //Edit our existing messages
                 idCount++
+                gatheredIds.add(it.idLong)
                 if (idCount >= target) {
-                    gatheredIds.add(it.idLong)
                     callback(gatheredIds)
-                    doDelete(gatheredIds)
                 }
             }
-            doReply(parts.subList(messageIds.size, parts.size)) {
+            doReply(parts.subList(messageIds.size, parts.size)) { //Reply for the rest
                 idCount++
+                gatheredIds.add(it.idLong)
                 if (idCount >= target) {
-                    gatheredIds.add(it.idLong)
                     callback(gatheredIds)
-                    doDelete(gatheredIds)
                 }
             }
         }

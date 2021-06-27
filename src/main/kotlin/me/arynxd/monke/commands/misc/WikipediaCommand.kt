@@ -9,6 +9,7 @@ import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.threads.CommandReply
+import me.arynxd.monke.objects.web.WikipediaPage
 import me.arynxd.monke.util.getWikipediaPage
 import me.arynxd.monke.util.parseDateTime
 
@@ -39,34 +40,37 @@ class WikipediaCommand : Command(
 
         val language = event.language
 
-        val page = getWikipediaPage(event, subject)
-        if (page == null) {
-            event.reply {
-                type(CommandReply.Type.EXCEPTION)
-                title(
-                    translate {
-                        lang = language
-                        path = "command.wiki.response.not_found"
+        getWikipediaPage(event, subject)
+            .filter { it.getType() == WikipediaPage.PageType.STANDARD }
+            .subscribe { page ->
+                if (page == null) {
+                    event.replyAsync {
+                        type(CommandReply.Type.EXCEPTION)
+                        title(
+                            translate {
+                                lang = language
+                                path = "command.wiki.response.not_found"
+                            }
+                        )
+                        event.thread.post(this)
                     }
-                )
-                event.thread.post(this)
-            }
-            return
-        }
+                    return@subscribe
+                }
 
-        val lastEdited = translate {
-            lang = language
-            path = "command.wiki.keyword.last_edited"
-            values = arrayOf(
-                parseDateTime(page.getTimestamp())
-            )
-        }
-        event.reply {
-            type(CommandReply.Type.SUCCESS)
-            title(page.getTitle())
-            description(page.getExtract().toString())
-            footer(lastEdited)
-            event.thread.post(this)
-        }
+                val lastEdited = translate {
+                    lang = language
+                    path = "command.wiki.keyword.last_edited"
+                    values = arrayOf(
+                        parseDateTime(page.getTimestamp())
+                    )
+                }
+                event.replyAsync {
+                    type(CommandReply.Type.SUCCESS)
+                    title(page.getTitle())
+                    description(page.getExtract().toString())
+                    footer(lastEdited)
+                    event.thread.post(this)
+                }
+            }
     }
 }

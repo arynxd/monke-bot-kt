@@ -40,9 +40,6 @@ class CommandHandler(
 ) : Handler() {
     private val reflections = Reflections(COMMAND_PACKAGE, SubTypesScanner())
     val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
-    private val executor = Executors.newSingleThreadExecutor {
-        Thread(it, "Monke-Command-Thread")
-    }
 
     fun handlePreprocessEvent(event: CommandPreprocessEvent) {
         val message = event.message
@@ -136,19 +133,17 @@ class CommandHandler(
     }
 
     private fun launchCommand(command: Command, event: CommandEvent) {
-        executor.submit {
-            val isExecutable = runBlocking {
-                try {
-                    command.isExecutable(event)
-                }
-                catch (ex: Exception) {
-                    handleException(event, ex)
-                    false
-                }
+        GlobalScope.launch {
+            val isExecutable = try {
+                command.isExecutable(event)
+            }
+            catch (ex: Exception) {
+                handleException(event, ex)
+                false
             }
 
             if (!isExecutable) {
-                return@submit
+                return@launch
             }
 
             if (command.hasFlag(CommandFlag.SUSPENDING)) {

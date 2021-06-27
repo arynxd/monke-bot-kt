@@ -1,4 +1,4 @@
-package me.arynxd.monke.commands.developer
+package me.arynxd.monke.commands.misc
 
 import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.objects.argument.Argument
@@ -18,9 +18,8 @@ class JsonCommand : Command(
     CommandMetaData(
         name = "json",
         description = "Gets the JSON representation of a message.",
-        category = CommandCategory.DEVELOPER,
+        category = CommandCategory.MISC,
         aliases = listOf("getjson"),
-        flags = listOf(CommandFlag.DEVELOPER_ONLY),
 
         arguments = ArgumentConfiguration(
             ArgumentLong(

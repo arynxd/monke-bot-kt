@@ -14,33 +14,31 @@ class CatCommand : Command(
         description = "Shows cute cats from Reddit.",
         category = CommandCategory.FUN,
         aliases = listOf("kitty"),
-        flags = listOf(CommandFlag.SUSPENDING),
         cooldown = 3000L
     )
 ) {
-    override suspend fun runSuspend(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val subreddits = listOf("Kitten", "cutecats", "catsnamedafterfood")
         val random = Random
-        val posts = getPosts(subreddits[random.nextInt(subreddits.size)], event.monke)
-            .filter { it.isMedia() }
         val language = event.language
 
-        if (posts.isEmpty()) {
-            event.reply {
-                type(CommandReply.Type.EXCEPTION)
-                title(
-                    translate {
-                        lang = language
-                        path = "command_error.corrupt_web_data"
-                        values = arrayOf("Reddit")
-                    }
-                )
-                footer()
-                event.thread.post(this)
+        getPosts(subreddits[random.nextInt(subreddits.size)], event.monke)
+            .filter { it.isMedia() }
+            .doOnError {
+                event.replyAsync {
+                    type(CommandReply.Type.EXCEPTION)
+                    title(
+                        translate {
+                            lang = language
+                            path = "command_error.corrupt_web_data"
+                            values = arrayOf("Reddit")
+                        }
+                    )
+                    footer()
+                    event.thread.post(this)
+                }
             }
-            return
-        }
-
-        checkAndSendPost(event, posts[random.nextInt(posts.size)])
+            .collectList()
+            .subscribe { checkAndSendPost(event, it.random()) }
     }
 }

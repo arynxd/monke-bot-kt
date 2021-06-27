@@ -70,11 +70,6 @@ class JDAEvents(val monke: Monke) : EventListener {
                     .handlePreprocessEvent(CommandPreprocessEvent(event, monke))
             }
 
-            is GuildMessageDeleteEvent -> {
-                monke.handlers[CommandThreadHandler::class]
-                    .delete(event.messageIdLong, event.channel)
-            }
-
             is GuildJoinEvent -> {
                 val jda = event.jda
                 val channel = jda.getTextChannelById(monke.handlers[ConfigHandler::class].config.logChannel) ?: return

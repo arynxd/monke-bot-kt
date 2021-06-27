@@ -8,6 +8,7 @@ import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.util.IGNORE_UNKNOWN
 import me.arynxd.monke.util.set
 import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
 import java.util.concurrent.TimeUnit
 
 class CommandThreadHandler(
@@ -37,5 +38,15 @@ class CommandThreadHandler(
         else if (toDelete.size == 1) {
             channel.deleteMessageById(toDelete.first()).queue(null, IGNORE_UNKNOWN)
         }
+    }
+
+    override fun onGuildMessageDelete(event: GuildMessageDeleteEvent) {
+        val id = event.messageIdLong
+        val channel = event.channel
+        delete(id, channel)
+
+        val thread = threads.asMap().values.firstOrNull { it.contains(id) }?: return
+        put(CommandThread(thread.messageId, thread.responseIds.takeWhile { it != id }))
+        channel.deleteMessageById(id).queue(null, IGNORE_UNKNOWN) //Messages should be our own, so perm checks are not needed
     }
 }

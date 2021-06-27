@@ -2,6 +2,7 @@ package me.arynxd.monke.commands.misc
 
 import dev.minn.jda.ktx.asFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import me.arynxd.monke.handlers.translation.translate
@@ -38,6 +39,7 @@ class CleanupCommand : Command(
         val messages = event.channel.iterableHistory.asFlow()
             .take(amount.toInt())
             .filter { it.author.idLong == event.selfMember.idLong }
+            .map { it.id }
             .toList()
 
         if (messages.isEmpty()) {
@@ -55,7 +57,7 @@ class CleanupCommand : Command(
             return
         }
 
-        event.channel.purgeMessagesById(messages.map { it.toString() })
+        event.channel.purgeMessagesById(messages)
         event.replyAsync {
             type(CommandReply.Type.SUCCESS)
             title(
