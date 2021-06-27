@@ -4,10 +4,7 @@ import me.arynxd.monke.handlers.ExceptionHandler
 import me.arynxd.monke.handlers.translation.translateAll
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.translation.Language
-import java.lang.IllegalStateException
-import kotlin.math.exp
 
 class ArgumentConfiguration(vararg val expected: Argument<*>) {
     fun isConfigurationValid(cmd: CommandEvent): Boolean {
@@ -44,7 +41,10 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
     }
 
     private fun logInvalid(cmd: CommandEvent) {
-        cmd.monke.handlers[ExceptionHandler::class].handle(IllegalStateException(), "ArgumentConfiguration for ${cmd.command.metaData.name} is invalid.")
+        cmd.monke.handlers[ExceptionHandler::class].handle(
+            IllegalStateException(),
+            "ArgumentConfiguration for ${cmd.command.metaData.name} is invalid."
+        )
     }
 
     suspend fun validateArguments(event: CommandEvent): ArgumentConversion {

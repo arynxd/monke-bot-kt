@@ -12,7 +12,6 @@ import me.arynxd.monke.util.MIN_PERMISSIONS
 import me.arynxd.monke.util.hasMinimumPermissions
 import net.dv8tion.jda.api.audio.AudioSendHandler
 import net.dv8tion.jda.api.entities.*
-import java.lang.IllegalStateException
 
 class GuildMusicManager(
     manager: AudioPlayerManager,
@@ -66,9 +65,9 @@ class GuildMusicManager(
     }
 
     private fun updateThread(thread: CommandThread, nowPlaying: AudioTrack?) {
-        val upNext = scheduler.peek()?.info?.title?: "---"
-        val duration = nowPlaying?.duration?: "---"
-        val np = nowPlaying?.info?.title?: "---"
+        val upNext = scheduler.peek()?.info?.title ?: "---"
+        val duration = nowPlaying?.duration ?: "---"
+        val np = nowPlaying?.info?.title ?: "---"
 
         getReply().apply {
             type(CommandReply.Type.SUCCESS)
@@ -98,7 +97,7 @@ class GuildMusicManager(
                 MessageEmbed.Field("Up Next", "---", true)
             )
         )
-        textChannel.sendMessage(embed).queue {
+        textChannel.sendMessageEmbeds(embed).queue {
             this.messageId = it.idLong
             val thr = CommandThread(messageId, listOf(messageId))
             monke.handlers[CommandThreadHandler::class].put(thr)

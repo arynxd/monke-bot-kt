@@ -23,9 +23,6 @@ import java.io.PrintStream
 import java.util.concurrent.TimeUnit
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
-import kotlin.reflect.full.declaredFunctions
-import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.script.experimental.jsr223.KotlinJsr223DefaultScriptEngineFactory
 
 
 @Suppress("UNUSED")
@@ -167,14 +164,15 @@ class EvalCommand : Command(
 
         System.setOut(oldConsole)
 
-        val outputArr = outputObj.data.joinToString(separator = ", ").takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, monke).let {
-            if (it.isBlank()) {
-                return@let "Nothing saved"
+        val outputArr =
+            outputObj.data.joinToString(separator = ", ").takeOrHaste(MessageEmbed.VALUE_MAX_LENGTH, monke).let {
+                if (it.isBlank()) {
+                    return@let "Nothing saved"
+                }
+                else {
+                    return@let it
+                }
             }
-            else {
-                return@let it
-            }
-        }
 
         val output = result.first
         val isSuccessful = result.second

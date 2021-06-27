@@ -156,7 +156,7 @@ abstract class Command(
             val invalid =
                 argResult.failure.joinToString(separator = "") {
                     "*${it.arg.getName(language, event.command)}* -- ${
-                        translate { 
+                        translate {
                             lang = language
                             path = it.result.error
                             values = it.result.values

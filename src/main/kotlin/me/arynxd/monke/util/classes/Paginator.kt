@@ -123,6 +123,7 @@ fun MessageChannel.sendPaginator(monke: Monke, userId: Long, messageId: Long, va
 fun MessageChannel.sendPaginator(event: CommandEvent, vararg embeds: MessageEmbed) {
     sendPaginator(event.monke, event.user.idLong, event.messageIdLong, *embeds)
 }
+
 fun MessageChannel.sendPaginator(monke: Monke, userId: Long, messageId: Long, embeds: Collection<MessageEmbed>) {
     sendPaginator(monke, userId, messageId, *embeds.toTypedArray())
 }

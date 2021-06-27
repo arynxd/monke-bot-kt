@@ -2,7 +2,6 @@ package me.arynxd.monke.objects.translation
 
 import me.arynxd.monke.objects.exception.TranslationException
 import net.dv8tion.jda.api.utils.data.DataObject
-import java.util.*
 
 data class TranslatedLanguage(val data: DataObject)
 

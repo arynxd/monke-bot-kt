@@ -2,8 +2,6 @@ package me.arynxd.monke.handlers
 
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.music.GuildMusicManager

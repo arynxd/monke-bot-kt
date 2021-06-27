@@ -3,7 +3,6 @@ package me.arynxd.monke.events
 import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.CommandHandler
-import me.arynxd.monke.handlers.CommandThreadHandler
 import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.handlers.GuildDataHandler
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
@@ -13,7 +12,6 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
-import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.hooks.EventListener

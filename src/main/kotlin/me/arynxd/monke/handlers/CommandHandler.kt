@@ -1,8 +1,6 @@
 package me.arynxd.monke.handlers
 
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import me.arynxd.monke.Monke
 import me.arynxd.monke.events.CommandPreprocessEvent
 import me.arynxd.monke.handlers.translation.TranslationHandler
@@ -24,7 +22,6 @@ import me.arynxd.monke.util.markdownSanitize
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
 import kotlin.reflect.KClass
 
 const val COMMAND_PACKAGE = "me.arynxd.monke.commands"
@@ -175,7 +172,8 @@ class CommandHandler(
 
     private fun handleException(event: CommandEvent, exception: Exception) {
         val monke = event.monke
-        val errorCode = monke.handlers[ExceptionHandler::class].handle(exception, "From command '${event.command.metaData.name}'")
+        val errorCode =
+            monke.handlers[ExceptionHandler::class].handle(exception, "From command '${event.command.metaData.name}'")
         event.replyAsync {
             type(CommandReply.Type.EXCEPTION)
             title("Something went wrong whilst executing that command. Please report this to the devs, when you reach them, give them this error code `$errorCode`")

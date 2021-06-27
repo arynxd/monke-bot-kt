@@ -45,8 +45,9 @@ class CommandThreadHandler(
         val channel = event.channel
         delete(id, channel)
 
-        val thread = threads.asMap().values.firstOrNull { it.contains(id) }?: return
+        val thread = threads.asMap().values.firstOrNull { it.contains(id) } ?: return
         put(CommandThread(thread.messageId, thread.responseIds.takeWhile { it != id }))
-        channel.deleteMessageById(id).queue(null, IGNORE_UNKNOWN) //Messages should be our own, so perm checks are not needed
+        channel.deleteMessageById(id)
+            .queue(null, IGNORE_UNKNOWN) //Messages should be our own, so perm checks are not needed
     }
 }

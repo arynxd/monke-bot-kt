@@ -28,7 +28,7 @@ fun Call.asMonoEnqueued(): Mono<Response> = Mono.create { sink ->
     })
 }
 
-fun <T : Closeable, S: Closeable> T.useWith(other: S, fn: (T, S) -> Unit) {
+fun <T : Closeable, S : Closeable> T.useWith(other: S, fn: (T, S) -> Unit) {
     this.use { me ->
         other.use { o ->
             fn(me, o)
@@ -43,56 +43,56 @@ fun getPosts(subreddit: String, monke: Monke): Flux<RedditPost> {
         .build()
 
     return monke.handlers.okHttpClient.newCall(request).asMonoEnqueued()
-    .flux()
-    .flatMap { resp ->
-        val body = resp.body()
+        .flux()
+        .flatMap { resp ->
+            val body = resp.body()
 
-        val err = translateInternal {
-            path = "internal_error.web_service_error"
-            values = arrayOf("Reddit")
-        }
-
-        val ioEx = UncheckedIOException(err)
-
-        Flux.create { sink ->
-            if (body == null) {
-                LOGGER.error(err)
-                sink.error(ioEx)
-                return@create
+            val err = translateInternal {
+                path = "internal_error.web_service_error"
+                values = arrayOf("Reddit")
             }
 
-            resp.useWith(body) { res, bdy ->
-                if (!res.isSuccessful) {
-                    return@useWith
-                }
+            val ioEx = UncheckedIOException(err)
 
-                val redditJson = DataObject.fromJson(bdy.string())
-
-                if (!redditJson.hasKey("data")) {
+            Flux.create { sink ->
+                if (body == null) {
+                    LOGGER.error(err)
                     sink.error(ioEx)
-                    return@useWith
+                    return@create
                 }
 
-                if (!redditJson.getObject("data").hasKey("children")) {
-                    sink.error(ioEx)
-                    return@useWith
-                }
-
-                val jsonArray = redditJson
-                    .getObject("data")
-                    .getArray("children")
-
-                for (i in 0 until jsonArray.length()) {
-                    val post = jsonArray.getObject(i)
-                    if (!post.hasKey("data")) {
-                        continue
+                resp.useWith(body) { res, bdy ->
+                    if (!res.isSuccessful) {
+                        return@useWith
                     }
 
-                    sink.next(RedditPost(post.getObject("data")))
+                    val redditJson = DataObject.fromJson(bdy.string())
+
+                    if (!redditJson.hasKey("data")) {
+                        sink.error(ioEx)
+                        return@useWith
+                    }
+
+                    if (!redditJson.getObject("data").hasKey("children")) {
+                        sink.error(ioEx)
+                        return@useWith
+                    }
+
+                    val jsonArray = redditJson
+                        .getObject("data")
+                        .getArray("children")
+
+                    for (i in 0 until jsonArray.length()) {
+                        val post = jsonArray.getObject(i)
+                        if (!post.hasKey("data")) {
+                            continue
+                        }
+
+                        sink.next(RedditPost(post.getObject("data")))
+                    }
                 }
             }
         }
-    }
 }
 
 fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
@@ -176,14 +176,6 @@ suspend fun postBin(text: String, client: OkHttpClient): String? {
         .header("User-Agent", "Mozilla/5.0 Monke")
         .build()
 
-    client.newCall(request).asMonoEnqueued()
-        .map { resp ->
-            resp.use { res ->
-                if (!res.isSuccessful) {
-
-                }
-            }
-        }
     client.newCall(request).await().use { resp ->
         if (!resp.isSuccessful) {
             return null

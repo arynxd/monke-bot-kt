@@ -43,7 +43,8 @@ class PlayCommand : Command(
         val channel = event.channel
         val voiceChannel = event.member.voiceState!!.channel!!
         val musicHandler = event.monke.handlers[MusicHandler::class]
-        val musicManager = musicHandler.getGuildMusicManager(event.guild, channel, voiceChannel, event.user, event.messageIdLong)
+        val musicManager =
+            musicHandler.getGuildMusicManager(event.guild, channel, voiceChannel, event.user, event.messageIdLong)
 
         if (musicManager.textChannel != channel) {
             event.reply {

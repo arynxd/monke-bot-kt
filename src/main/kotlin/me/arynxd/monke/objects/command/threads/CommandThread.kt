@@ -12,7 +12,7 @@ class CommandThread(val messageId: Long, val responseIds: List<Long>) {
 
     fun post(reply: CommandReply) {
         if (responseIds.isEmpty()) {
-            reply.send() {
+            reply.send {
                 reply.monke.handlers[CommandThreadHandler::class].put(
                     CommandThread(messageId, listOf(it.idLong))
                 )

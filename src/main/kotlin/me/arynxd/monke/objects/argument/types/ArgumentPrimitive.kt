@@ -76,10 +76,10 @@ class ArgumentString(
 ) : Argument<String>() {
     override suspend fun convert(input: String, event: CommandEvent): ArgumentResult<String> {
         return if (input.isBlank()) {
-                ArgumentResult(null, "command.argument.string.error.empty")
-            }
-            else {
-                ArgumentResult(input, null)
-            }
+            ArgumentResult(null, "command.argument.string.error.empty")
+        }
+        else {
+            ArgumentResult(input, null)
+        }
     }
 }

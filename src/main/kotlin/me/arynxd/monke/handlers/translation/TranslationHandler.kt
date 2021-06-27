@@ -104,7 +104,7 @@ fun doTranslate(language: Language, key: String, vararg values: Any?): String {
                     )
                 )
             )
-    
+
     if (values.isNotEmpty()) {
         for (i in values.indices) {
             result = result.replace("%$i", values[i].toString(), true)

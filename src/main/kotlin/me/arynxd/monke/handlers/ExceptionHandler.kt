@@ -11,6 +11,7 @@ import me.arynxd.monke.objects.handlers.whenEnabled
 import me.arynxd.monke.util.ERROR_EMBED_COLOUR
 import net.dv8tion.jda.api.entities.MessageEmbed
 import java.time.Instant
+import java.util.*
 import kotlin.reflect.KClass
 
 @Suppress("UNUSED")
@@ -22,12 +23,13 @@ class ExceptionHandler(
     private val avatarUrl: String by whenEnabled { monke.jda.selfUser.effectiveAvatarUrl }
     private val webhookClient: WebhookClient by lazy { WebhookClient.withUrl(webhookUrl) }
 
-    fun handle(throwable: Throwable, information: String = "null") {
-        LOGGER.error("An uncaught exception has occurred: ($information)", throwable)
+    fun handle(throwable: Throwable, information: String = "null"): String {
+        val code = generateErrorCode()
+        LOGGER.error("An uncaught exception has occurred: Error Code ($code) ($information)", throwable)
         val ex = throwable.stackTraceToString()
         val embed = WebhookEmbedBuilder.fromJDA(
             Embed(
-                title = "An uncaught exception has occurred",
+                title = "An uncaught exception has occurred. Error Code ($code)",
                 color = ERROR_EMBED_COLOUR.rgb,
                 description = ex.take(MessageEmbed.TEXT_MAX_LENGTH),
                 timestamp = Instant.now(),
@@ -40,7 +42,10 @@ class ExceptionHandler(
             .build()
 
         webhookClient.send(message)
+        return code
     }
+
+    private fun generateErrorCode() = UUID.randomUUID().toString().substringBefore("-") //Random set of chars
 
     override fun onDisable() {
         webhookClient.close()

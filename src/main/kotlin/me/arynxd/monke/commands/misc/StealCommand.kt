@@ -7,7 +7,6 @@ import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.ArgumentResult
 import me.arynxd.monke.objects.argument.types.ArgumentImageURL
 import me.arynxd.monke.objects.argument.types.ArgumentString
-import me.arynxd.monke.objects.argument.types.ArgumentURL
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent

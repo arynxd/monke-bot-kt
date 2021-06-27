@@ -3,7 +3,10 @@ package me.arynxd.monke
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import me.arynxd.monke.events.JDAEvents
-import me.arynxd.monke.handlers.*
+import me.arynxd.monke.handlers.ConfigHandler
+import me.arynxd.monke.handlers.MetricsHandler
+import me.arynxd.monke.handlers.PaginationHandler
+import me.arynxd.monke.handlers.TaskHandler
 import me.arynxd.monke.handlers.translation.translateInternal
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
@@ -26,7 +29,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import javax.security.auth.login.LoginException
-import kotlin.coroutines.CoroutineContext
 import kotlin.random.Random
 import kotlin.system.exitProcess
 

@@ -26,7 +26,7 @@ abstract class Argument<T> {
 
     fun getDescription(language: Language, command: Command): String {
         val commandName = if (command is SubCommand) "${command.parent.metaData.name}.child.${command.metaData.name}"
-                          else command.metaData.name//Untranslated because name is a constant key
+        else command.metaData.name//Untranslated because name is a constant key
 
         return translate {
             lang = language
@@ -36,7 +36,7 @@ abstract class Argument<T> {
 
     fun getName(language: Language, command: Command): String {
         val commandName = if (command is SubCommand) "${command.parent.metaData.name}.child.${command.metaData.name}"
-                          else command.metaData.name //Untranslated because name is a constant key
+        else command.metaData.name //Untranslated because name is a constant key
 
         return translate {
             lang = language
@@ -100,7 +100,8 @@ data class ArgumentResult<T>(
 
     companion object {
         fun <T> ofSuccess(data: T) = ArgumentResult(data, null)
-        fun <T> ofFailure(err: String, vararg values: Any?) = ArgumentResult<T>(null, err, values.toList().toTypedArray())
+        fun <T> ofFailure(err: String, vararg values: Any?) =
+            ArgumentResult<T>(null, err, values.toList().toTypedArray())
     }
 }
 
