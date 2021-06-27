@@ -1,5 +1,7 @@
 package me.arynxd.monke
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import me.arynxd.monke.events.JDAEvents
 import me.arynxd.monke.handlers.*
 import me.arynxd.monke.handlers.translation.translateInternal
@@ -24,6 +26,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import javax.security.auth.login.LoginException
+import kotlin.coroutines.CoroutineContext
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
@@ -33,6 +36,7 @@ fun main() {
 
 class Monke : ListenerAdapter(), Debuggable {
     val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(10)
+    val coroutineScope = CoroutineScope(Dispatchers.Unconfined)
     val handlers = Handlers(this)
     val plugins = Plugins(this)
 

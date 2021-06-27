@@ -29,7 +29,7 @@ class Paginator(
         Checks.notEmpty(pages, "Pages")
 
         val message = getChannel()
-            .sendMessage(pages.first())
+            .sendMessageEmbeds(pages.first())
             .referenceById(messageId)
             .mentionRepliedUser(false)
             .await()
@@ -87,16 +87,16 @@ class Paginator(
     private suspend fun changePage() {
         when {
             page < 0 -> {
-                getChannel().editMessageById(sentMessage, pages.last())
+                getChannel().editMessageEmbedsById(sentMessage, pages.last())
                 page = pages.size - 1
             }
 
             page >= pages.size -> {
-                getChannel().editMessageById(sentMessage, pages.first())
+                getChannel().editMessageEmbedsById(sentMessage, pages.first())
                 page = 0
             }
 
-            else -> getChannel().editMessageById(sentMessage, pages[page])
+            else -> getChannel().editMessageEmbedsById(sentMessage, pages[page])
         }
 
         awaitReaction()

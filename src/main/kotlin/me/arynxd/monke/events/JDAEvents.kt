@@ -76,7 +76,7 @@ class JDAEvents(val monke: Monke) : EventListener {
                 val serverCount = jda.guildCache.size()
 
                 event.guild.retrieveOwner().queue {
-                    channel.sendMessage(
+                    channel.sendMessageEmbeds(
                         Embed(
                             title = "Joined a new server!",
                             description = "Server: *${it.guild.name}* with owner **${
@@ -98,7 +98,7 @@ class JDAEvents(val monke: Monke) : EventListener {
                 val serverCount = jda.guildCache.size()
 
                 event.guild.retrieveOwner().queue {
-                    channel.sendMessage(
+                    channel.sendMessageEmbeds(
                         Embed(
                             title = "Left a server :(",
                             description = "Server: *${it.guild.name}* with owner **${

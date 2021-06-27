@@ -81,7 +81,7 @@ class CommandHandler(
             return
         }
 
-        val query = args.removeAt(0).toLowerCase()
+        val query = args.removeAt(0).lowercase()
         val command = commandMap[query]
 
         if (command == null) {
@@ -132,8 +132,8 @@ class CommandHandler(
         return content.startsWith("<@$id>") || content.startsWith("<@!$id>")
     }
 
-    private fun launchCommand(command: Command, event: CommandEvent) {
-        GlobalScope.launch {
+    fun launchCommand(command: Command, event: CommandEvent) {
+        event.monke.coroutineScope.launch {
             val isExecutable = try {
                 command.isExecutable(event)
             }
@@ -147,13 +147,11 @@ class CommandHandler(
             }
 
             if (command.hasFlag(CommandFlag.SUSPENDING)) {
-                GlobalScope.launch {
-                    try {
-                        command.runSuspend(event)
-                    }
-                    catch (exception: Exception) {
-                        handleException(event, exception)
-                    }
+                try {
+                    command.runSuspend(event)
+                }
+                catch (exception: Exception) {
+                    handleException(event, exception)
                 }
             }
             else {
@@ -177,16 +175,13 @@ class CommandHandler(
 
     private fun handleException(event: CommandEvent, exception: Exception) {
         val monke = event.monke
-
+        val errorCode = monke.handlers[ExceptionHandler::class].handle(exception, "From command '${event.command.metaData.name}'")
         event.replyAsync {
             type(CommandReply.Type.EXCEPTION)
-            title("Something went wrong whilst executing that command. Please report this to the devs!")
+            title("Something went wrong whilst executing that command. Please report this to the devs, when you reach them, give them this error code `$errorCode`")
             footer()
             event.thread.post(this)
         }
-
-        monke.handlers[ExceptionHandler::class]
-            .handle(exception, "From command '${event.command.metaData.name}'")
     }
 
     /**
@@ -198,7 +193,7 @@ class CommandHandler(
 
     private fun registerCommand(command: Command, map: ConcurrentHashMap<String, Command>): Boolean {
         for (language in Language.getLanguages()) {
-            val name = command.getName(language).toLowerCase()
+            val name = command.getName(language).lowercase()
             if (map.containsKey(name)) {
                 return false
             }
@@ -207,7 +202,7 @@ class CommandHandler(
                 if (map.containsKey(alias)) {
                     return false
                 }
-                map[alias.toLowerCase()] = command
+                map[alias.lowercase()] = command
             }
         }
         return true

@@ -1,14 +1,22 @@
 package me.arynxd.monke.objects.argument
 
+import me.arynxd.monke.handlers.ExceptionHandler
 import me.arynxd.monke.handlers.translation.translateAll
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.translation.Language
+import java.lang.IllegalStateException
+import kotlin.math.exp
 
 class ArgumentConfiguration(vararg val expected: Argument<*>) {
+    fun isConfigurationValid(cmd: CommandEvent): Boolean {
+        if (expected.isEmpty()) {
+            return true //Short circuit because there's no point in validating empty args
+        }
 
-    fun isConfigurationValid(): Boolean {
         if (expected.count { it.type == Argument.Type.VARARG } > 1) { // Is there more than 1 vararg
+            logInvalid(cmd)
             return false
         }
 
@@ -16,20 +24,27 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
         val requiredIndex = expected.indexOfLast { it.required }
 
         if (varargIndex != -1 && varargIndex < expected.size - 1) { // Is there a vararg not at the end of the config
+            logInvalid(cmd)
             return false
         }
 
-        if (varargIndex != -1 && expected.count { !it.required } > 0) { // Is there a vararg and an optional arg
+        if (varargIndex != -1 && expected.count { !it.required } > 0 && expected[varargIndex].required) { // Is there a vararg and an optional arg, and the vararg isnt the optional
+            logInvalid(cmd)
             return false
         }
 
         if (requiredIndex != -1 && expected.asList().subList(0, requiredIndex)
                 .find { !it.required } != null
         ) { //Is there an optional before a required
+            logInvalid(cmd)
             return false
         }
 
         return true
+    }
+
+    private fun logInvalid(cmd: CommandEvent) {
+        cmd.monke.handlers[ExceptionHandler::class].handle(IllegalStateException(), "ArgumentConfiguration for ${cmd.command.metaData.name} is invalid.")
     }
 
     suspend fun validateArguments(event: CommandEvent): ArgumentConversion {
@@ -70,6 +85,7 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
         }
 
         if (varargIndex != -1) {
+            //Zip up and process all the non-varargs
             args.subList(0, varargIndex).zip(expected).forEach {
                 val result = it.second.verify(it.first, event)
                 if (result.isSuccess) {
@@ -80,8 +96,9 @@ class ArgumentConfiguration(vararg val expected: Argument<*>) {
                 }
             }
 
-            for (arg in args.subList(varargIndex, args.size)) {
-                val result = expected[varargIndex].verify(arg, event)
+            //Process the vararg
+            args.subList(varargIndex, args.size).forEach {
+                val result = expected[varargIndex].verify(it, event)
 
                 if (result.isSuccess) {
                     validArguments.add(result.data!!)

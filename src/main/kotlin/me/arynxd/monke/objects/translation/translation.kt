@@ -2,6 +2,7 @@ package me.arynxd.monke.objects.translation
 
 import me.arynxd.monke.objects.exception.TranslationException
 import net.dv8tion.jda.api.utils.data.DataObject
+import java.util.*
 
 data class TranslatedLanguage(val data: DataObject)
 
@@ -16,7 +17,7 @@ enum class Language(val code: String, val aliases: List<String>, val commonName:
         }
 
         fun getLanguageOrNull(name: String): Language? {
-            return values().find { it.code == name || it.aliases.contains(name.toLowerCase()) }
+            return values().find { it.code == name || it.aliases.contains(name.lowercase()) }
         }
 
         fun getLanguages(): List<Language> {

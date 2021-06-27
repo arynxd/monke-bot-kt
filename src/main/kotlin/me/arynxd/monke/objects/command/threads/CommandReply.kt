@@ -34,7 +34,7 @@ class CommandReply(val messageId: Long, val channel: TextChannel, val user: User
     fun replace(messageIds: List<Long>, callback: ((Message) -> Unit) = {}) {
         checkType()
 
-        channel.editMessageById(messageIds[0], embed.build())
+        channel.editMessageEmbedsById(messageIds[0], embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
             .override(true)
@@ -47,7 +47,7 @@ class CommandReply(val messageId: Long, val channel: TextChannel, val user: User
         checkType()
         Checks.notEmpty(messageIds, "IDs")
 
-        val message = channel.editMessageById(messageIds[0], embed.build())
+        val message = channel.editMessageEmbedsById(messageIds[0], embed.build())
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
             .override(true)
@@ -60,7 +60,7 @@ class CommandReply(val messageId: Long, val channel: TextChannel, val user: User
     fun send(callback: ((Message) -> Unit) = {}) {
         checkType()
 
-        channel.sendMessage(embed.build())
+        channel.sendMessageEmbeds(embed.build())
             .referenceById(messageId)
             .mentionRepliedUser(false)
             .allowedMentions(mentions)
@@ -70,7 +70,7 @@ class CommandReply(val messageId: Long, val channel: TextChannel, val user: User
     suspend fun await(): Message {
         checkType()
 
-        return channel.sendMessage(embed.build())
+        return channel.sendMessageEmbeds(embed.build())
             .referenceById(messageId)
             .mentionRepliedUser(false)
             .allowedMentions(mentions)

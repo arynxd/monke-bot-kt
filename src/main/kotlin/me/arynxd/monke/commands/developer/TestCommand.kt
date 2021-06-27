@@ -30,7 +30,7 @@ class TestCommand : Command(
                     path = "command.test.keyword.success"
                 }
             )
-            event.thread.post(this)
+            send()
         }
 
         event.reply {
@@ -42,7 +42,7 @@ class TestCommand : Command(
                 }
             )
             footer()
-            event.thread.post(this)
+            send()
         }
 
         event.reply {

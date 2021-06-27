@@ -49,6 +49,6 @@ object MonkeInfo {
     }
 
     fun getUserCount(jda: JDA): Long {
-        return jda.guildCache.sumBy { it.memberCount }.toLong()
+        return jda.guildCache.sumOf { it.memberCount }.toLong()
     }
 }

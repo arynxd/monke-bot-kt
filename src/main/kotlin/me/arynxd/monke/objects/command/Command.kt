@@ -43,7 +43,7 @@ abstract class Command(
             return false
         }
 
-        if (!metaData.arguments.isConfigurationValid()) {
+        if (!metaData.arguments.isConfigurationValid(event)) {
             event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
@@ -183,10 +183,12 @@ abstract class Command(
             return false
         }
 
+
         if (!metaData.finalCheck(event)) {
             metaData.finalCheckFail(event)
             return false
         }
+
         return true
     }
 

@@ -38,7 +38,7 @@ class PingCommand : Command(
             time = System.currentTimeMillis() - time
 
             description(description + "\n\n **$message**: ${time}ms")
-            msg.editMessage(build()).queue()
+            msg.editMessageEmbeds(build()).queue()
         }
     }
 }

@@ -58,7 +58,7 @@
   "command_error": {
     "disabled": "That command is disabled, please try again later.",
     "developer_only": "That command is for developers only.",
-    "argument_config": "Something went wrong when running that command. Please report this to the devs.",
+    "argument_config": "Something about this command is incorrectly configured. Please report this to the devs.",
     "member_permission": "You are missing some permissions needed to execute that command. \n %0",
     "bot_permission": "I am missing some permissions needed to execute that command. \n %0",
     "required_args": "You are missing %0 required argument%1. \n %2",
@@ -571,6 +571,27 @@
             }
           }
         }
+      }
+    },
+    "sudo": {
+      "name": "sudo",
+      "description": "Allows you to execute commands as if you were another user",
+      "argument": {
+        "member": {
+          "name": "member",
+          "description": "The member to impersonate"
+        },
+        "command": {
+          "name": "command",
+          "description": "The command to execute"
+        },
+        "args": {
+          "name": "args",
+          "description": "The arguments to execute the command with"
+        }
+      },
+      "response": {
+        "start": "Starting fake execution of command '%0' impersonating user %1"
       }
     }
   }
