@@ -112,10 +112,11 @@ class Paginator(
 
     fun delete() {
         val channel = getChannel()
-        if (channel is PrivateChannel) return
-
-        if (channel is TextChannel && channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_MANAGE)) {
-            channel.deleteMessageById(sentMessage)
+        if (channel is PrivateChannel) {
+            return
+        }
+        else if (channel is TextChannel) {
+            channel.deleteMessageById(sentMessage) // This shouldnt raise perm errors because its our own message
                 .queue(null, IGNORE_UNKNOWN)
         }
     }
