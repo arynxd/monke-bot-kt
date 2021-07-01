@@ -143,6 +143,15 @@ class CommandHandler(
                 return@launch
             }
 
+            monke.handlers[CooldownHandler::class].addCommand(event.user, command)
+            monke.handlers[MetricsHandler::class].commandCounter.labels(
+                if (command is SubCommand)
+                    command.parent.metaData.name
+                else
+                    command.metaData.name
+            ).inc()
+
+
             if (command.hasFlag(CommandFlag.SUSPENDING)) {
                 try {
                     command.runSuspend(event)
@@ -159,14 +168,6 @@ class CommandHandler(
                     handleException(event, exception)
                 }
             }
-
-            monke.handlers[CooldownHandler::class].addCommand(event.user, command)
-            monke.handlers[MetricsHandler::class].commandCounter.labels(
-                if (command is SubCommand)
-                    command.parent.metaData.name
-                else
-                    command.metaData.name
-            ).inc()
         }
     }
 

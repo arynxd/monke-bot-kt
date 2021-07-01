@@ -8,9 +8,10 @@ import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.IGNORE_UNKNOWN
 import me.arynxd.monke.util.addReactions
 import me.arynxd.monke.util.queue
-import net.dv8tion.jda.api.entities.MessageChannel
-import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.internal.utils.Checks
 
 class Paginator(
@@ -46,13 +47,13 @@ class Paginator(
 
     private suspend fun awaitReaction() {
         lastUsed = System.currentTimeMillis()
-        val event = monke.jda.await<GuildMessageReactionAddEvent> {
+        val event = monke.jda.await<MessageReactionAddEvent> {
             it.userIdLong == authorId && it.messageIdLong == sentMessage
         }
-        val user = event.user
+        val user = event.retrieveUser().await()
 
         if (event.reactionEmote.isEmote) {
-            event.reaction.removeReaction(user).queue()
+            removeReaction(event, user)
             awaitReaction()
             return
         }
@@ -60,21 +61,31 @@ class Paginator(
         when (event.reactionEmote.emoji) {
             Emoji.ARROW_LEFT.asReaction -> {
                 page--
-                event.reaction.removeReaction(user).queue()
+                removeReaction(event, user)
                 changePage()
             }
 
             Emoji.ARROW_RIGHT.asReaction -> {
                 page++
-                event.reaction.removeReaction(user).queue()
+                removeReaction(event, user)
                 changePage()
             }
 
-            Emoji.WASTE_BASKET.asReaction -> getChannel()
-                .deleteMessageById(sentMessage)
-                .queue(null, IGNORE_UNKNOWN)
+            Emoji.WASTE_BASKET.asReaction -> delete()
 
-            else -> event.reaction.removeReaction(user).queue()
+            else -> removeReaction(event, user)
+        }
+    }
+
+    private fun removeReaction(event: MessageReactionAddEvent, user: User) {
+        if (event.isFromGuild) {
+            val guild = event.guild
+            if (guild.selfMember.hasPermission(event.textChannel, Permission.MESSAGE_MANAGE)) {
+                event.reaction.removeReaction(user).queue()
+            }
+        }
+        else if (user == event.jda.selfUser) {
+            event.reaction.removeReaction(user).queue()
         }
     }
 
@@ -103,7 +114,13 @@ class Paginator(
     }
 
     fun delete() {
-        getChannel().deleteMessageById(sentMessage).queue(null, IGNORE_UNKNOWN)
+        val channel = getChannel()
+        if (channel is PrivateChannel) return
+
+        if (channel is TextChannel && channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_MANAGE)) {
+            channel.deleteMessageById(sentMessage)
+                .queue(null, IGNORE_UNKNOWN)
+        }
     }
 }
 
