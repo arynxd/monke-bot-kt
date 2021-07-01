@@ -84,9 +84,6 @@ class Paginator(
                 event.reaction.removeReaction(user).queue()
             }
         }
-        else if (user == event.jda.selfUser) {
-            event.reaction.removeReaction(user).queue()
-        }
     }
 
     private fun getChannel(): MessageChannel {
@@ -98,16 +95,16 @@ class Paginator(
     private suspend fun changePage() {
         when {
             page < 0 -> {
-                getChannel().editMessageEmbedsById(sentMessage, pages.last())
+                getChannel().editMessageEmbedsById(sentMessage, pages.last()).queue()
                 page = pages.size - 1
             }
 
             page >= pages.size -> {
-                getChannel().editMessageEmbedsById(sentMessage, pages.first())
+                getChannel().editMessageEmbedsById(sentMessage, pages.first()).queue()
                 page = 0
             }
 
-            else -> getChannel().editMessageEmbedsById(sentMessage, pages[page])
+            else -> getChannel().editMessageEmbedsById(sentMessage, pages[page]).queue()
         }
 
         awaitReaction()
