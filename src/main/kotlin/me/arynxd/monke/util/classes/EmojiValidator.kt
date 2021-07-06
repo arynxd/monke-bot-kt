@@ -10,6 +10,12 @@ import me.arynxd.monke.util.readFully
 object EmojiValidator {
     private val setOfEmoji = mutableSetOf<String>()
 
+    val state: String
+        get() {
+            return if (setOfEmoji.isEmpty()) "Disabled"
+            else "${setOfEmoji.size} emojis loaded"
+        }
+
     fun init() {
         val emojiJson = loadResource("assets/emoji.json").readFully()
 
@@ -18,6 +24,7 @@ object EmojiValidator {
             return
         }
 
+        setOfEmoji.clear()
         val jsonParse = Json { isLenient = true }
 
         try {
@@ -44,5 +51,5 @@ object EmojiValidator {
         LOGGER.info("emoji.json loaded successfully")
     }
 
-    fun unicodeExists(unicode: String) = setOfEmoji.contains(unicode)
+    fun unicodeExists(unicode: String) = if (setOfEmoji.isEmpty()) true else setOfEmoji.contains(unicode)
 }

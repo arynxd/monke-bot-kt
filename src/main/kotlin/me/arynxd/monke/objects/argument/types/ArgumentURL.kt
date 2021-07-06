@@ -43,7 +43,7 @@ class ArgumentImageURL(
             val url = withContext(Dispatchers.IO) { URL(input) }
             val conn = withContext(Dispatchers.IO) { url.openConnection() }
 
-            if (conn.contentLengthLong > 100_000) {
+            if (conn.contentLengthLong > 100_000_000) {
                 return ArgumentResult.ofFailure("command.argument.url.error.too_long", input)
             }
             return ArgumentResult(url, null)

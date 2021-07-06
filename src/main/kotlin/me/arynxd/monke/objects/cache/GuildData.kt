@@ -24,7 +24,7 @@ class GuildData(
             setSetting(GUILDS.LANGUAGE, value.code)
         }
 
-    var logChannel = getSetting(GUILDS.LOG_CHANNEL, -1)
+    var logChannel = getSetting(GUILDS.LOG_CHANNEL, -1L)
         set(value) {
             field = value
             setSetting(GUILDS.LOG_CHANNEL, value)

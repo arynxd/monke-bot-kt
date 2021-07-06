@@ -143,7 +143,7 @@ class CommandHandler(
                 return@launch
             }
 
-            monke.handlers[CooldownHandler::class].addCommand(event.user, command)
+            monke.handlers[CooldownHandler::class].getCache(event.guildIdLong).addCommand(event.user, command)
             monke.handlers[MetricsHandler::class].commandCounter.labels(
                 if (command is SubCommand)
                     command.parent.metaData.name

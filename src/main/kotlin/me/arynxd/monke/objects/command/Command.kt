@@ -94,13 +94,12 @@ abstract class Command(
             return false
         }
 
+        val cooldownCache = event.monke.handlers[CooldownHandler::class].getCache(event.guildIdLong)
         val cooldown = "%.2f".format(
-            event.monke.handlers[CooldownHandler::class]
-                .getRemaining(event.user, event.command) / 1000F
+            cooldownCache.getRemaining(event.user, event.command) / 1000F
         )
 
-        val isOnCooldown = event.monke.handlers[CooldownHandler::class]
-            .isOnCooldown(event.user, event.command)
+        val isOnCooldown = cooldownCache.isOnCooldown(event.user, event.command)
 
         if (isOnCooldown) {
             event.reply {
@@ -223,4 +222,9 @@ abstract class Command(
         //Placeholder method
         throw UnsupportedOperationException("Incorrect run method called. Expected suspend, called sync")
     }
+
+    override fun toString(): String {
+        return "Command(name=${metaData.name})"
+    }
+
 }

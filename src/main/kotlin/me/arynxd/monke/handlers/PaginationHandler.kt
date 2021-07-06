@@ -18,7 +18,7 @@ class PaginationHandler(
     private val paginators: MutableMap<Paginator, Job> = mutableMapOf()
 
     fun addPaginator(paginator: Paginator) {
-        paginators[paginator] = GlobalScope.launch {
+        paginators[paginator] = monke.coroutineScope.launch {
             paginator.paginate()
         }
     }

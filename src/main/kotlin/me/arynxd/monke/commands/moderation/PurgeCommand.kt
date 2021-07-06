@@ -4,6 +4,7 @@ import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.awaitConfirmation
+import me.arynxd.monke.util.purge
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.TextChannel
 
@@ -55,7 +56,7 @@ class PurgeCommand : Command(
         }
 
         if (confirmation.data) {
-            purgeChannel(event.channel)
+            event.channel.purge()
         }
         else {
             event.reply {
@@ -71,11 +72,5 @@ class PurgeCommand : Command(
             }
             return
         }
-    }
-
-    private fun purgeChannel(tc: TextChannel) {
-        val clone = tc.createCopy()
-        tc.delete().queue()
-        clone.queue()
     }
 }

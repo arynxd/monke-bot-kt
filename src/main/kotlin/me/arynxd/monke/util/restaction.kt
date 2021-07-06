@@ -2,6 +2,7 @@ package me.arynxd.monke.util
 
 import com.google.errorprone.annotations.CheckReturnValue
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.GuildChannel
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.requests.RestAction
@@ -28,4 +29,10 @@ fun <T> Collection<RestAction<T>>.queue(
 fun TextChannel.hasMinimumPermissions(): Boolean {
     val selfMember = this.guild.selfMember
     return selfMember.hasPermission(this, MIN_PERMISSIONS)
+}
+
+fun GuildChannel.purge() {
+    val clone = this.createCopy()
+    this.delete().queue()
+    clone.queue()
 }

@@ -53,8 +53,4 @@ class CommandThread(val messageId: Long, val responseIds: List<Long>) {
             reply.monke.handlers[CommandThreadHandler::class].put(thread)
         }
     }
-
-    override fun toString(): String {
-        return "CommandThread(messageId=$messageId, responseIds=$responseIds)"
-    }
 }

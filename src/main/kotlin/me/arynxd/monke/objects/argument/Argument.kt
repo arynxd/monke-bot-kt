@@ -5,6 +5,8 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.SubCommand
 import me.arynxd.monke.objects.translation.Language
+import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
 abstract class Argument<T> {
     abstract val name: String
@@ -44,9 +46,27 @@ abstract class Argument<T> {
         }
     }
 
+    companion object {
+        /**
+         * Creates an empty argument instance for the purpose of trivial conversion to avoid duplicate code. Not to be used for actual argument validation.
+         */
+        fun <T : Argument<T>> ofEmpty(cls: KClass<T>): Argument<T> {
+            val const = cls.primaryConstructor?: throw IllegalStateException("No constructor found for argument ${cls.simpleName}")
+            val params = const.parameters
+            val args = mapOf(
+                params[0] to "name",
+                params[1] to "description",
+                params[2] to false,
+                params[3] to Type.EMPTY,
+            )
+            return const.callBy(args)
+        }
+    }
+
     enum class Type {
         VARARG,
-        REGULAR
+        REGULAR,
+        EMPTY
     }
 }
 

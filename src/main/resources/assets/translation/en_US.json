@@ -593,6 +593,10 @@
       "response": {
         "start": "Starting fake execution of command '%0' impersonating user %1"
       }
+    },
+    "admin": {
+      "name": "admin",
+      "description": "Controls the bot's internals"
     }
   }
 }

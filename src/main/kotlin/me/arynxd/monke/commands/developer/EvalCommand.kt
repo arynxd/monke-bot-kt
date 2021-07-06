@@ -292,7 +292,7 @@ class EvalCommand : Command(
                 try {
                     out.await()?.toString() ?: "null"
                 }
-                catch (exception: ErrorResponseException) {
+                catch (exception: Exception) {
                     successful = false
                     val haste = exception
                         .stackTraceToString()
@@ -318,6 +318,9 @@ class EvalCommand : Command(
     }
 
     //Wrapper class for a data list because script engine can't handle a regular array or functional variables????
+    /**
+     * This class is for use with the eval command **ONLY**. It is not designed for use outside of the eval class.
+     */
     data class EvalOutput(
         val data: MutableList<Any?>,
         var saveHook: ((Any?) -> Unit)? // dont worry this is fine :)
