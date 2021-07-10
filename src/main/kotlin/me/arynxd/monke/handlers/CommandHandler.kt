@@ -177,7 +177,7 @@ class CommandHandler(
             monke.handlers[ExceptionHandler::class].handle(exception, "From command '${event.command.metaData.name}'")
         event.replyAsync {
             type(CommandReply.Type.EXCEPTION)
-            title("Something went wrong whilst executing that command. Please report this to the devs, when you reach them, give them this error code `$errorCode`")
+            title("Something went wrong while executing the command. Please report this to the devs by giving them the following error code `$errorCode`")
             footer()
             event.thread.post(this)
         }
