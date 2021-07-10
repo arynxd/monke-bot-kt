@@ -108,6 +108,8 @@ class EvalCommand : Command(
         val outputObj = EvalOutput(mutableListOf(), null)
         var reply = buildReply(event, script, true, "---", "---", "---")
 
+        event.thread.awaitPost(reply)
+
         val restActionHandler: (Throwable) -> Unit = {
             event.monke.handlers[TaskHandler::class].addOneShot(2, TimeUnit.SECONDS) {
                 val value = it.message.toString()
@@ -146,7 +148,6 @@ class EvalCommand : Command(
         engine["monke"] = monke
         engine["language"] = language
 
-        event.thread.post(reply)
 
         val defaultFailure = RestAction.getDefaultFailure()
         RestAction.setDefaultFailure(restActionHandler)
