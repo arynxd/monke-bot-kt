@@ -30,6 +30,7 @@ class TestCommand : Command(
                     path = "command.test.keyword.success"
                 }
             )
+            footer()
             send()
         }
 

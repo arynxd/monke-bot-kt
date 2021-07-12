@@ -20,6 +20,7 @@ abstract class Handler : ListenerAdapter() {
         this::class.declaredMemberProperties
             .mapNotNull { getDelegate(it) }
             .filterIsInstance<whenEnabled<*>>()
+            .sortedBy { it.priority }
             .forEach { it.load() }
     }
 

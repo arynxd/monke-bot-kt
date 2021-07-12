@@ -22,8 +22,8 @@ class DatabaseHandler(
         TranslationHandler::class
     )
 ) : Handler() {
-    private val pool: HikariDataSource by whenEnabled { getHikari() }
-    val db: Database by lazy { getKtorm() }
+    private val pool: HikariDataSource by whenEnabled(0) { getHikari() }
+    val db: Database by whenEnabled(1) { getKtorm() }
 
     private fun getHikari(): HikariDataSource {
         val hikariConfig = HikariConfig()

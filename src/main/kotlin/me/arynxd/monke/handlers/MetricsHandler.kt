@@ -26,7 +26,7 @@ class MetricsHandler(
     override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
 ) : Handler() {
 
-    private val port: Int by whenEnabled { getPrometheusPort() }
+    private val port: Int by whenEnabled(0) { getPrometheusPort() }
 
     private val musicEvents: Counter = Counter.build()
         .name("monkebot_track_event")

@@ -36,7 +36,7 @@ class CommandHandler(
     )
 ) : Handler() {
     private val reflections = Reflections(COMMAND_PACKAGE, SubTypesScanner())
-    val commandMap: ConcurrentHashMap<String, Command> by whenEnabled { loadCommands() }
+    val commandMap: ConcurrentHashMap<String, Command> by whenEnabled(0) { loadCommands() }
 
     fun handlePreprocessEvent(event: CommandPreprocessEvent) {
         val message = event.message

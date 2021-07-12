@@ -2,7 +2,10 @@ package me.arynxd.monke.objects.handlers
 
 import kotlin.reflect.KProperty
 
-class whenEnabled<T>(val supplier: () -> T) {
+/**
+ * Priority is ordered where 0 is loaded first
+ */
+class whenEnabled<T>(val priority: Int, val supplier: () -> T) {
     private var value: T? = null
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
