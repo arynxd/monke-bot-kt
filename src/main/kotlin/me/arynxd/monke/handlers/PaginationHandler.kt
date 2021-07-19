@@ -1,6 +1,5 @@
 package me.arynxd.monke.handlers
 
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -21,15 +20,6 @@ class PaginationHandler(
         paginators[paginator] = monke.coroutineScope.launch {
             paginator.paginate()
         }
-    }
-
-    fun cleanup() {
-        paginators.entries
-            .filter { (it.key.lastUsed + 30_000) < System.currentTimeMillis() } //Has the paginator been left for 30 seconds
-            .forEach {
-                it.key.delete()
-                it.value.cancel(translateInternal { path = "cancel_reason.timeout" })
-            }
     }
 
     override fun onDisable() {

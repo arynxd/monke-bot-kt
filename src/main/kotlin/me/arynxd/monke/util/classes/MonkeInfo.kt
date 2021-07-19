@@ -12,8 +12,8 @@ import java.time.temporal.ChronoUnit
 object MonkeInfo {
     private val cpuFormatter = DecimalFormat("#.##")
 
-    val JDA_VERSION: String = JDAInfo.VERSION
-    val JAVA_VERSION: String = System.getProperty("java.version")
+    val jdaVersion: String = JDAInfo.VERSION
+    val javaVersion: String = System.getProperty("java.version")
 
     val maxMemory: Long
         get() = Runtime.getRuntime().maxMemory()

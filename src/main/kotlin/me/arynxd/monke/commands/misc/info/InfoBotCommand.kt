@@ -50,8 +50,8 @@ class InfoBotCommand(parent: Command) : SubCommand(
             type(CommandReply.Type.INFORMATION)
             title(event.jda.selfUser.name + translations[9])
 
-            field(jvmVersion, MonkeInfo.JAVA_VERSION, true)
-            field(jdaVersion, MonkeInfo.JDA_VERSION, true)
+            field(jvmVersion, MonkeInfo.javaVersion, true)
+            field(jdaVersion, MonkeInfo.jdaVersion, true)
             field(monkeVersion, MONKE_VERSION, true)
 
             field(threadCount, MonkeInfo.threadCount, true)

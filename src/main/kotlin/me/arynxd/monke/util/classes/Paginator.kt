@@ -1,6 +1,7 @@
 package me.arynxd.monke.util.classes
 
 import dev.minn.jda.ktx.await
+import kotlinx.coroutines.withTimeoutOrNull
 import me.arynxd.monke.Monke
 import me.arynxd.monke.handlers.PaginationHandler
 import me.arynxd.monke.objects.Emoji
@@ -10,9 +11,9 @@ import me.arynxd.monke.util.addReactions
 import me.arynxd.monke.util.queue
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.internal.utils.Checks
+import java.util.concurrent.TimeUnit
 
 class Paginator(
     val monke: Monke,
@@ -20,11 +21,13 @@ class Paginator(
     val channelId: Long,
     val messageId: Long,
     val pages: List<MessageEmbed>,
+    timeout: Long = 1,
+    timeoutUnit: TimeUnit = TimeUnit.MINUTES
 ) {
     private var sentMessage = -1L
     private var page = 0
 
-    var lastUsed = System.currentTimeMillis()
+    val timeout = timeoutUnit.toMillis(timeout)
 
     suspend fun paginate() {
         Checks.notEmpty(pages, "Pages")
@@ -46,10 +49,17 @@ class Paginator(
     }
 
     private suspend fun awaitReaction() {
-        lastUsed = System.currentTimeMillis()
-        val event = monke.jda.await<MessageReactionAddEvent> {
-            it.userIdLong == authorId && it.messageIdLong == sentMessage
+        val event = withTimeoutOrNull(timeout) {
+            monke.jda.await<MessageReactionAddEvent> {
+                it.userIdLong == authorId && it.messageIdLong == sentMessage
+            }
         }
+
+        if (event == null) {
+            delete()
+            return
+        }
+
         val user = event.retrieveUser().await()
 
         if (event.reactionEmote.isEmote) {

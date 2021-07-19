@@ -119,11 +119,7 @@ class Monke : ListenerAdapter(), Debuggable {
 
     private fun initTasks() {
         val taskHandler = handlers[TaskHandler::class]
-
-        taskHandler.addRepeatingTask(30, TimeUnit.SECONDS) {
-            handlers[PaginationHandler::class].cleanup()
-        }
-
+        
         taskHandler.addRepeatingTask(2, TimeUnit.MINUTES) {
             switchStatus()
         }
