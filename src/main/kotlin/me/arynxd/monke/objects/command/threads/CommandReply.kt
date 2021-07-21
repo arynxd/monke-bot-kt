@@ -19,7 +19,14 @@ import java.time.Instant
 /**
  * Provides a simple API to respond to a user, used in threading
  */
-class CommandReply(val messageId: Long, val channel: TextChannel, val user: User?, val monke: Monke) {
+class CommandReply(
+    val messageId: Long,
+    val channel: TextChannel,
+    val user: User?,
+    val monke: Monke,
+    private val embed: EmbedBuilder = EmbedBuilder()
+) {
+
     constructor(event: CommandEvent) : this(
         messageId = event.message.idLong,
         channel = event.channel,
@@ -27,7 +34,6 @@ class CommandReply(val messageId: Long, val channel: TextChannel, val user: User
         monke = event.monke
     )
 
-    private val embed = EmbedBuilder()
     private val mentions = mutableListOf<Message.MentionType>()
     private var type = Type.UNKNOWN
 
@@ -222,5 +228,21 @@ class CommandReply(val messageId: Long, val channel: TextChannel, val user: User
         INFORMATION,
         EXCEPTION,
         SUCCESS
+    }
+
+    companion object {
+        fun fromEmbed(
+            embed: MessageEmbed,
+            messageId: Long,
+            channel: TextChannel,
+            monke: Monke,
+            user: User? = null
+        ) = CommandReply(
+            messageId = messageId,
+            channel = channel,
+            user = user,
+            monke = monke,
+            embed = EmbedBuilder(embed)
+        )
     }
 }

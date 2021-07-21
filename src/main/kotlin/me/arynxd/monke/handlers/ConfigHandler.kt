@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
+import me.arynxd.monke.objects.handlers.whenEnabled
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -16,6 +17,11 @@ class ConfigHandler(
     override val monke: Monke,
 ) : Handler() {
     private val formatter = Json { prettyPrint = true; isLenient = true }
+
+    init {
+        initFile()
+    }
+
     val config = loadFile()
 
     private fun initFile() {
@@ -50,7 +56,7 @@ class ConfigHandler(
                 )
             )
 
-            File(CONFIG_FILE_NAME).writeText(defaults)
+            configFile.writeText(defaults)
         }
     }
 
@@ -96,8 +102,4 @@ class ConfigHandler(
     data class PrometheusConfiguration(
         val port: String
     )
-
-    override fun onEnable() {
-        initFile()
-    }
 }

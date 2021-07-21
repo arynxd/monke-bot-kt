@@ -2,18 +2,17 @@ package me.arynxd.monke.commands.misc
 
 import dev.minn.jda.ktx.Embed
 import me.arynxd.monke.handlers.CommandHandler
+import me.arynxd.monke.handlers.PaginationHandler
 import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.handlers.translation.translateAll
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
 import me.arynxd.monke.objects.argument.types.ArgumentCommand
-import me.arynxd.monke.objects.command.Command
-import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
-import me.arynxd.monke.objects.command.CommandMetaData
+import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
-import me.arynxd.monke.util.classes.sendPaginator
+import me.arynxd.monke.util.classes.Paginator
+import me.arynxd.monke.util.classes.ThreadPaginator
 import net.dv8tion.jda.api.entities.MessageEmbed
 
 
@@ -24,6 +23,7 @@ class HelpCommand : Command(
         description = "Shows help menu, or help for a specific command.",
         category = CommandCategory.MISC,
         aliases = listOf("?", "commands"),
+        flags = listOf(CommandFlag.SUSPENDING, CommandFlag.PAGINATED),
 
         arguments = ArgumentConfiguration(
             ArgumentCommand(
@@ -35,14 +35,26 @@ class HelpCommand : Command(
         )
     )
 ) {
-    override fun runSync(event: CommandEvent) {
+    override suspend fun runSuspend(event: CommandEvent) {
         val prefix = event.prefix
         if (event.isArgumentPresent(0)) {
             getHelp(event, event.argument(0))
             return
         }
 
-        event.channel.sendPaginator(event, getHelpPages(prefix, event))
+        val pages = getHelpPages(prefix, event)
+        val monke = event.monke
+
+        val paginator = ThreadPaginator(
+            monke = monke,
+            authorId = event.user.idLong,
+            channelId = event.channel.idLong,
+            thread = event.thread,
+            pages = pages
+        )
+
+        monke.handlers[PaginationHandler::class]
+            .addPaginator(paginator)
     }
 
     private fun getHelp(event: CommandEvent, command: Command) {

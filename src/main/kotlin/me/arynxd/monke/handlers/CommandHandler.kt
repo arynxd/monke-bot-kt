@@ -43,12 +43,13 @@ class CommandHandler(
         val channel = event.channel
         val user = event.user
         val contentRaw = event.message.contentRaw
+        val messageId = message.idLong
 
         val dataCache = monke.handlers[GuildDataHandler::class].getData(event.guild.idLong)
         val language = dataCache.language
         val prefix = dataCache.prefix
 
-        val thread = event.monke.handlers[CommandThreadHandler::class].getOrNew(message.idLong)
+        val thread = event.monke.handlers[CommandThreadHandler::class].getOrNew(messageId)
 
         if (!event.channel.hasMinimumPermissions()) {
             message.reply(
@@ -82,7 +83,7 @@ class CommandHandler(
         val command = commandMap[query]
 
         if (command == null) {
-            val reply = CommandReply(message.idLong, channel, user, monke)
+            val reply = CommandReply(messageId, channel, user, monke)
             reply.type(CommandReply.Type.EXCEPTION)
             reply.description(
                 translate {
@@ -96,6 +97,14 @@ class CommandHandler(
             )
             thread.post(reply)
             return
+        }
+
+        if (!command.hasFlag(CommandFlag.PAGINATED)) {
+            val handler = monke.handlers[PaginationHandler::class]
+            println(handler)
+            handler.getById(messageId)?.stop() //Halt any existing paginators, we dont need them
+            handler.remove(messageId)
+            println(handler)
         }
 
         val commandEvent = CommandEvent(monke, args.toMutableList(), command, event)

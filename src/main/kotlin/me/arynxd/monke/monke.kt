@@ -5,9 +5,10 @@ import kotlinx.coroutines.Dispatchers
 import me.arynxd.monke.events.JDAEvents
 import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.handlers.MetricsHandler
-import me.arynxd.monke.handlers.PaginationHandler
 import me.arynxd.monke.handlers.TaskHandler
 import me.arynxd.monke.handlers.translation.translateInternal
+import me.arynxd.monke.objects.argument.Argument
+import me.arynxd.monke.objects.argument.types.ArgumentCommand
 import me.arynxd.monke.objects.handlers.Handlers
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.plugins.Plugins

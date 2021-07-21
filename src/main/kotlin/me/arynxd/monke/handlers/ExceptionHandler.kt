@@ -6,6 +6,7 @@ import me.arynxd.monke.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.handlers.whenEnabled
+import me.arynxd.monke.util.markdownSanitize
 import net.dv8tion.jda.api.entities.Message
 import java.util.*
 import kotlin.reflect.KClass
@@ -41,7 +42,7 @@ class ExceptionHandler(
     private fun generateContent(st: Throwable, errorCode: String): String {
         val sb = StringBuilder()
 
-        sb.append(st.toString()).append("\n")
+        sb.append("```").append(st.toString()).append("\n")
         for (elem in st.stackTrace) { //Basically printStackTrace but with our classes in bold
 
             val head =
@@ -61,6 +62,7 @@ class ExceptionHandler(
 
             sb.append(body).append("\n")
         }
+        sb.append("```")
 
         val title = "An uncaught exception has occurred. Error Code (**$errorCode**)"
         val thread = Thread.currentThread()

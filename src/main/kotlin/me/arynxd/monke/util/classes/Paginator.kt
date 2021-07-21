@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.internal.utils.Checks
 import java.util.concurrent.TimeUnit
 
-class Paginator(
+open class Paginator(
     val monke: Monke,
     val authorId: Long,
     val channelId: Long,
@@ -24,12 +24,12 @@ class Paginator(
     timeout: Long = 1,
     timeoutUnit: TimeUnit = TimeUnit.MINUTES
 ) {
-    private var sentMessage = -1L
+    protected var sentMessage = -1L
     private var page = 0
 
     val timeout = timeoutUnit.toMillis(timeout)
 
-    suspend fun paginate() {
+    open suspend fun paginate() {
         Checks.notEmpty(pages, "Pages")
 
         val message = getChannel()
@@ -48,7 +48,7 @@ class Paginator(
         awaitReaction()
     }
 
-    private suspend fun awaitReaction() {
+    protected suspend fun awaitReaction() {
         val event = withTimeoutOrNull(timeout) {
             monke.jda.await<MessageReactionAddEvent> {
                 it.userIdLong == authorId && it.messageIdLong == sentMessage
@@ -87,7 +87,7 @@ class Paginator(
         }
     }
 
-    private fun removeReaction(event: MessageReactionAddEvent, user: User) {
+    protected fun removeReaction(event: MessageReactionAddEvent, user: User) {
         if (event.isFromGuild) {
             val guild = event.guild
             if (guild.selfMember.hasPermission(event.textChannel, Permission.MESSAGE_MANAGE)) {
@@ -96,13 +96,13 @@ class Paginator(
         }
     }
 
-    private fun getChannel(): MessageChannel {
+    protected fun getChannel(): MessageChannel {
         return monke.jda.getTextChannelById(channelId)
             ?: monke.jda.getPrivateChannelById(channelId)
             ?: throw IllegalStateException("Channel $channelId does not exist")
     }
 
-    private suspend fun changePage() {
+    protected suspend fun changePage() {
         when {
             page < 0 -> {
                 getChannel().editMessageEmbedsById(sentMessage, pages.last()).queue()
@@ -122,39 +122,15 @@ class Paginator(
 
     fun delete() {
         val channel = getChannel()
-        if (channel is PrivateChannel) {
-            return
-        }
-        else if (channel is TextChannel) {
-            channel.deleteMessageById(sentMessage) // This shouldnt raise perm errors because its our own message
-                .queue(null, IGNORE_UNKNOWN)
-        }
+        channel.deleteMessageById(sentMessage) // This shouldnt raise perm errors because its our own message
+            .queue(null, IGNORE_UNKNOWN)
     }
-}
 
-fun MessageChannel.sendPaginator(monke: Monke, userId: Long, messageId: Long, vararg embeds: MessageEmbed) {
-    val paginator = Paginator(
-        monke = monke,
-        authorId = userId,
-        channelId = this.idLong,
-        messageId = messageId,
-        pages = embeds.toList()
-    )
-
-    monke.handlers[PaginationHandler::class]
-        .addPaginator(paginator)
-}
-
-fun MessageChannel.sendPaginator(event: CommandEvent, vararg embeds: MessageEmbed) {
-    sendPaginator(event.monke, event.user.idLong, event.messageIdLong, *embeds)
-}
-
-fun MessageChannel.sendPaginator(monke: Monke, userId: Long, messageId: Long, embeds: Collection<MessageEmbed>) {
-    sendPaginator(monke, userId, messageId, *embeds.toTypedArray())
-}
-
-fun MessageChannel.sendPaginator(event: CommandEvent, embeds: Collection<MessageEmbed>) {
-    sendPaginator(event, *embeds.toTypedArray())
+    fun stop() {
+        val channel = getChannel()
+        if (channel !is TextChannel) return
+        channel.clearReactionsById(sentMessage).queue(null, IGNORE_UNKNOWN)
+    }
 }
 
 

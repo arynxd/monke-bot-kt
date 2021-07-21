@@ -121,7 +121,7 @@ data class ArgumentResult<T>(
     companion object {
         fun <T> ofSuccess(data: T) = ArgumentResult(data, null)
         fun <T> ofFailure(err: String, vararg values: Any?) =
-            ArgumentResult<T>(null, err, values.toList().toTypedArray())
+            ArgumentResult<T>(null, err, values.toList().toTypedArray()) //toTypedArray because kotlin complains otherwise
     }
 }
 
