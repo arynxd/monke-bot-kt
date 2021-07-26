@@ -3,7 +3,7 @@ package me.arynxd.monke.util
 import dev.minn.jda.ktx.await
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import net.dv8tion.jda.api.entities.Emoji
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User

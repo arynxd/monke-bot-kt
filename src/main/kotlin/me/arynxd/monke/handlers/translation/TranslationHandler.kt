@@ -1,6 +1,6 @@
 package me.arynxd.monke.handlers.translation
 
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.handlers.ConfigHandler
 import me.arynxd.monke.objects.exception.TranslationException
 import me.arynxd.monke.objects.handlers.Handler
@@ -15,7 +15,8 @@ import kotlin.reflect.KClass
 
 class TranslationHandler(
     override val monke: Monke,
-    override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
+    override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class),
+    override val loadInService: Boolean = true
 ) : Handler() {
     override fun onEnable() {
         val lang = Language.getLanguageOrNull(monke.handlers[ConfigHandler::class].config.preferredLanguage)

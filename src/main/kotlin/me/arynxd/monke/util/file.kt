@@ -1,6 +1,6 @@
 package me.arynxd.monke.util
 
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import net.dv8tion.jda.api.entities.Icon
 import java.io.IOException
 import java.io.InputStream

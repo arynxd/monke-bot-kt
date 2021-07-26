@@ -3,7 +3,7 @@ package me.arynxd.monke.objects.plugins
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.handlers.ExceptionHandler
 import me.arynxd.monke.handlers.translation.translateAllInternal
 import me.arynxd.monke.handlers.translation.translateInternal

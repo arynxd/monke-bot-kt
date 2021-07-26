@@ -4,19 +4,21 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
-import me.arynxd.monke.objects.handlers.whenEnabled
 import java.io.File
 import kotlin.system.exitProcess
 
-const val CONFIG_FILE_NAME = "config.json"
-
 class ConfigHandler(
     override val monke: Monke,
+    override val loadInService: Boolean = true
 ) : Handler() {
     private val formatter = Json { prettyPrint = true; isLenient = true }
+
+    val configPath = monke.config.configPath
+
+    private val configFile = File(configPath)
 
     init {
         initFile()
@@ -25,7 +27,6 @@ class ConfigHandler(
     val config = loadFile()
 
     private fun initFile() {
-        val configFile = File(CONFIG_FILE_NAME)
         if (!configFile.exists()) {
             configFile.createNewFile()
 
@@ -62,7 +63,7 @@ class ConfigHandler(
 
     private fun loadFile(): ConfigFile {
         try {
-            return Json.decodeFromString(File(CONFIG_FILE_NAME).readLines().joinToString(separator = "\n"))
+            return Json.decodeFromString(configFile.readLines().joinToString(separator = "\n"))
         }
         catch (exception: Exception) {
             // This cannot be translated since.. the language comes from the config file

@@ -70,10 +70,6 @@
     "nsfw_reddit_post": "The post found was NSFW and cannot be shown here, please try again.",
     "timeout": "Cancelled due to timeout"
   },
-  "command_response": {
-    "reddit_description": "Taken from %0 by %1",
-    "reddit_footer": "%0 upvotes : %1 downvotes"
-  },
   "command": {
     "category": {
       "developer": "Developer",
@@ -82,6 +78,12 @@
       "moderation": "Moderation",
       "configuration": "Configuration",
       "music": "Music"
+    },
+    "response": {
+      "reddit": {
+        "description": "Taken from %0 by %1",
+        "footer": "%0 upvotes : %1 downvotes"
+      }
     },
     "argument": {
       "language": {

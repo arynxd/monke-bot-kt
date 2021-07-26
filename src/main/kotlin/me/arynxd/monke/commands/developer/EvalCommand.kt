@@ -77,7 +77,7 @@ class EvalCommand : Command(
         }
     }
 
-    private val codeBlockRegex = Regex("`{0,3}")
+    private val codeBlockRegex = Regex("`{1,3}\\w*\\s*(.+?)\\s*`{1,3}")
 
     override suspend fun runSuspend(event: CommandEvent) {
         val monke = event.monke

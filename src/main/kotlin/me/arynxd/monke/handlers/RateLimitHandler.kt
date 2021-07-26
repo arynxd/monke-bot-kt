@@ -1,22 +1,19 @@
 package me.arynxd.monke.handlers
 
-import me.arynxd.monke.Monke
+import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.benmanes.caffeine.cache.LoadingCache
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.ratelimit.RateLimiter
-import java.util.concurrent.ConcurrentHashMap
 
 class RateLimitHandler(
     override val monke: Monke,
 ) : Handler() {
-    private val limiters = ConcurrentHashMap<Long, RateLimiter>()
+    private val limiters: LoadingCache<Long, RateLimiter> =
+        Caffeine.newBuilder()
+            .build { RateLimiter() }
 
     fun getRateLimiter(guildId: Long): RateLimiter {
-        val limiter = limiters[guildId]
-
-        if (limiter == null) {
-            limiters[guildId] = RateLimiter()
-        }
-
         return limiters[guildId]!!
     }
 }

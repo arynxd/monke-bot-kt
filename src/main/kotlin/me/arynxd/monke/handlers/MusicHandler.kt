@@ -2,7 +2,7 @@ package me.arynxd.monke.handlers
 
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.music.GuildMusicManager
 import net.dv8tion.jda.api.entities.Guild

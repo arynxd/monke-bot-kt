@@ -1,7 +1,7 @@
 package me.arynxd.monke.objects.command.threads
 
 import dev.minn.jda.ktx.await
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.handlers.translation.translateInternal
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR

@@ -4,7 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import dev.minn.jda.ktx.Embed
 import dev.minn.jda.ktx.ref
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.handlers.CommandThreadHandler
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.command.threads.CommandThread

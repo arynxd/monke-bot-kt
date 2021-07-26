@@ -2,7 +2,7 @@ package me.arynxd.monke.handlers
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.LoadingCache
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.objects.cache.GuildData
 import me.arynxd.monke.objects.database.GUILDS
 import me.arynxd.monke.objects.handlers.Handler

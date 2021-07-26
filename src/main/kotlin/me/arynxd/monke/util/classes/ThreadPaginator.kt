@@ -1,6 +1,6 @@
 package me.arynxd.monke.util.classes
 
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.objects.Emoji
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.command.threads.CommandThread

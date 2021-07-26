@@ -1,6 +1,6 @@
 package me.arynxd.monke.handlers
 
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.util.classes.StateMachine
 import net.dv8tion.jda.api.events.GenericEvent

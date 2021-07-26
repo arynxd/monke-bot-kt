@@ -1,7 +1,7 @@
 package me.arynxd.monke.handlers
 
 import kotlinx.coroutines.launch
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.events.CommandPreprocessEvent
 import me.arynxd.monke.handlers.translation.TranslationHandler
 import me.arynxd.monke.handlers.translation.translate
@@ -33,7 +33,8 @@ class CommandHandler(
     override val dependencies: List<KClass<out Handler>> = listOf(
         TranslationHandler::class,
         GuildDataHandler::class
-    )
+    ),
+    override val loadPredicate: () -> Boolean = { monke.config.isTesting }
 ) : Handler() {
     private val reflections = Reflections(COMMAND_PACKAGE, SubTypesScanner())
     val commandMap: ConcurrentHashMap<String, Command> by whenEnabled(0) { loadCommands() }

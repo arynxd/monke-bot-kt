@@ -1,7 +1,7 @@
 package me.arynxd.monke.util
 
 import me.arynxd.monke.MONKE_VERSION
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.handlers.translation.translateInternal
 import me.arynxd.monke.objects.command.CommandEvent
@@ -114,7 +114,7 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
 
     val description = translate {
         lang = language
-        path = "command_response.reddit_description"
+        path = "command.response.reddit.description"
         values = arrayOf(
             post.getSubreddit().toString(),
             post.getAuthor().toString()
@@ -123,7 +123,7 @@ fun checkAndSendPost(event: CommandEvent, post: RedditPost) {
 
     val footer = translate {
         lang = language
-        path = "command_response.reddit_footer"
+        path = "command.response.reddit.footer"
         values = arrayOf(
             post.getUpvotes() ?: "0",
             post.getDownvotes() ?: "0"

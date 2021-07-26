@@ -2,11 +2,10 @@ package me.arynxd.monke.handlers
 
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.handlers.whenEnabled
-import me.arynxd.monke.util.markdownSanitize
 import net.dv8tion.jda.api.entities.Message
 import java.util.*
 import kotlin.reflect.KClass

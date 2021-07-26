@@ -1,6 +1,6 @@
 package me.arynxd.monke.objects.command
 
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.events.CommandPreprocessEvent
 import me.arynxd.monke.handlers.CommandThreadHandler
 import me.arynxd.monke.handlers.ConfigHandler

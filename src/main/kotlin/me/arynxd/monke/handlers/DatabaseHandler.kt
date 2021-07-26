@@ -2,7 +2,7 @@ package me.arynxd.monke.handlers
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.handlers.translation.TranslationHandler
 import me.arynxd.monke.handlers.translation.translateInternal
 import me.arynxd.monke.objects.handlers.Handler

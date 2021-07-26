@@ -1,6 +1,6 @@
 package me.arynxd.monke.objects.handlers
 
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
@@ -37,5 +37,6 @@ abstract class Handler : ListenerAdapter() {
     }
 
     abstract val monke: Monke
+    open val loadPredicate: () -> Boolean = { true }
     open val dependencies: List<KClass<out Handler>> = emptyList()
 }

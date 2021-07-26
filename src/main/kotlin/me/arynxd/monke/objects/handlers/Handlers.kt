@@ -1,6 +1,6 @@
 package me.arynxd.monke.objects.handlers
 
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.objects.exception.HandlerException
 import okhttp3.OkHttpClient
 import org.reflections.Reflections
@@ -45,8 +45,10 @@ class Handlers(val monke: Monke) {
                 .map { it.kotlinFunction }
                 .firstOrNull { it != null }
 
+            val simpleName = cls.simpleName
+
             if (constructor == null) {
-                LOGGER.warn("Non Handler class ( ${cls.simpleName} ) found in handlers package!")
+                LOGGER.warn("Non Handler class ( $simpleName ) found in handlers package!")
                 continue
             }
 
@@ -58,7 +60,12 @@ class Handlers(val monke: Monke) {
             )
 
             if (instance !is Handler) {
-                LOGGER.warn("Non Handler class ( ${cls.simpleName} ) found in handlers package!")
+                LOGGER.warn("Non Handler class ( $simpleName ) found in handlers package!")
+                continue
+            }
+
+            if (!instance.loadPredicate() && monke.config.isService) {
+                LOGGER.info("Skipping handler $simpleName due to service mode.")
                 continue
             }
 

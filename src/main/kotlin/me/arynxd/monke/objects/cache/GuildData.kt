@@ -1,7 +1,7 @@
 package me.arynxd.monke.objects.cache
 
 import me.arynxd.monke.DEFAULT_BOT_PREFIX
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.handlers.DatabaseHandler
 import me.arynxd.monke.objects.database.GUILDS
 import me.arynxd.monke.objects.translation.Language

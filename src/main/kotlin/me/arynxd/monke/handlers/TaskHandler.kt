@@ -1,6 +1,6 @@
 package me.arynxd.monke.handlers
 
-import me.arynxd.monke.Monke
+import me.arynxd.monke.launch.Monke
 import me.arynxd.monke.objects.handlers.Handler
 import java.util.*
 import java.util.concurrent.Future
@@ -22,7 +22,8 @@ class TaskHandler(
     fun addRepeatingTask(delay: Long, unit: TimeUnit, block: () -> Unit) =
         addRepeatingTask(getName(), delay, unit, block)
 
-    fun addRepeatingTask(block: () -> Unit) = addRepeatingTask(getName(), 0, TimeUnit.MILLISECONDS, block)
+    fun addRepeatingTask(block: () -> Unit) =
+        addRepeatingTask(getName(), 0, TimeUnit.MILLISECONDS, block)
 
     fun <T> addOneShot(delay: Long, unit: TimeUnit, name: String = getName(), block: () -> T): Future<T> {
         val job = scheduler.schedule(block, delay, unit)
