@@ -31,7 +31,7 @@ class ExceptionHandler(
 
         val message = WebhookMessageBuilder()
             .setAvatarUrl(avatarUrl)
-            .setContent(content)
+            .setContent("$content```")
             .build()
 
         webhookClient.send(message)
@@ -61,7 +61,6 @@ class ExceptionHandler(
 
             sb.append(body).append("\n")
         }
-        sb.append("```")
 
         val title = "An uncaught exception has occurred. Error Code (**$errorCode**)"
         val thread = Thread.currentThread()

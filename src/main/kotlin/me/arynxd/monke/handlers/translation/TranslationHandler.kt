@@ -15,8 +15,7 @@ import kotlin.reflect.KClass
 
 class TranslationHandler(
     override val monke: Monke,
-    override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class),
-    override val loadInService: Boolean = true
+    override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
 ) : Handler() {
     override fun onEnable() {
         val lang = Language.getLanguageOrNull(monke.handlers[ConfigHandler::class].config.preferredLanguage)

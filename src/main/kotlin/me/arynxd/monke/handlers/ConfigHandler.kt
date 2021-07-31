@@ -11,8 +11,7 @@ import java.io.File
 import kotlin.system.exitProcess
 
 class ConfigHandler(
-    override val monke: Monke,
-    override val loadInService: Boolean = true
+    override val monke: Monke
 ) : Handler() {
     private val formatter = Json { prettyPrint = true; isLenient = true }
 
