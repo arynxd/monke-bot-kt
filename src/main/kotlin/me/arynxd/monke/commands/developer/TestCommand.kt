@@ -4,18 +4,21 @@ import dev.minn.jda.ktx.await
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
 import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.exception.TestException
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 
 @Suppress("UNUSED")
 class TestCommand : Command(
-    name = "test",
-    description = "Tests the bot's basic functionality.",
-    category = CommandCategory.DEVELOPER,
-    flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.ASYNC),
-
-    ) {
+    CommandMetaData(
+        name = "test",
+        description = "Tests the bot's basic functionality.",
+        category = CommandCategory.DEVELOPER,
+        flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.SUSPENDING)
+    )
+) {
 
     override suspend fun runSuspend(event: CommandEvent) {
         val language = event.getLanguage()
@@ -23,7 +26,7 @@ class TestCommand : Command(
         event.reply {
             type(CommandReply.Type.SUCCESS)
             title(
-                TranslationHandler.getString(
+                translate(
                     language = language,
                     key = "command.test.keyword.success"
                 )
@@ -35,7 +38,7 @@ class TestCommand : Command(
         event.reply {
             type(CommandReply.Type.EXCEPTION)
             title(
-                TranslationHandler.getString(
+                translate(
                     language = language,
                     key = "command.test.keyword.error"
                 )
@@ -47,13 +50,13 @@ class TestCommand : Command(
         event.reply {
             type(CommandReply.Type.INFORMATION)
             title(
-                TranslationHandler.getString(
+                translate(
                     language = language,
                     key = "command.test.keyword.embed"
                 )
             )
             description(
-                TranslationHandler.getString(
+                translate(
                     language = language,
                     key = "command.test.keyword.event_waiting"
                 )
@@ -70,7 +73,7 @@ class TestCommand : Command(
                 event.reply {
                     type(CommandReply.Type.SUCCESS)
                     title(
-                        TranslationHandler.getString(
+                        translate(
                             language = language,
                             key = "command.test.keyword.captured_result",
                             values = arrayOf(messageEvent.message.contentRaw)
@@ -85,7 +88,7 @@ class TestCommand : Command(
             event.reply {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command.test.keyword.time_out"
                     )

@@ -1,46 +1,48 @@
 package me.arynxd.monke.commands.misc.info
 
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentMember
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.util.parseDateTime
 import net.dv8tion.jda.api.entities.Member
 
 class InfoUserCommand(parent: Command) : SubCommand(
-    name = "user",
-    description = "Shows information about a user.",
-    category = CommandCategory.MISC,
-    flags = listOf(CommandFlag.ASYNC),
-    parent = parent,
+    parent,
+    CommandMetaData(
+        name = "user",
+        description = "Shows information about a user.",
+        category = CommandCategory.MISC,
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentMember(
-                name = "member",
-                description = "The member to show information for.",
-                required = false,
-                type = ArgumentType.REGULAR,
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentMember(
+                    name = "member",
+                    description = "The member to show information for.",
+                    required = false,
+                    type = Type.REGULAR,
+                )
             )
         )
     )
 ) {
 
-    override suspend fun runSuspend(event: CommandEvent) {
+    override fun runSync(event: CommandEvent) {
         val member = event.getArgument(0, event.member)
 
         val language = event.getLanguage()
 
-        val information = TranslationHandler.getString(language, "command.info.keyword.information_for_user")
-        val boosting = TranslationHandler.getString(language, "command.info.keyword.boosting_since")
-        val notBoosting = TranslationHandler.getString(language, "command.info.keyword.not_boosting")
-        val joinedAt = TranslationHandler.getString(language, "command.info.keyword.joined_at")
-        val createdAt = TranslationHandler.getString(language, "command.info.keyword.created_at")
-        val roles = TranslationHandler.getString(language, "command.info.keyword.roles")
-        val noRoles = TranslationHandler.getString(language, "command.info.keyword.no_roles")
+        val information = translate(language, "command.info.keyword.information_for_user")
+        val boosting = translate(language, "command.info.keyword.boosting_since")
+        val notBoosting = translate(language, "command.info.keyword.not_boosting")
+        val joinedAt = translate(language, "command.info.keyword.joined_at")
+        val createdAt = translate(language, "command.info.keyword.created_at")
+        val roles = translate(language, "command.info.keyword.roles")
+        val noRoles = translate(language, "command.info.keyword.no_roles")
 
-        event.reply {
+        event.replyAsync {
             type(CommandReply.Type.INFORMATION)
             title("$information: **${member.user.asTag}**")
             field(boosting, parseDateTime(member.timeBoosted) ?: notBoosting, true)

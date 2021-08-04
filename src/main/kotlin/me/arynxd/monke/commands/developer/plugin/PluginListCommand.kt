@@ -1,13 +1,16 @@
 package me.arynxd.monke.commands.developer.plugin
 
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 
 class PluginListCommand(parent: Command) : SubCommand(
-    name = "enable",
-    description = "Enables a plugin.",
-    category = CommandCategory.DEVELOPER,
-    parent = parent,
-    flags = listOf(CommandFlag.DEVELOPER_ONLY)
+    parent,
+    CommandMetaData(
+        name = "list",
+        description = "Lists all loaded plugins.",
+        category = CommandCategory.DEVELOPER,
+        flags = listOf(CommandFlag.DEVELOPER_ONLY)
+    )
 ) {
     override fun runSync(event: CommandEvent) {
         event.replyAsync {

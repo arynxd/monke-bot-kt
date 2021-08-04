@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap
 class RateLimitHandler(
     override val monke: Monke,
 ) : Handler() {
-
     private val limiters = ConcurrentHashMap<Long, RateLimiter>()
 
     fun getRateLimiter(guildId: Long): RateLimiter {

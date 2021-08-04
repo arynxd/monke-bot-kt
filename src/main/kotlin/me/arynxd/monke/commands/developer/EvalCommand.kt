@@ -1,11 +1,13 @@
 package me.arynxd.monke.commands.developer
 
 import dev.minn.jda.ktx.await
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translateInternal
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentString
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.objects.translation.Language
 import me.arynxd.monke.util.postBin
@@ -18,18 +20,20 @@ import javax.script.ScriptEngineManager
 
 @Suppress("UNUSED")
 class EvalCommand : Command(
-    name = "eval",
-    description = "Evaluates Kotlin code.",
-    category = CommandCategory.DEVELOPER,
-    flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.ASYNC),
+    CommandMetaData(
+        name = "eval",
+        description = "Evaluates Kotlin code.",
+        category = CommandCategory.DEVELOPER,
+        flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.SUSPENDING),
 
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentString(
-                name = "code",
-                description = "The code to evaluate.",
-                required = true,
-                type = ArgumentType.VARARG,
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentString(
+                    name = "code",
+                    description = "The code to evaluate.",
+                    required = true,
+                    type = Type.VARARG,
+                )
             )
         )
     )
@@ -57,7 +61,7 @@ class EvalCommand : Command(
         """.trimIndent()
             )
 
-            LOGGER.info(TranslationHandler.getInternalString("internal_error.eval_reflection_warning"))
+            LOGGER.info(translateInternal("internal_error.eval_reflection_warning"))
         }
     }
 
@@ -89,20 +93,20 @@ class EvalCommand : Command(
 
         val reply = CommandReply(event)
         reply.title(
-            TranslationHandler.getString(
+            translate(
                 language = language,
                 key = "command.eval.keyword.evaluated_result"
             )
         )
 
         reply.field(
-            title = TranslationHandler.getString(language, "command.eval.keyword.duration"),
+            title = translate(language, "command.eval.keyword.duration"),
             description = "${System.currentTimeMillis() - startTime}ms",
             inline = false
         )
 
         reply.field(
-            title = TranslationHandler.getString(language, "command.eval.keyword.code"),
+            title = translate(language, "command.eval.keyword.code"),
             description =
             if (script.length > MessageEmbed.VALUE_MAX_LENGTH) {
                 postBin(script, client) ?: "Something went wrong whilst uploading the code"
@@ -117,7 +121,7 @@ class EvalCommand : Command(
         if (isSuccessful) {
             reply.type(CommandReply.Type.SUCCESS)
             reply.field(
-                title = TranslationHandler.getString(language, "command.eval.keyword.result"),
+                title = translate(language, "command.eval.keyword.result"),
                 description = output,
                 inline = false
             )
@@ -126,7 +130,7 @@ class EvalCommand : Command(
         else {
             reply.type(CommandReply.Type.EXCEPTION)
             reply.field(
-                title = TranslationHandler.getString(language, "command.eval.keyword.error"),
+                title = translate(language, "command.eval.keyword.error"),
                 description = output,
                 inline = false
             )
@@ -154,11 +158,11 @@ class EvalCommand : Command(
 
         val result = when (out) {
             null -> {
-                "Null"
+                "null"
             }
             is RestAction<*> ->
                 try {
-                    out.await()?.toString() ?: "Null"
+                    out.await()?.toString() ?: "null"
                 }
                 catch (exception: ErrorResponseException) {
                     successful = false
@@ -174,7 +178,7 @@ class EvalCommand : Command(
             else -> {
                 val o = out.toString()
                 if (o.isEmpty()) {
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command.eval.keyword.no_error"
                     )

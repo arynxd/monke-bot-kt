@@ -14,7 +14,7 @@ import java.time.Instant
 import kotlin.reflect.KClass
 
 @Suppress("UNUSED")
-class ExceptionHandler @JvmOverloads constructor(
+class ExceptionHandler(
     override val monke: Monke,
     override val dependencies: List<KClass<out Handler>> = listOf(ConfigHandler::class)
 ) : Handler() {

@@ -2,6 +2,7 @@ package me.arynxd.monke.objects.command
 
 import dev.minn.jda.ktx.Embed
 import dev.minn.jda.ktx.await
+import me.arynxd.monke.objects.events.types.command.GenericCommandEvent
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
 import me.arynxd.monke.util.ERROR_EMBED_COLOUR
 import me.arynxd.monke.util.SUCCESS_EMBED_COLOUR
@@ -10,7 +11,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import java.time.Instant
 
-class CommandReply(val event: CommandEvent) {
+class CommandReply(val event: GenericCommandEvent) {
     private val embed = EmbedBuilder()
     private val mentions = mutableListOf<Message.MentionType>()
     private var type = Type.UNKNOWN

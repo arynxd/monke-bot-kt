@@ -9,6 +9,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 import kotlin.reflect.KClass
+import kotlin.reflect.KParameter
+import kotlin.reflect.jvm.kotlinFunction
 import kotlin.system.exitProcess
 
 const val HANDLER_PACKAGE = "me.arynxd.monke.handlers"
@@ -38,7 +40,8 @@ class Handlers(val monke: Monke) {
         for (cls in classes) {
             val constructor = cls
                 .constructors
-                .firstOrNull { it.parameterCount == 1 && it.parameters[0].type == Monke::class.java }
+                .map { it.kotlinFunction }
+                .firstOrNull { it != null }
 
             // These cannot be translated because the TranslationHandler has not been loaded yet
             if (constructor == null) {
@@ -46,7 +49,10 @@ class Handlers(val monke: Monke) {
                 continue
             }
 
-            val instance = constructor.newInstance(monke)
+            val params = constructor.parameters
+            val instance = constructor.callBy(mapOf(
+                params[0] to monke
+            ))
 
             if (instance !is Handler) {
                 LOGGER.warn("Non Handler class ( ${cls.simpleName} ) found in handlers package!")

@@ -20,8 +20,9 @@ suspend fun awaitConfirmation(message: Message, user: User, monke: Monke): Boole
     message.addReaction(Emoji.GREEN_CROSS.getAsReaction()).queue()
     return try {
         withTimeout(10_000) {
-            val event =
-                monke.jda.await<GuildMessageReactionAddEvent> { it.userIdLong == userId && it.messageIdLong == message.idLong }
+            val event = monke.jda.await<GuildMessageReactionAddEvent> {
+                    it.userIdLong == userId && it.messageIdLong == message.idLong
+                }
 
             if (event.reactionEmote.isEmote) {
                 return@withTimeout null

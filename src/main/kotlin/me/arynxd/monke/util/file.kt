@@ -17,22 +17,10 @@ fun loadResource(fileName: String): InputStream {
     }
 }
 
-fun convertToString(input: InputStream): String {
-    val builder = StringBuilder()
-    val reader = BufferedReader(InputStreamReader(input))
-    var line: String?
-
-    line = reader.readLine()
-
-    while (line != null) {
-        builder.append(line)
-        line = reader.readLine()
+fun InputStream.readFully(): String {
+    return this.use {
+        return@use String(this.readAllBytes())
     }
-
-    reader.close()
-    input.close()
-
-    return builder.toString()
 }
 
 fun getIcon(url: URL): Icon? {

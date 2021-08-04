@@ -1,40 +1,42 @@
 package me.arynxd.monke.commands.moderation
 
 import me.arynxd.monke.handlers.RateLimitHandler
-import me.arynxd.monke.handlers.TranslationHandler
+import me.arynxd.monke.handlers.translate
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.ArgumentType
+import me.arynxd.monke.objects.argument.Type
 import me.arynxd.monke.objects.argument.types.ArgumentInt
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
-import me.arynxd.monke.objects.command.CommandEvent
+import me.arynxd.monke.objects.command.CommandMetaData
 import me.arynxd.monke.objects.command.CommandReply
+import me.arynxd.monke.objects.events.types.command.CommandEvent
 import me.arynxd.monke.objects.ratelimit.RateLimitedAction
 import me.arynxd.monke.util.plurifyInt
 import net.dv8tion.jda.api.Permission
 
 @Suppress("UNUSED")
 class ClearCommand : Command(
-    name = "clear",
-    description = "Clears messages from this channel.",
-    category = CommandCategory.MODERATION,
-    aliases = listOf("purge"),
-    cooldown = 10_000L,
-    arguments = ArgumentConfiguration(
-        listOf(
-            ArgumentInt(
-                name = "amount",
-                description = "The amount to clear. 1 - 50",
-                required = true,
-                type = ArgumentType.REGULAR,
-                condition = { it in 1..50 },
+    CommandMetaData(
+        name = "clear",
+        description = "Clears messages from this channel.",
+        category = CommandCategory.MODERATION,
+        aliases = listOf("purge"),
+        cooldown = 10_000L,
+        arguments = ArgumentConfiguration(
+            listOf(
+                ArgumentInt(
+                    name = "amount",
+                    description = "The amount to clear. 1 - 50",
+                    required = true,
+                    type = Type.REGULAR,
+                    condition = { it in 1..50 },
+                )
             )
-        )
-    ),
-    memberPermissions = listOf(Permission.MESSAGE_MANAGE),
-    botPermissions = listOf(Permission.MESSAGE_MANAGE),
-
-    ) {
+        ),
+        memberPermissions = listOf(Permission.MESSAGE_MANAGE),
+        botPermissions = listOf(Permission.MESSAGE_MANAGE)
+    )
+) {
 
     override fun runSync(event: CommandEvent) {
         val limiter = event.monke.handlers.get(RateLimitHandler::class).getRateLimiter(event.guildIdLong)
@@ -44,7 +46,7 @@ class ClearCommand : Command(
             event.replyAsync {
                 type(CommandReply.Type.EXCEPTION)
                 title(
-                    TranslationHandler.getString(
+                    translate(
                         language = language,
                         key = "command_error.rate_limited"
                     )
@@ -67,7 +69,7 @@ class ClearCommand : Command(
                 event.replyAsync {
                     type(CommandReply.Type.SUCCESS)
                     title(
-                        TranslationHandler.getString(
+                        translate(
                             language = language,
                             key = "command.clear.response.cleared",
                             values = arrayOf(
