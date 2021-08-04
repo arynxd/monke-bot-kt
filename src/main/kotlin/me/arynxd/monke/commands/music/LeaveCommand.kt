@@ -6,6 +6,8 @@ import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent
 import me.arynxd.monke.objects.command.CommandMetaData
+import me.arynxd.monke.objects.command.precondition.impl.MemberVoicePrecondition
+import me.arynxd.monke.objects.command.precondition.impl.SelfVoicePrecondition
 import me.arynxd.monke.objects.command.threads.CommandReply
 
 @Suppress("UNUSED")
@@ -15,15 +17,7 @@ class LeaveCommand : Command(
         description = "Leaves the voice channel, if it's in one.",
         category = CommandCategory.MUSIC,
 
-        finalCheck = { it.member.voiceState?.channel != null && it.selfMember.voiceState?.channel != null },
-        finalCheckFail = {
-            it.replyAsync {
-                type(CommandReply.Type.EXCEPTION)
-                title("You or I are not in a voice channel.")
-                footer()
-                send()
-            }
-        }
+        preconditions = listOf(MemberVoicePrecondition(), SelfVoicePrecondition())
     )
 ) {
     override fun runSync(event: CommandEvent) {

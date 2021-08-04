@@ -9,14 +9,14 @@ import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.handlers.translation.translateInternal
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.types.ArgumentString
+import me.arynxd.monke.objects.argument.impl.ArgumentString
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.command.precondition.impl.DeveloperPrecondition
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.objects.handlers.LOGGER
 import me.arynxd.monke.util.set
 import me.arynxd.monke.util.takeOrHaste
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.RestAction
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
@@ -31,7 +31,7 @@ class EvalCommand : Command(
         name = "eval",
         description = "Evaluates Kotlin code.",
         category = CommandCategory.DEVELOPER,
-        flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.SUSPENDING),
+        flags = listOf(CommandFlag.SUSPENDING),
 
         arguments = ArgumentConfiguration(
             ArgumentString(
@@ -40,7 +40,9 @@ class EvalCommand : Command(
                 required = true,
                 type = Argument.Type.VARARG
             )
-        )
+        ),
+
+        preconditions = listOf(DeveloperPrecondition())
     )
 ) {
 

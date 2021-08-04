@@ -7,11 +7,10 @@ import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.handlers.translation.translateAll
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.types.ArgumentCommand
+import me.arynxd.monke.objects.argument.impl.ArgumentCommand
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.DEFAULT_EMBED_COLOUR
-import me.arynxd.monke.util.classes.Paginator
 import me.arynxd.monke.util.classes.ThreadPaginator
 import net.dv8tion.jda.api.entities.MessageEmbed
 

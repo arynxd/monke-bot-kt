@@ -7,8 +7,9 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import me.arynxd.monke.handlers.MusicHandler
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.types.ArgumentString
+import me.arynxd.monke.objects.argument.impl.ArgumentString
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.command.precondition.impl.MemberVoicePrecondition
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.isValidUrl
 import me.arynxd.monke.util.markdownSanitize
@@ -28,15 +29,7 @@ class PlayCommand : Command(
                 type = Argument.Type.VARARG
             )
         ),
-        finalCheck = { it.member.voiceState?.channel != null },
-        finalCheckFail = {
-            it.replyAsync {
-                type(CommandReply.Type.EXCEPTION)
-                title("You are not in a voice channel.")
-                footer()
-                it.thread.post(this)
-            }
-        }
+        preconditions = listOf(MemberVoicePrecondition())
     )
 ) {
     override suspend fun runSuspend(event: CommandEvent) {

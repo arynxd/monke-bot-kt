@@ -1,4 +1,4 @@
-package me.arynxd.monke.objects.argument.types
+package me.arynxd.monke.objects.argument.impl
 
 import me.arynxd.monke.handlers.CommandHandler
 import me.arynxd.monke.handlers.translation.translate

@@ -6,10 +6,11 @@ import me.arynxd.monke.handlers.CommandHandler
 import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.types.ArgumentCommand
-import me.arynxd.monke.objects.argument.types.ArgumentMember
-import me.arynxd.monke.objects.argument.types.ArgumentString
+import me.arynxd.monke.objects.argument.impl.ArgumentCommand
+import me.arynxd.monke.objects.argument.impl.ArgumentMember
+import me.arynxd.monke.objects.argument.impl.ArgumentString
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.command.precondition.impl.DeveloperPrecondition
 import me.arynxd.monke.objects.command.threads.CommandReply
 import net.dv8tion.jda.api.entities.Member
 
@@ -19,7 +20,8 @@ class SudoCommand : Command(
         name = "sudo",
         description = "Allows you to execute commands as if you were another user",
         category = CommandCategory.DEVELOPER,
-        flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.SUSPENDING),
+        flags = listOf(CommandFlag.SUSPENDING),
+        preconditions = listOf(DeveloperPrecondition()),
         arguments = ArgumentConfiguration(
             ArgumentMember(
                 name = "member",

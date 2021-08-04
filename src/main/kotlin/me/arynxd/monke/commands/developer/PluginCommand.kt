@@ -2,6 +2,7 @@ package me.arynxd.monke.commands.developer
 
 import me.arynxd.monke.commands.developer.plugin.*
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.command.precondition.impl.DeveloperPrecondition
 
 //TODO: Add translation for the child commands
 @Suppress("UNUSED")
@@ -10,7 +11,7 @@ class PluginCommand : Command(
         name = "plugin",
         description = "Controls the currently running plugins.",
         category = CommandCategory.DEVELOPER,
-        flags = listOf(CommandFlag.DEVELOPER_ONLY)
+        preconditions = listOf(DeveloperPrecondition())
     )
 ) {
     init {

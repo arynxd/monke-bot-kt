@@ -1,4 +1,4 @@
-package me.arynxd.monke.objects.argument.types
+package me.arynxd.monke.objects.argument.impl
 
 import dev.minn.jda.ktx.await
 import me.arynxd.monke.objects.argument.Argument

@@ -2,6 +2,8 @@ package me.arynxd.monke.commands.music
 
 import me.arynxd.monke.handlers.MusicHandler
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.command.precondition.impl.MemberVoicePrecondition
+import me.arynxd.monke.objects.command.precondition.impl.SelfVoicePrecondition
 import me.arynxd.monke.objects.command.threads.CommandReply
 
 @Suppress("UNUSED")
@@ -12,15 +14,7 @@ class PauseCommand : Command(
         category = CommandCategory.MUSIC,
         flags = listOf(CommandFlag.SUSPENDING),
 
-        finalCheck = { it.member.voiceState?.channel != null },
-        finalCheckFail = {
-            it.replyAsync {
-                type(CommandReply.Type.EXCEPTION)
-                title("You or I are not in a voice channel.")
-                footer()
-                send()
-            }
-        }
+        preconditions = listOf(MemberVoicePrecondition(), SelfVoicePrecondition())
     )
 ) {
     override suspend fun runSuspend(event: CommandEvent) {

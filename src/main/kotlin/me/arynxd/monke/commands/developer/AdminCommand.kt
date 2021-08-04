@@ -2,10 +2,9 @@ package me.arynxd.monke.commands.developer
 
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.types.ArgumentCommand
-import me.arynxd.monke.objects.argument.types.ArgumentString
+import me.arynxd.monke.objects.argument.impl.ArgumentString
 import me.arynxd.monke.objects.command.*
-import me.arynxd.monke.util.equalsIgnoreCase
+import me.arynxd.monke.objects.command.precondition.impl.DeveloperPrecondition
 
 @Suppress("UNUSED")
 class AdminCommand : Command(
@@ -13,7 +12,7 @@ class AdminCommand : Command(
         name = "admin",
         description = "Controls the bot's internals",
         category = CommandCategory.DEVELOPER,
-        flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.SUSPENDING, CommandFlag.DISABLED),
+        flags = listOf(CommandFlag.SUSPENDING, CommandFlag.DISABLED),
 
         arguments = ArgumentConfiguration(
             ArgumentString(
@@ -34,7 +33,8 @@ class AdminCommand : Command(
                 required = true,
                 type = Argument.Type.REGULAR
             )
-        )
+        ),
+        preconditions = listOf(DeveloperPrecondition())
     )
 ) {
     @Suppress("UNUSED_VARIABLE")

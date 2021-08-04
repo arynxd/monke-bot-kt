@@ -1,6 +1,7 @@
 package me.arynxd.monke.objects.command
 
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
+import me.arynxd.monke.objects.command.precondition.Precondition
 import net.dv8tion.jda.api.Permission
 
 data class CommandMetaData @JvmOverloads constructor(
@@ -14,8 +15,7 @@ data class CommandMetaData @JvmOverloads constructor(
     var isDisabled: Boolean = false,
     val cooldown: Long = 1000L,
 
-    val finalCheck: (CommandEvent) -> Boolean = { true },
-    val finalCheckFail: (CommandEvent) -> Unit = { },
+    val preconditions: List<Precondition> = emptyList(),
 
     val memberPermissions: List<Permission> = emptyList(),
     val botPermissions: List<Permission> = emptyList(),

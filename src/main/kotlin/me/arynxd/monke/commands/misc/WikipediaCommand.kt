@@ -3,7 +3,7 @@ package me.arynxd.monke.commands.misc
 import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.types.ArgumentString
+import me.arynxd.monke.objects.argument.impl.ArgumentString
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent

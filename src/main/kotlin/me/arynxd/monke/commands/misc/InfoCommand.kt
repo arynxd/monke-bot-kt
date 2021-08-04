@@ -5,7 +5,7 @@ import me.arynxd.monke.commands.misc.info.InfoServerCommand
 import me.arynxd.monke.commands.misc.info.InfoUserCommand
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.types.ArgumentMember
+import me.arynxd.monke.objects.argument.impl.ArgumentMember
 import me.arynxd.monke.objects.command.Command
 import me.arynxd.monke.objects.command.CommandCategory
 import me.arynxd.monke.objects.command.CommandEvent

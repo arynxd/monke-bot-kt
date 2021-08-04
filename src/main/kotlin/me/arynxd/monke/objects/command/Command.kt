@@ -28,21 +28,6 @@ abstract class Command(
             return false
         }
 
-        if (hasFlag(CommandFlag.DEVELOPER_ONLY) && !event.isDeveloper) {
-            event.reply {
-                type(CommandReply.Type.EXCEPTION)
-                title(
-                    translate {
-                        lang = language
-                        path = "command_error.developer_only"
-                    }
-                )
-                footer()
-                event.thread.post(this)
-            }
-            return false
-        }
-
         if (!metaData.arguments.isConfigurationValid(event)) {
             event.reply {
                 type(CommandReply.Type.EXCEPTION)
@@ -182,10 +167,14 @@ abstract class Command(
             return false
         }
 
-
-        if (!metaData.finalCheck(event)) {
-            metaData.finalCheckFail(event)
-            return false
+        metaData.preconditions.forEach { cond ->
+            if (cond.pass(event)) {
+                cond.onSuccess(event)
+            }
+            else {
+                cond.onFail(event)
+                return@isExecutable false
+            }
         }
 
         return true

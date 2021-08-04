@@ -7,14 +7,6 @@ abstract class SubCommand(
     val parent: Command,
     metaData: CommandMetaData,
 ) : Command(metaData) {
-    override suspend fun runSuspend(event: CommandEvent) {
-        //Placeholder method
-    }
-
-    override fun runSync(event: CommandEvent) {
-        //Placeholder method
-    }
-
     override fun getName(language: Language): String {
         return translate {
             lang = language

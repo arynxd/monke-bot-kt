@@ -2,6 +2,7 @@ package me.arynxd.monke.commands.developer
 
 import me.arynxd.monke.handlers.translation.translate
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.command.precondition.impl.DeveloperPrecondition
 import me.arynxd.monke.objects.command.threads.CommandReply
 import kotlin.system.exitProcess
 
@@ -11,7 +12,8 @@ class ShutdownCommand : Command(
         name = "shutdown",
         description = "Shuts the bot down gracefully.",
         category = CommandCategory.DEVELOPER,
-        flags = listOf(CommandFlag.DEVELOPER_ONLY, CommandFlag.SUSPENDING)
+        flags = listOf(CommandFlag.SUSPENDING),
+        preconditions = listOf(DeveloperPrecondition())
     )
 ) {
     override suspend fun runSuspend(event: CommandEvent) {

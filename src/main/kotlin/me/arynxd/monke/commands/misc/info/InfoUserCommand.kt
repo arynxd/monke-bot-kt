@@ -3,7 +3,7 @@ package me.arynxd.monke.commands.misc.info
 import me.arynxd.monke.handlers.translation.translateAll
 import me.arynxd.monke.objects.argument.Argument
 import me.arynxd.monke.objects.argument.ArgumentConfiguration
-import me.arynxd.monke.objects.argument.types.ArgumentMember
+import me.arynxd.monke.objects.argument.impl.ArgumentMember
 import me.arynxd.monke.objects.command.*
 import me.arynxd.monke.objects.command.threads.CommandReply
 import me.arynxd.monke.util.parseDateTime

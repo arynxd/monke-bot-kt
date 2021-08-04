@@ -51,7 +51,8 @@ abstract class Argument<T> {
          * Creates an empty argument instance for the purpose of trivial conversion to avoid duplicate code. Not to be used for actual argument validation.
          */
         fun <T : Argument<T>> ofEmpty(cls: KClass<T>): Argument<T> {
-            val const = cls.primaryConstructor?: throw IllegalStateException("No constructor found for argument ${cls.simpleName}")
+            val const = cls.primaryConstructor?:
+                throw IllegalStateException("No constructor found for argument ${cls.simpleName}")
             val params = const.parameters
             val args = mapOf(
                 params[0] to "name",
@@ -59,6 +60,9 @@ abstract class Argument<T> {
                 params[2] to false,
                 params[3] to Type.EMPTY,
             )
+            // we use reflection since otherwise we'd have to duplicate this impl to every Argument impl
+            // this is rarely used and is thread safe and thus can be stored statically
+            // so reflection is justified
             return const.callBy(args)
         }
     }

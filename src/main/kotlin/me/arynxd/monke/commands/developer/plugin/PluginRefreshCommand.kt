@@ -1,6 +1,7 @@
 package me.arynxd.monke.commands.developer.plugin
 
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.command.precondition.impl.DeveloperPrecondition
 import me.arynxd.monke.objects.command.threads.CommandReply
 
 class PluginRefreshCommand(parent: Command) : SubCommand(
@@ -9,7 +10,7 @@ class PluginRefreshCommand(parent: Command) : SubCommand(
         name = "refresh",
         description = "Reloads all plugins from disk.",
         category = CommandCategory.DEVELOPER,
-        flags = listOf(CommandFlag.DEVELOPER_ONLY)
+        preconditions = listOf(DeveloperPrecondition())
     )
 ) {
     override fun runSync(event: CommandEvent) {

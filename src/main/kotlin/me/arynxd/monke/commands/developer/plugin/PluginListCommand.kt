@@ -1,6 +1,7 @@
 package me.arynxd.monke.commands.developer.plugin
 
 import me.arynxd.monke.objects.command.*
+import me.arynxd.monke.objects.command.precondition.impl.DeveloperPrecondition
 import me.arynxd.monke.objects.command.threads.CommandReply
 
 class PluginListCommand(parent: Command) : SubCommand(
@@ -9,7 +10,7 @@ class PluginListCommand(parent: Command) : SubCommand(
         name = "list",
         description = "Lists all loaded plugins.",
         category = CommandCategory.DEVELOPER,
-        flags = listOf(CommandFlag.DEVELOPER_ONLY)
+        preconditions = listOf(DeveloperPrecondition())
     )
 ) {
     override fun runSync(event: CommandEvent) {

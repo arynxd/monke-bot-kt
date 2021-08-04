@@ -1,4 +1,4 @@
-package me.arynxd.monke.objects.argument.types
+package me.arynxd.monke.objects.argument.impl
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
